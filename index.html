@@ -1,58 +1,106 @@
-<div class="catalog-starter" id="catalog-starter">
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            /* ПРЕМИАЛЬНЫЙ ТЕМНО-СЕРЫЙ ФОН (БЕЗ КАРТИНОК) */
+            --bg-color: #1a1a1a; 
+            --glass-bg: rgba(255, 255, 255, 0.04);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-main: #ffffff;
+            --blur-val: blur(15px);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0; padding: 15px;
+            display: flex; flex-direction: column; align-items: center;
+            overflow-x: hidden;
+        }
+
+        .container { width: 100%; max-width: 420px; display: flex; flex-direction: column; align-items: center; }
+
+        /* СКРУГЛЕННЫЙ БЛОК ЛОГОТИПА (ИСПРАВЛЕНО) */
+        .logo-block {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 10px;
+            width: 100px; height: 100px;
+            display: flex; justify-content: center; align-items: center;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+        .logo-block img { width: 90%; height: auto; object-fit: contain; }
+
+        h1 { font-weight: 200; letter-spacing: 3px; text-transform: uppercase; font-size: 13px; opacity: 0.6; margin: 0 0 25px 0; text-align: center;}
+
+        /* СТИЛЬ ВКЛАДОК КАТАЛОГА (КНОПКИ ТЕПЕРЬ НАЖИМАЮТСЯ) */
+        .catalog-starter {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .category-card {
+            background: var(--glass-bg);
+            backdrop-filter: var(--blur-val);
+            -webkit-backdrop-filter: var(--blur-val);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .category-card:active { transform: scale(0.98); background: rgba(255,255,255,0.06); }
+        .category-card h2 { font-size: 16px; font-weight: 600; margin: 0; color: #fff; }
+
+        /* СЕКЦИИ ТОВАРОВ (СКРЫТЫ) */
+        .product-section { display: none; width: 100%; flex-direction: column; gap: 15px; }
+
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .title { font-size: 14px; font-weight: 300; opacity: 0.9; margin-bottom: 5px; }
+        .price { font-size: 18px; font-weight: 700; margin-bottom: 15px; color: #fff; }
+
+        .btn {
+            background: #fff; color: #000; border: none;
+            padding: 10px 30px; border-radius: 12px;
+            text-transform: uppercase; font-size: 10px; font-weight: 800;
+            cursor: pointer;
+        }
+
+        /* КНОПКА "НАЗАД" */
+        .back-btn {
+            align-self: flex-start; background: none; border: none; color: #fff;
+            font-size: 20px; cursor: pointer; opacity: 0.6; display: none; margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-block" id="logo-block">
+            <img src="https://raw.githubusercontent.com/rdlrik321-ui/NexTech-shop/main/logo.png" alt="Logo">
+        </div>
+        
+        <button class="back-btn" id="back-btn" onclick="showCatalog()">‹ Назад</button>
+        <h1 id="main-title">NEXTECH // TERMINAL</h1>
+        
+        <div class="catalog-starter" id="catalog-starter">
             <div class="category-card" onclick="showSection('gpu-section')">
                 <h2>ВИДЕОКАРТЫ</h2>
             </div>
             <div class="category-card" onclick="showSection('cpu-section')">
-                <h2>ПРОЦЕССОРЫ</h2>
-            </div>
-        </div>
-
-        <div class="product-section" id="gpu-section">
-            <div class="card">
-                <img src="https://raw.githubusercontent.com/rdlrik321-ui/NexTech-shop/main/logo.png">
-                <div class="price">5,800 ₽</div>
-                <button class="btn" onclick="sendOrder('RX 580', 5800)">В корзину</button>
-            </div>
-        </div>
-
-        <div class="product-section" id="cpu-section">
-            <div class="card">
-                <img src="https://raw.githubusercontent.com/rdlrik321-ui/NexTech-shop/main/logo.png">
-                <div class="price">12,500 ₽</div>
-                <button class="btn" onclick="sendOrder('Ryzen 5600X', 12500)">В корзину</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        let tg = window.Telegram.WebApp;
-        tg.expand();
-
-        // Логика переключения (починено)
-        function showSection(sectionId) {
-            document.getElementById('catalog-starter').style.display = 'none';
-            document.getElementById('logo-block').style.display = 'none';
-            document.getElementById('gpu-section').style.display = 'none';
-            document.getElementById('cpu-section').style.display = 'none';
-            
-            document.getElementById(sectionId).style.display = 'flex';
-            document.getElementById('back-btn').style.display = 'block';
-            document.getElementById('main-title').innerText = sectionId === 'gpu-section' ? 'NEXTECH // GPU' : 'NEXTECH // CPU';
-        }
-
-        function showCatalog() {
-            document.getElementById('gpu-section').style.display = 'none';
-            document.getElementById('cpu-section').style.display = 'none';
-            document.getElementById('catalog-starter').style.display = 'grid';
-            document.getElementById('logo-block').style.display = 'flex';
-            document.getElementById('back-btn').style.display = 'none';
-            document.getElementById('main-title').innerText = 'NEXTECH // TERMINAL';
-        }
-
-        function sendOrder(name, price) {
-            tg.sendData(JSON.stringify({item: name, total: price}));
-            tg.close();
-        }
-    </script>
-</body>
-</html>
