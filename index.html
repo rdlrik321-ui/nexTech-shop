@@ -23,21 +23,19 @@
 
         .container { width: 100%; max-width: 400px; display: flex; flex-direction: column; align-items: center; }
 
-        /* СКРУГЛЕННЫЙ ЛОГОТИП */
         .logo-block {
             background: #ffffff;
             border-radius: 25px;
             padding: 15px;
-            width: 110px; height: 110px;
+            width: 100px; height: 100px;
             display: flex; justify-content: center; align-items: center;
             margin-bottom: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
         .logo-block img { width: 100%; height: auto; object-fit: contain; }
 
-        h1 { font-weight: 200; letter-spacing: 3px; text-transform: uppercase; font-size: 13px; opacity: 0.5; margin-bottom: 30px; }
+        h1 { font-weight: 200; letter-spacing: 3px; text-transform: uppercase; font-size: 13px; opacity: 0.5; margin-bottom: 30px; text-align: center; }
 
-        /* ВКЛАДКИ КАТАЛОГА */
         .catalog-starter { width: 100%; display: grid; gap: 12px; }
 
         .category-card {
@@ -49,12 +47,10 @@
             padding: 30px 20px;
             text-align: center;
             cursor: pointer;
-            transition: transform 0.2s;
         }
         .category-card:active { transform: scale(0.97); background: rgba(255,255,255,0.07); }
-        .category-card h2 { font-size: 16px; font-weight: 600; margin: 0; letter-spacing: 1px; }
+        .category-card h2 { font-size: 16px; font-weight: 600; margin: 0; letter-spacing: 1px; pointer-events: none; }
 
-        /* СЕКЦИИ ТОВАРОВ */
         .product-section { display: none; width: 100%; flex-direction: column; gap: 15px; }
 
         .card {
@@ -65,9 +61,6 @@
             text-align: center;
         }
 
-        .card-title { font-size: 15px; margin-bottom: 10px; opacity: 0.9; }
-        .price { font-size: 20px; font-weight: 700; margin-bottom: 15px; }
-
         .btn {
             background: #ffffff; color: #000; border: none;
             padding: 12px 30px; border-radius: 15px;
@@ -75,7 +68,6 @@
             cursor: pointer;
         }
 
-        /* КНОПКА НАЗАД */
         .back-btn {
             align-self: flex-start; background: none; border: none; color: #fff;
             font-size: 24px; cursor: pointer; opacity: 0.5; display: none; margin-bottom: 10px;
@@ -84,14 +76,14 @@
 </head>
 <body>
     <div class="container">
-        <div class="logo-block" id="logo-block">
+        <div class="logo-block" id="ui-logo">
             <img src="https://raw.githubusercontent.com/rdlrik321-ui/NexTech-shop/main/logo.png">
         </div>
         
-        <button class="back-btn" id="back-btn" onclick="showHome()">‹ Назад</button>
-        <h1 id="main-title">NEXTECH // TERMINAL</h1>
+        <button class="back-btn" id="ui-back" onclick="showHome()">‹ Назад</button>
+        <h1 id="ui-title">NEXTECH // TERMINAL</h1>
 
-        <div class="catalog-starter" id="home-menu">
+        <div class="catalog-starter" id="ui-home">
             <div class="category-card" onclick="openCategory('gpu-page')">
                 <h2>ВИДЕОКАРТЫ</h2>
             </div>
@@ -102,5 +94,12 @@
 
         <div class="product-section" id="gpu-page">
             <div class="card">
-                <div class="card-title">Sapphire Nitro+ RX 580</div>
-                <div class="price">5,800 ₽</div>
+                <div style="margin-bottom: 10px;">Sapphire Nitro+ RX 580</div>
+                <div style="font-size: 20px; font-weight: 700; margin-bottom: 15px;">5,800 ₽</div>
+                <button class="btn" onclick="sendOrder('RX 580', 5800)">В корзину</button>
+            </div>
+        </div>
+
+        <div class="product-section" id="cpu-page">
+            <div class="card">
+                <div style="margin-bottom: 10px;">AMD Ryzen 5 5600X</div>
