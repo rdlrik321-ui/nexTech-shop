@@ -1,37 +1,108 @@
-<div style="font-size:20px; font-weight:bold; margin-bottom:15px">12,500 ₽</div>
-                <button class="btn" onclick="order('5600X', 12500)">В корзину</button>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --bg: #0d0d0f;
+            --accent: #ffffff;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.08);
+        }
+
+        body {
+            background-color: var(--bg);
+            /* Технологичная сетка на фоне */
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 30px 30px;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+            min-height: 100vh;
+        }
+
+        .container { width: 100%; max-width: 400px; display: flex; flex-direction: column; align-items: center; }
+
+        /* Логотип со свечением */
+        .logo-block {
+            background: #fff;
+            border-radius: 22px;
+            width: 90px; height: 90px;
+            display: flex; justify-content: center; align-items: center;
+            margin-bottom: 25px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
+        }
+        .logo-block img { width: 75%; height: auto; }
+
+        h1 { font-size: 11px; letter-spacing: 4px; opacity: 0.4; text-transform: uppercase; margin-bottom: 30px; }
+
+        /* Стеклянные карточки категорий */
+        .cat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 18px;
+            padding: 30px;
+            width: 100%;
+            margin-bottom: 12px;
+            text-align: center;
+            box-sizing: border-box;
+            transition: all 0.2s;
+        }
+        .cat-card:active { background: rgba(255,255,255,0.07); transform: scale(0.98); }
+        .cat-card h2 { margin: 0; font-size: 17px; letter-spacing: 1px; font-weight: 600; pointer-events: none; }
+
+        /* Кнопка Назад */
+        .nav-back {
+            align-self: flex-start;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            color: #fff; padding: 7px 15px; border-radius: 10px;
+            font-size: 14px; margin-bottom: 15px; display: none;
+        }
+
+        /* Блоки товаров */
+        .page { display: none; width: 100%; flex-direction: column; gap: 15px; }
+        
+        .item-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px; padding: 20px; text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .buy-btn {
+            background: #fff; color: #000; border: none;
+            padding: 12px 35px; border-radius: 12px;
+            font-weight: 800; text-transform: uppercase; font-size: 11px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-block" id="logo-box">
+            <img src="https://raw.githubusercontent.com/rdlrik321-ui/NexTech-shop/main/logo.png">
+        </div>
+        
+        <button class="nav-back" id="back-btn" onclick="goHome()">← НАЗАД</button>
+        <h1 id="main-head">NEXTECH // TERMINAL</h1>
+
+        <div id="home-screen" style="width: 100%;">
+            <div class="cat-card" onclick="showPage('gpu-page')">
+                <h2>ВИДЕОКАРТЫ</h2>
+            </div>
+            <div class="cat-card" onclick="showPage('cpu-page')">
+                <h2>ПРОЦЕССОРЫ</h2>
             </div>
         </div>
-    </div>
 
-    <script>
-        let tg = window.Telegram.WebApp;
-        tg.expand();
-
-        function openP(id) {
-            document.getElementById('h-m').style.display = 'none';
-            document.getElementById('l-b').style.display = 'none';
-            document.getElementById('gpu').style.display = 'none';
-            document.getElementById('cpu').style.display = 'none';
-            
-            document.getElementById(id).style.display = 'flex';
-            document.getElementById('b-b').style.display = 'block';
-            document.getElementById('t-m').innerText = 'NEXTECH // ' + id.toUpperCase();
-        }
-
-        function toHome() {
-            document.getElementById('gpu').style.display = 'none';
-            document.getElementById('cpu').style.display = 'none';
-            document.getElementById('b-b').style.display = 'none';
-            document.getElementById('h-m').style.display = 'block';
-            document.getElementById('l-b').style.display = 'flex';
-            document.getElementById('t-m').innerText = 'NEXTECH // TERMINAL';
-        }
-
-        function order(n, p) {
-            tg.sendData(JSON.stringify({item: n, total: p}));
-            tg.close();
-        }
-    </script>
-</body>
-</html>
+        <div class="page" id="gpu-page">
+            <div class="item-card">
+                <div style="opacity: 0.7; margin-bottom: 5px;">Sapphire Nitro+ RX 580</div>
