@@ -6,100 +6,88 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-color: #121212; 
-            --glass-bg: rgba(255, 255, 255, 0.04);
+            /* Базовые темные тона */
+            --bg-deep: #000000;
+            --bg-accent: #0a0a0d;
+            
+            /* Цвета интерфейса */
+            --glass-bg: rgba(255, 255, 255, 0.03);
             --glass-border: rgba(255, 255, 255, 0.08);
             --text-main: #ffffff;
+            --accent-glow: #3182ce; /* Красивый синий акцент */
+            
+            --blur-val: blur(20px);
         }
 
+        /* 1. СЛОЖНЫЙ ХАЙ-ТЕК ФОН */
         body {
-            background: radial-gradient(circle at top, #1e1e1e 0%, #121212 100%);
+            background-color: var(--bg-deep);
+            background-image: 
+                /* Тёмный неоновый градиент */
+                radial-gradient(circle at top right, rgba(49, 130, 206, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at bottom left, rgba(49, 130, 206, 0.08) 0%, transparent 35%),
+                /* ТЕ САМЫЕ ДИАГОНАЛЬНЫЕ ПОЛОСКИ */
+                repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.01) 0px, rgba(255, 255, 255, 0.01) 1px, transparent 1px, transparent 20px),
+                /* Тонкая сетка */
+                linear-gradient(rgba(255, 255, 255, 0.005) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.005) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+            
             color: var(--text-main);
             font-family: -apple-system, system-ui, sans-serif;
             margin: 0; padding: 20px;
             display: flex; flex-direction: column; align-items: center;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        .container { width: 100%; max-width: 400px; display: flex; flex-direction: column; align-items: center; }
+        .container { width: 100%; max-width: 400px; display: flex; flex-direction: column; align-items: center; position: relative; }
 
+        /* 2. ЛОГОТИП С НЕОНОВЫМ СВЕЧЕНИЕМ */
         .logo-block {
             background: #ffffff;
             border-radius: 25px;
             padding: 15px;
             width: 100px; height: 100px;
             display: flex; justify-content: center; align-items: center;
-            margin-bottom: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            margin-bottom: 25px;
+            /* Белое свечение */
+            box-shadow: 0 0 25px rgba(255,255,255,0.4), 0 0 50px rgba(255,255,255,0.1);
         }
         .logo-block img { width: 100%; height: auto; object-fit: contain; }
 
-        h1 { font-weight: 200; letter-spacing: 3px; text-transform: uppercase; font-size: 13px; opacity: 0.5; margin-bottom: 30px; text-align: center; }
+        h1 { font-weight: 200; letter-spacing: 3px; text-transform: uppercase; font-size: 12px; opacity: 0.5; margin-bottom: 30px; text-align: center; color: #fff; }
 
         .catalog-starter { width: 100%; display: grid; gap: 12px; }
 
+        /* 3. КАРТОЧКИ С ГЛУБОКИМ БЛЮРОМ */
         .category-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
+            background: rgba(255,255,255,0.02);
+            backdrop-filter: var(--blur-val);
+            -webkit-backdrop-filter: var(--blur-val);
             border: 1px solid var(--glass-border);
             border-radius: 20px;
             padding: 30px 20px;
             text-align: center;
             cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative; overflow: hidden;
         }
-        .category-card:active { transform: scale(0.97); background: rgba(255,255,255,0.07); }
-        .category-card h2 { font-size: 16px; font-weight: 600; margin: 0; letter-spacing: 1px; pointer-events: none; }
-
-        .product-section { display: none; width: 100%; flex-direction: column; gap: 15px; }
-
-        .card {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 25px;
-            padding: 20px;
-            text-align: center;
+        /* Легкое неоновое свечение при наведении (на ПК) или долгом нажатии */
+        .category-card:active { 
+            transform: scale(0.97); 
+            background: rgba(49, 130, 206, 0.05);
+            box-shadow: 0 0 20px rgba(49, 130, 206, 0.15); /* Синий акцент */
+            border-color: rgba(49, 130, 206, 0.2);
         }
+        .category-card h2 { font-size: 16px; font-weight: 600; margin: 0; letter-spacing: 1px; color: #fff; pointer-events: none; }
 
-        .btn {
-            background: #ffffff; color: #000; border: none;
-            padding: 12px 30px; border-radius: 15px;
-            font-weight: 800; text-transform: uppercase; font-size: 11px;
-            cursor: pointer;
+        /* 4. АНИМАЦИЯ ТОВАРОВ (ПЛАВНОЕ ВЫПЛЫВАНИЕ) */
+        @keyframes slideInUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
 
-        .back-btn {
-            align-self: flex-start; background: none; border: none; color: #fff;
-            font-size: 24px; cursor: pointer; opacity: 0.5; display: none; margin-bottom: 10px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="logo-block" id="ui-logo">
-            <img src="https://raw.githubusercontent.com/rdlrik321-ui/NexTech-shop/main/logo.png">
-        </div>
-        
-        <button class="back-btn" id="ui-back" onclick="showHome()">‹ Назад</button>
-        <h1 id="ui-title">NEXTECH // TERMINAL</h1>
-
-        <div class="catalog-starter" id="ui-home">
-            <div class="category-card" onclick="openCategory('gpu-page')">
-                <h2>ВИДЕОКАРТЫ</h2>
-            </div>
-            <div class="category-card" onclick="openCategory('cpu-page')">
-                <h2>ПРОЦЕССОРЫ</h2>
-            </div>
-        </div>
-
-        <div class="product-section" id="gpu-page">
-            <div class="card">
-                <div style="margin-bottom: 10px;">Sapphire Nitro+ RX 580</div>
-                <div style="font-size: 20px; font-weight: 700; margin-bottom: 15px;">5,800 ₽</div>
-                <button class="btn" onclick="sendOrder('RX 580', 5800)">В корзину</button>
-            </div>
-        </div>
-
-        <div class="product-section" id="cpu-page">
-            <div class="card">
-                <div style="margin-bottom: 10px;">AMD Ryzen 5 5600X</div>
+        .product-section { 
+            display: none; width: 100%; flex-direction: column; gap: 15px; 
+            animation: slideInUp 0.
