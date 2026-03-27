@@ -6,21 +6,16 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg: #0d0d0f;
-            --accent: #ffffff;
-            --card-bg: rgba(255, 255, 255, 0.03);
-            --border: rgba(255, 255, 255, 0.08);
+            --bg-color: #121212; 
+            --glass-bg: rgba(255, 255, 255, 0.04);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-main: #ffffff;
         }
 
         body {
-            background-color: var(--bg);
-            /* Технологичная сетка на фоне */
-            background-image: 
-                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-            background-size: 30px 30px;
-            color: #fff;
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: radial-gradient(circle at top, #1e1e1e 0%, #121212 100%);
+            color: var(--text-main);
+            font-family: -apple-system, system-ui, sans-serif;
             margin: 0; padding: 20px;
             display: flex; flex-direction: column; align-items: center;
             min-height: 100vh;
@@ -28,81 +23,187 @@
 
         .container { width: 100%; max-width: 400px; display: flex; flex-direction: column; align-items: center; }
 
-        /* Логотип со свечением */
         .logo-block {
-            background: #fff;
-            border-radius: 22px;
-            width: 90px; height: 90px;
+            background: #ffffff;
+            border-radius: 25px;
+            padding: 15px;
+            width: 100px; height: 100px;
             display: flex; justify-content: center; align-items: center;
-            margin-bottom: 25px;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        .logo-block img { width: 75%; height: auto; }
+        .logo-block img { width: 100%; height: auto; object-fit: contain; }
 
-        h1 { font-size: 11px; letter-spacing: 4px; opacity: 0.4; text-transform: uppercase; margin-bottom: 30px; }
+        h1 { font-weight: 200; letter-spacing: 3px; text-transform: uppercase; font-size: 13px; opacity: 0.5; margin-bottom: 30px; text-align: center; }
 
-        /* Стеклянные карточки категорий */
-        .cat-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-radius: 18px;
-            padding: 30px;
-            width: 100%;
-            margin-bottom: 12px;
+        .catalog-starter { width: 100%; display: grid; gap: 12px; }
+
+        .category-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 30px 20px;
             text-align: center;
-            box-sizing: border-box;
-            transition: all 0.2s;
+            cursor: pointer;
         }
-        .cat-card:active { background: rgba(255,255,255,0.07); transform: scale(0.98); }
-        .cat-card h2 { margin: 0; font-size: 17px; letter-spacing: 1px; font-weight: 600; pointer-events: none; }
+        .category-card:active { transform: scale(0.97); background: rgba(255,255,255,0.07); }
+        .category-card h2 { font-size: 16px; font-weight: 600; margin: 0; letter-spacing: 1px; pointer-events: none; }
 
-        /* Кнопка Назад */
-        .nav-back {
-            align-self: flex-start;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--border);
-            color: #fff; padding: 7px 15px; border-radius: 10px;
-            font-size: 14px; margin-bottom: 15px; display: none;
-        }
+        .product-section { display: none; width: 100%; flex-direction: column; gap: 15px; }
 
-        /* Блоки товаров */
-        .page { display: none; width: 100%; flex-direction: column; gap: 15px; }
-        
-        .item-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 20px; padding: 20px; text-align: center;
-            backdrop-filter: blur(10px);
+        .card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 25px;
+            padding: 20px;
+            text-align: center;
         }
 
-        .buy-btn {
-            background: #fff; color: #000; border: none;
-            padding: 12px 35px; border-radius: 12px;
+        .btn {
+            background: #ffffff; color: #000; border: none;
+            padding: 12px 30px; border-radius: 15px;
             font-weight: 800; text-transform: uppercase; font-size: 11px;
-            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        .back-btn {
+            align-self: flex-start; background: none; border: none; color: #fff;
+            font-size: 24px; cursor: pointer; opacity: 0.5; display: none; margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="logo-block" id="logo-box">
+        <div class="logo-block" id="ui-logo">
             <img src="https://raw.githubusercontent.com/rdlrik321-ui/NexTech-shop/main/logo.png">
         </div>
         
-        <button class="nav-back" id="back-btn" onclick="goHome()">← НАЗАД</button>
-        <h1 id="main-head">NEXTECH // TERMINAL</h1>
+        <button class="back-btn" id="ui-back" onclick="showHome()">‹ Назад</button>
+        <h1 id="ui-title">NEXTECH // TERMINAL</h1>
 
-        <div id="home-screen" style="width: 100%;">
-            <div class="cat-card" onclick="showPage('gpu-page')">
+        <div class="catalog-starter" id="ui-home">
+            <div class="category-card" onclick="openCategory('gpu-page')">
                 <h2>ВИДЕОКАРТЫ</h2>
             </div>
-            <div class="cat-card" onclick="showPage('cpu-page')">
+            <div class="category-card" onclick="openCategory('cpu-page')">
                 <h2>ПРОЦЕССОРЫ</h2>
             </div>
         </div>
 
-        <div class="page" id="gpu-page">
-            <div class="item-card">
-                <div style="opacity: 0.7; margin-bottom: 5px;">Sapphire Nitro+ RX 580</div>
+        <div class="product-section" id="gpu-page">
+            <div class="card">
+                <div style="margin-bottom: 10px;">Sapphire Nitro+ RX 580</div>
+                <div style="font-size: 20px; font-weight: 700; margin-bottom: 15px;">5,800 ₽</div>
+                <button class="btn" onclick="sendOrder('RX 580', 5800)">В корзину</button>
+            </div>
+        </div>
+
+        <div class="product-section" id="cpu-page">
+            <div class="card">
+                <div style="margin-bottom: 10px;">AMD Ryzen 5 5600X</div>
+                4s ease-out; /* Плавное появление */
+        }
+
+        .card {
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 25px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .card-title { font-size: 15px; margin-bottom: 10px; opacity: 0.9; }
+        .price { font-size: 20px; font-weight: 700; margin-bottom: 15px; }
+
+        .btn {
+            background: #ffffff; color: #000; border: none;
+            padding: 12px 30px; border-radius: 15px;
+            font-weight: 800; text-transform: uppercase; font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn:active { transform: scale(0.95); opacity: 0.8; }
+
+        /* КНОПКА НАЗАД (БОЛЕЕ АККУРАТНАЯ) */
+        .back-btn {
+            align-self: flex-start; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); color: #fff;
+            padding: 5px 12px; border-radius: 10px;
+            font-size: 18px; cursor: pointer; opacity: 0.5; display: none; margin-bottom: 15px;
+        }
+        .back-btn:active { opacity: 1; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-block" id="ui-logo">
+            <img src="https://raw.githubusercontent.com/rdlrik321-ui/NexTech-shop/main/logo.png">
+        </div>
+        
+        <button class="back-btn" id="ui-back" onclick="showHome()">‹ Назад</button>
+        <h1 id="ui-title">NEXTECH // TERMINAL</h1>
+
+        <div class="catalog-starter" id="ui-home">
+            <div class="category-card" onclick="openCategory('gpu-page')">
+                <h2>ВИДЕОКАРТЫ</h2>
+            </div>
+            <div class="category-card" onclick="openCategory('cpu-page')">
+                <h2>ПРОЦЕССОРЫ</h2>
+            </div>
+        </div>
+
+        <div class="product-section" id="gpu-page">
+            <div class="card">
+                <div class="card-title">Sapphire Nitro+ RX 580</div>
+                <div class="price">5,800 ₽</div>
+                <button class="btn" onclick="sendOrder('RX 580', 5800)">В корзину</button>
+            </div>
+        </div>
+
+        <div class="product-section" id="cpu-page">
+            <div class="card">
+                <div class="card-title">AMD Ryzen 5 5600X</div>
+                <div class="price">12,500 ₽</div>
+                <button class="btn" onclick="sendOrder('Ryzen 5600X', 12500)">В корзину</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+
+        function openCategory(pageId) {
+            // Прячем всё
+            document.getElementById('ui-home').style.display = 'none';
+            document.getElementById('ui-logo').style.display = 'none';
+            document.getElementById('gpu-page').style.display = 'none';
+            document.getElementById('cpu-page').style.display = 'none';
+            
+            // Показываем нужное
+            document.getElementById(pageId).style.display = 'flex';
+            document.getElementById('ui-back').style.display = 'block';
+            
+            // Заголовок
+            document.getElementById('ui-title').innerText = pageId === 'gpu-page' ? 'NEXTECH // GPU' : 'NEXTECH // CPU';
+        }
+
+        function showHome() {
+            document.getElementById('gpu-page').style.display = 'none';
+            document.getElementById('cpu-page').style.display = 'none';
+            document.getElementById('ui-back').style.display = 'none';
+            
+            document.getElementById('ui-home').style.display = 'grid';
+            document.getElementById('ui-logo').style.display = 'flex';
+            document.getElementById('ui-title').innerText = 'NEXTECH // TERMINAL';
+        }
+
+        function sendOrder(name, price) {
+            tg.sendData(JSON.stringify({item: name, total: price}));
+            tg.close();
+        }
+    </script>
+</body>
+</html>
