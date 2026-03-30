@@ -6,18 +6,15 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-color: #0d0d0f;
+            --bg: #0d0d0f;
             --card-bg: rgba(255, 255, 255, 0.03);
             --border: rgba(255, 255, 255, 0.08);
-            --accent: #ffffff;
         }
 
         body {
-            background-color: var(--bg-color);
-            /* Сетка на фоне для стиля */
-            background-image: 
-                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-color: var(--bg);
+            background-image: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
             background-size: 30px 30px;
             color: #fff;
             font-family: -apple-system, system-ui, sans-serif;
@@ -28,65 +25,57 @@
 
         .container { width: 100%; max-width: 400px; display: flex; flex-direction: column; align-items: center; }
 
-        /* Логотип */
         .logo-block {
-            background: #fff;
-            border-radius: 22px;
-            width: 90px; height: 90px;
+            background: #fff; border-radius: 20px;
+            width: 85px; height: 85px;
             display: flex; justify-content: center; align-items: center;
-            margin-bottom: 25px;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
         }
-        .logo-block img { width: 75%; height: auto; }
+        .logo-block img { width: 70%; height: auto; }
 
-        h1 { font-size: 11px; letter-spacing: 4px; opacity: 0.4; text-transform: uppercase; margin-bottom: 30px; }
+        h1 { font-size: 11px; letter-spacing: 3px; opacity: 0.4; text-transform: uppercase; margin-bottom: 25px; }
 
-        /* Карточки меню */
-        .menu-card {
+        /* Кнопки категорий */
+        .btn-cat {
             background: var(--card-bg);
             border: 1px solid var(--border);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border-radius: 18px;
-            padding: 35px 20px;
+            padding: 30px 20px;
             width: 100%;
             margin-bottom: 12px;
             text-align: center;
-            box-sizing: border-box;
             cursor: pointer;
-            transition: transform 0.2s;
+            box-sizing: border-box;
         }
-        .menu-card:active { transform: scale(0.97); background: rgba(255,255,255,0.06); }
-        .menu-card h2 { margin: 0; font-size: 16px; letter-spacing: 2px; }
+        .btn-cat:active { background: rgba(255,255,255,0.07); transform: scale(0.98); }
+        .btn-cat h2 { margin: 0; font-size: 16px; letter-spacing: 1px; pointer-events: none; }
 
         /* Кнопка Назад */
-        .back-btn {
+        .back {
             align-self: flex-start;
-            background: rgba(255,255,255,0.05);
+            background: rgba(255,255,255,0.06);
             border: 1px solid var(--border);
             color: #fff; padding: 8px 16px; border-radius: 10px;
-            font-size: 13px; margin-bottom: 20px; display: none;
+            font-size: 13px; margin-bottom: 15px; display: none;
             cursor: pointer;
         }
 
         /* Страницы товаров */
         .page { display: none; width: 100%; flex-direction: column; gap: 15px; }
         
-        .item-card {
+        .card {
             background: var(--card-bg);
             border: 1px solid var(--border);
             border-radius: 20px; padding: 20px; text-align: center;
         }
 
-        .item-img {
-            width: 100%; border-radius: 15px; margin-bottom: 15px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .buy-btn {
+        .buy {
             background: #fff; color: #000; border: none;
-            padding: 12px 35px; border-radius: 12px;
-            font-weight: 800; text-transform: uppercase; font-size: 11px;
+            padding: 12px 30px; border-radius: 12px;
+            font-weight: 800; text-transform: uppercase; font-size: 10px;
             margin-top: 15px; cursor: pointer;
         }
     </style>
@@ -94,20 +83,24 @@
 <body>
 
     <div class="container">
-        <div class="logo-block" id="logo-main">
+        <div class="logo-block" id="main-logo">
             <img src="https://raw.githubusercontent.com/rdlrik321-ui/NexTech-shop/main/logo.png">
         </div>
         
-        <button class="back-btn" id="btn-back" onclick="goHome()">← НАЗАД</button>
-        <h1 id="header-title">NEXTECH // TERMINAL</h1>
+        <button class="back" id="back-link" onclick="goHome()">← НАЗАД</button>
+        <h1 id="title-text">NEXTECH // TERMINAL</h1>
 
-        <div id="screen-home" style="width: 100%;">
-            <div class="menu-card" onclick="openPage('gpu-page')">
+        <div id="main-menu" style="width: 100%;">
+            <div class="btn-cat" onclick="openCat('gpu')">
                 <h2>ВИДЕОКАРТЫ</h2>
             </div>
-            <div class="menu-card" onclick="openPage('cpu-page')">
+            <div class="btn-cat" onclick="openCat('cpu')">
                 <h2>ПРОЦЕССОРЫ</h2>
             </div>
         </div>
 
-        <div class="page" id="gpu-page">
+        <div class="page" id="page-gpu">
+            <div class="card">
+                <img src="https://raw.githubusercontent.com/rdlrik321-ui/NexTech-shop/main/gpu_photo.jpg" 
+                     style="width: 100%; border-radius: 12px; margin-bottom: 10px;" alt="GPU">
+                <div style="font-weight: 600; margin-bottom: 5px;">Sapphire Nitro+ RX 580</div>
