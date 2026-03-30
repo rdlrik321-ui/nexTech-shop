@@ -5,11 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root { 
-            --bg: #0d0d0f; 
-            --card: rgba(255, 255, 255, 0.03); 
-            --brd: rgba(255, 255, 255, 0.08); 
-        }
+        :root { --bg: #0d0d0f; --card: rgba(255, 255, 255, 0.03); --brd: rgba(255, 255, 255, 0.08); }
         body { 
             background-color: var(--bg); 
             background-image: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px), 
@@ -18,31 +14,29 @@
             color: #fff; font-family: -apple-system, sans-serif; margin: 0; padding: 20px; 
             display: flex; flex-direction: column; align-items: center; min-height: 100vh;
         }
-        .container { width: 100%; max-width: 400px; display: flex; flex-direction: column; align-items: center; }
+        .container { width: 100%; max-width: 400px; display: flex; flex-direction: column; align-items: center; position: relative; }
         
         .logo-block { background: #fff; border-radius: 20px; width: 80px; height: 80px; display: flex; justify-content: center; align-items: center; margin: 40px 0 20px 0; }
         .logo-block img { width: 70%; }
         
-        h1 { font-size: 11px; letter-spacing: 3px; opacity: 0.4; text-transform: uppercase; text-align: center; margin-bottom: 30px; width: 100%; }
+        h1 { font-size: 11px; letter-spacing: 3px; opacity: 0.4; text-transform: uppercase; text-align: center; margin-bottom: 30px; }
         
+        /* Кнопки категорий */
         .btn-cat { 
             background: var(--card); border: 1px solid var(--brd); border-radius: 18px; 
             padding: 25px; width: 100%; margin-bottom: 12px; text-align: center; 
-            cursor: pointer; box-sizing: border-box; transition: 0.2s;
+            cursor: pointer; box-sizing: border-box; 
+            position: relative; z-index: 10; /* Поднимаем кнопки над всеми слоями */
         }
-        .btn-cat:active { transform: scale(0.98); background: rgba(255, 255, 255, 0.05); }
-        .btn-cat h2 { margin: 0; font-size: 16px; letter-spacing: 1px; color: #fff; }
+        .btn-cat:active { transform: scale(0.97); background: rgba(255,255,255,0.1); }
+        .btn-cat h2 { margin: 0; font-size: 16px; pointer-events: none; }
 
-        .page { display: none; flex-direction: column; gap: 15px; width: 100%; }
-        .card { background: var(--card); border: 1px solid var(--brd); border-radius: 20px; padding: 20px; text-align: center; box-sizing: border-box; }
+        .page { display: none; flex-direction: column; gap: 15px; width: 100%; position: relative; z-index: 5; }
+        .card { background: var(--card); border: 1px solid var(--brd); border-radius: 20px; padding: 20px; text-align: center; }
         
-        .desc { text-align: left; font-size: 13px; opacity: 0.7; background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; margin: 15px 0; line-height: 1.4; }
-        
-        .cart-btn { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #fff; color: #000; padding: 15px; border-radius: 30px; font-weight: 800; display: none; width: 80%; text-align: center; z-index: 100; box-shadow: 0 10px 30px #000; }
-        
-        .buy { background: #fff; color: #000; border: none; padding: 15px; border-radius: 12px; font-weight: 800; width: 100%; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
-        
-        .back { background: rgba(255,255,255,0.05); border: 1px solid var(--brd); color: #fff; padding: 10px 20px; border-radius: 12px; margin-bottom: 20px; align-self: flex-start; display: none; cursor: pointer; font-size: 12px; }
+        .cart-btn { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #fff; color: #000; padding: 15px; border-radius: 30px; font-weight: 800; display: none; width: 80%; text-align: center; z-index: 100; }
+        .buy { background: #fff; color: #000; border: none; padding: 15px; border-radius: 12px; font-weight: 800; width: 100%; cursor: pointer; margin-top: 10px; }
+        .back { background: rgba(255,255,255,0.05); border: 1px solid var(--brd); color: #fff; padding: 10px 20px; border-radius: 12px; margin-bottom: 20px; align-self: flex-start; display: none; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -59,7 +53,22 @@
     <div class="page" id="page-gpu">
         <div class="card">
             <img src="https://raw.githubusercontent.com/rdlrik321-ui/NexTech-shop/main/gpu_photo.jpg" style="width: 100%; border-radius: 12px;">
-            <div style="font-weight: 600; font-size: 18px; margin-top: 15px;">Sapphire Nitro+ RX 580</div>
-            <div class="desc">• 1411 МГц | 8GB<br>• FurMark: 72°C<br>• Тихая, обслужена.</div>
-            <video controls style="width: 100%; border-radius: 10px; margin-bottom: 15px;">
-                <source src="https://raw.githubusercontent.
+            <h3>Sapphire RX 580</h3>
+            <p>5,800 ₽</p>
+            <button class="buy" onclick="addToCart('RX 580', 5800)">В КОРЗИНУ</button>
+        </div>
+    </div>
+
+    <div class="page" id="page-cpu">
+        <div class="card">
+            <h3>Ryzen 5 5600X</h3>
+            <p>12,500 ₽</p>
+            <button class="buy" onclick="addToCart('5600X', 12500)">В КОРЗИНУ</button>
+        </div>
+    </div>
+</div>
+
+<div class="cart-btn" id="cart-float" onclick="checkout()">ОФОРМИТЬ (<span id="count">0</span>)</div>
+
+<script>
+    let tg = window.Telegram.WebApp;
