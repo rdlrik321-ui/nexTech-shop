@@ -1,1 +1,74 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root { 
+            --bg: #0d0d0f; 
+            --card: rgba(255, 255, 255, 0.04); 
+            --brd: rgba(255, 255, 255, 0.08); 
+            --accent: #ffffff;
+        }
+        
+        * { 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; 
+            touch-action: manipulation;
+        }
+        
+        body { 
+            background-color: var(--bg); 
+            background-image: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px), 
+                              linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 30px 30px;
+            color: #fff; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            margin: 0; padding: 20px; 
+            display: flex; justify-content: center; min-height: 100vh;
+            overflow-x: hidden;
+        }
 
+        .container { width: 100%; max-width: 360px; display: flex; flex-direction: column; align-items: center; position: relative; }
+
+        /* Логотип и Шапка */
+        .header-area { display: flex; flex-direction: column; align-items: center; width: 100%; transition: 0.3s; }
+        .logo-box { background: #fff; border-radius: 22px; width: 80px; height: 80px; display: flex; justify-content: center; align-items: center; margin: 40px 0 15px 0; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .logo-box img { width: 60%; }
+        h1 { font-size: 10px; letter-spacing: 4px; opacity: 0.3; text-transform: uppercase; margin-bottom: 35px; text-align: center; }
+
+        /* Кнопки меню */
+        .menu-list { width: 100%; display: flex; flex-direction: column; gap: 12px; }
+        .btn-nav { 
+            background: var(--card); border: 1px solid var(--brd); border-radius: 20px; 
+            padding: 26px; width: 100%; cursor: pointer; text-align: center;
+            transition: transform 0.1s, background 0.2s; position: relative; z-index: 10;
+        }
+        .btn-nav:active { transform: scale(0.96); background: rgba(255,255,255,0.1); }
+        .btn-nav b { font-size: 16px; letter-spacing: 1px; display: block; pointer-events: none; }
+
+        /* Страницы */
+        .page { display: none; width: 100%; flex-direction: column; animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card { background: var(--card); border: 1px solid var(--brd); border-radius: 28px; padding: 20px; text-align: center; width: 100%; }
+        .card img { width: 100%; border-radius: 18px; margin-bottom: 15px; border: 1px solid var(--brd); }
+        
+        /* Кнопка Назад iOS Style */
+        .back-area { width: 100%; display: flex; justify-content: flex-start; margin-bottom: 15px; }
+        .btn-back { 
+            background: none; border: none; color: var(--accent); 
+            font-size: 15px; font-weight: 500; cursor: pointer; 
+            padding: 10px 0; display: flex; align-items: center; opacity: 0.6;
+        }
+        .btn-back:active { opacity: 1; }
+
+        .buy-btn { background: #fff; color: #000; border: none; padding: 18px; border-radius: 16px; font-weight: 800; width: 100%; margin-top: 20px; text-transform: uppercase; cursor: pointer; font-size: 14px; }
+        .price-tag { font-size: 26px; font-weight: 800; margin: 12px 0; color: #fff; }
+        .info-text { font-size: 13px; opacity: 0.5; line-height: 1.5; margin-bottom: 12px; }
+
+        .cart-panel { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); background: #fff; color: #000; padding: 18px; border-radius: 35px; font-weight: 800; display: none; width: 85%; text-align: center; z-index: 1000; box-shadow: 0 15px 40px rgba(0,0,0,0.6); }
+    </style>
+</head>
+<body>
