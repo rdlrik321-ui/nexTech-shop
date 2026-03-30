@@ -7,62 +7,63 @@
     <style>
         :root { 
             --bg: #0d0d0f; 
-            --card: rgba(255, 255, 255, 0.04); 
+            --card: rgba(255, 255, 255, 0.03); 
             --brd: rgba(255, 255, 255, 0.08); 
-            --text-main: #ffffff;
+            --accent: #ffffff;
             --text-sub: rgba(255, 255, 255, 0.6);
         }
         
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         body { 
             background-color: var(--bg); 
             background-image: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
             background-size: 30px 30px;
-            color: var(--text-main); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            margin: 0; padding: 20px; display: flex; justify-content: center; min-height: 100vh; overflow-x: hidden;
+            color: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            margin: 0; padding: 20px; display: flex; justify-content: center; min-height: 100vh;
         }
 
-        .container { width: 100%; max-width: 380px; position: relative; display: flex; flex-direction: column; align-items: center; }
+        .container { width: 100%; max-width: 380px; position: relative; }
 
-        /* Шапка nexTech (ЛОГО БОЛЬШЕ) */
-        .header-area { display: flex; flex-direction: column; align-items: center; width: 100%; margin: 60px 0 30px 0; transition: 0.3s; }
-        .logo-box { background: #fff; border-radius: 28px; width: 90px; height: 90px; display: flex; align-items: center; justify-content: center; box-shadow: 0 12px 30px rgba(0,0,0,0.6); margin-bottom: 15px; }
-        .logo-box img { width: 60%; }
-        h1 { font-size: 13px; letter-spacing: 5px; color: var(--text-sub); text-transform: uppercase; margin: 0; font-weight: 500; }
+        /* Центрируем лого и текст nexTech */
+        .logo-area { display: flex; flex-direction: column; align-items: center; width: 100%; margin-top: 40px; transition: 0.3s ease-out; }
+        .logo-img { background: #fff; border-radius: 20px; width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .logo-img img { width: 60%; }
+        h1 { font-size: 10px; letter-spacing: 4px; color: var(--text-sub); text-transform: uppercase; margin: 15px 0 30px 0; }
 
-        /* Кнопки меню */
-        .menu-list { width: 100%; display: flex; flex-direction: column; gap: 14px; }
-        .btn-io { 
-            background: var(--card); border: 1px solid var(--brd); border-radius: 22px; 
-            padding: 28px; width: 100%; cursor: pointer; text-align: center;
-            transition: transform 0.1s; color: var(--text-main); text-decoration: none;
+        /* Кнопки меню в iOS-стиле */
+        .menu-grid { width: 100%; display: flex; flex-direction: column; gap: 12px; }
+        .btn-ios { 
+            background: var(--card); border: 1px solid var(--brd); border-radius: 20px; 
+            padding: 26px; width: 100%; cursor: pointer; text-align: center;
+            transition: transform 0.1s, background 0.2s; position: relative; z-index: 10;
         }
-        .btn-io:active { transform: scale(0.97); background: rgba(255,255,255,0.1); }
-        .btn-io b { font-size: 17px; letter-spacing: 1px; pointer-events: none; }
+        .btn-ios:active { transform: scale(0.96); background: rgba(255,255,255,0.08); }
+        .btn-ios b { font-size: 16px; letter-spacing: 1px; color: #fff; display: block; }
 
-        /* Страницы */
-        .page { display: none; width: 100%; flex-direction: column; position: relative; }
-        .card-final { background: var(--card); border: 1px solid var(--brd); border-radius: 30px; padding: 25px; text-align: center; }
-        .card-final img { width: 100%; border-radius: 20px; margin-bottom: 18px; border: 1px solid var(--brd); box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
+        /* Анимация плавного появления страниц */
+        .page { display: none; width: 100%; flex-direction: column; position: absolute; top: 0; left: 0; animation: iosUp 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes iosUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card-final { background: var(--card); border: 1px solid var(--brd); border-radius: 28px; padding: 20px; text-align: center; }
+        .card-final img { width: 100%; border-radius: 18px; margin-bottom: 15px; border: 1px solid var(--brd); }
         
         .btn-back { 
-            background: none; border: none; color: var(--text-sub); 
-            font-size: 16px; padding: 15px 0; cursor: pointer; align-self: flex-start;
+            background: none; border: none; color: #fff; opacity: 0.5; 
+            font-size: 15px; padding: 10px 0; cursor: pointer; align-self: flex-start;
         }
-        .btn-back:active { color: var(--text-main); }
 
-        .buy-btn { background: #fff; color: #000; border: none; padding: 20px; border-radius: 18px; font-weight: 800; width: 100%; margin-top: 25px; cursor: pointer; text-transform: uppercase; font-size: 14px; }
-        .price-tag { font-size: 28px; font-weight: 800; margin: 12px 0; color: #fff; }
-        .info-text { font-size: 14px; color: var(--text-sub); line-height: 1.6; margin-bottom: 12px; }
+        .buy-btn { background: #fff; color: #000; border: none; padding: 18px; border-radius: 16px; font-weight: 800; width: 100%; margin-top: 20px; text-transform: uppercase; cursor: pointer; }
+        .price { font-size: 26px; font-weight: 800; margin: 10px 0; color: #fff; }
+        .desc { font-size: 13px; color: var(--text-sub); line-height: 1.5; margin-bottom: 12px; }
 
-        .cart-bar { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #fff; color: #000; padding: 18px 25px; border-radius: 35px; font-weight: 800; display: none; width: auto; min-width: 80%; text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.7); z-index: 1000; }
+        .cart-bar { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); background: #fff; color: #000; padding: 18px; border-radius: 35px; font-weight: 800; display: none; width: 85%; text-align: center; z-index: 1000; box-shadow: 0 15px 40px rgba(0,0,0,0.6); }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div id="m-screen" class="header-area">
-        <div class="logo-box"><img src="https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/logo.png" alt="Logo"></div>
+    <div id="home" class="logo-area">
+        <div class="logo-img"><img src="https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/logo.png" alt="Logo"></div>
         <h1>NEXTECH // TERMINAL</h1>
-        <div class="menu-list">
+        <div class="menu-grid">
