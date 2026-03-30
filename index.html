@@ -1,74 +1,83 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root { 
-            --bg: #0d0d0f; 
-            --card: rgba(255, 255, 255, 0.04); 
-            --brd: rgba(255, 255, 255, 0.08); 
-            --accent: #ffffff;
-        }
-        
-        * { 
-            box-sizing: border-box; 
-            -webkit-tap-highlight-color: transparent; 
-            touch-action: manipulation;
-        }
-        
         body { 
-            background-color: var(--bg); 
-            background-image: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px), 
-                              linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background: #0d0d0f; color: #fff; font-family: sans-serif; 
+            margin: 0; padding: 20px; text-align: center;
+            background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), 
+                              linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
             background-size: 30px 30px;
-            color: #fff; 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            margin: 0; padding: 20px; 
-            display: flex; justify-content: center; min-height: 100vh;
-            overflow-x: hidden;
         }
-
-        .container { width: 100%; max-width: 360px; display: flex; flex-direction: column; align-items: center; position: relative; }
-
-        /* Логотип и Шапка */
-        .header-area { display: flex; flex-direction: column; align-items: center; width: 100%; transition: 0.3s; }
-        .logo-box { background: #fff; border-radius: 22px; width: 80px; height: 80px; display: flex; justify-content: center; align-items: center; margin: 40px 0 15px 0; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-        .logo-box img { width: 60%; }
-        h1 { font-size: 10px; letter-spacing: 4px; opacity: 0.3; text-transform: uppercase; margin-bottom: 35px; text-align: center; }
-
-        /* Кнопки меню */
-        .menu-list { width: 100%; display: flex; flex-direction: column; gap: 12px; }
-        .btn-nav { 
-            background: var(--card); border: 1px solid var(--brd); border-radius: 20px; 
-            padding: 26px; width: 100%; cursor: pointer; text-align: center;
-            transition: transform 0.1s, background 0.2s; position: relative; z-index: 10;
-        }
-        .btn-nav:active { transform: scale(0.96); background: rgba(255,255,255,0.1); }
-        .btn-nav b { font-size: 16px; letter-spacing: 1px; display: block; pointer-events: none; }
-
-        /* Страницы */
-        .page { display: none; width: 100%; flex-direction: column; animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        .card { background: var(--card); border: 1px solid var(--brd); border-radius: 28px; padding: 20px; text-align: center; width: 100%; }
-        .card img { width: 100%; border-radius: 18px; margin-bottom: 15px; border: 1px solid var(--brd); }
+        .container { max-width: 400px; margin: 0 auto; }
+        .logo { background: #fff; border-radius: 15px; width: 60px; height: 60px; margin: 30px auto 10px; display: flex; align-items: center; justify-content: center; }
+        h1 { font-size: 10px; letter-spacing: 3px; opacity: 0.4; margin-bottom: 30px; }
         
-        /* Кнопка Назад iOS Style */
-        .back-area { width: 100%; display: flex; justify-content: flex-start; margin-bottom: 15px; }
-        .btn-back { 
-            background: none; border: none; color: var(--accent); 
-            font-size: 15px; font-weight: 500; cursor: pointer; 
-            padding: 10px 0; display: flex; align-items: center; opacity: 0.6;
+        .btn { 
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); 
+            border-radius: 15px; padding: 20px; margin-bottom: 10px; width: 100%;
+            cursor: pointer; color: #fff; font-weight: bold; font-size: 16px;
         }
-        .btn-back:active { opacity: 1; }
+        .btn:active { background: rgba(255,255,255,0.1); transform: scale(0.98); }
 
-        .buy-btn { background: #fff; color: #000; border: none; padding: 18px; border-radius: 16px; font-weight: 800; width: 100%; margin-top: 20px; text-transform: uppercase; cursor: pointer; font-size: 14px; }
-        .price-tag { font-size: 26px; font-weight: 800; margin: 12px 0; color: #fff; }
-        .info-text { font-size: 13px; opacity: 0.5; line-height: 1.5; margin-bottom: 12px; }
-
-        .cart-panel { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); background: #fff; color: #000; padding: 18px; border-radius: 35px; font-weight: 800; display: none; width: 85%; text-align: center; z-index: 1000; box-shadow: 0 15px 40px rgba(0,0,0,0.6); }
+        .page { display: none; }
+        .card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 20px; }
+        .back { background: none; border: none; color: #fff; opacity: 0.5; float: left; padding: 10px 0; cursor: pointer; }
+        .buy { background: #fff; color: #000; border: none; padding: 15px; border-radius: 12px; font-weight: bold; width: 100%; margin-top: 15px; }
     </style>
 </head>
 <body>
+
+<div class="container">
+    <div id="m">
+        <div class="logo"><img src="https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/logo.png" width="40"></div>
+        <h1>NEXTECH // TERMINAL</h1>
+        <button class="btn" onclick="sh('g')">ВИДЕОКАРТЫ</button>
+        <button class="btn" onclick="sh('c')">ПРОЦЕССОРЫ</button>
+    </div>
+
+    <div id="g" class="page">
+        <button class="back" onclick="sh('m')">← НАЗАД</button>
+        <div style="clear:both"></div>
+        <div class="card">
+            <img src="https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/gpu_photo.jpg" width="100%" style="border-radius:10px">
+            <h2>Sapphire RX 580</h2>
+            <p>5,800 ₽</p>
+            <button class="buy" onclick="at('RX 580', 5800)">В КОРЗИНУ</button>
+        </div>
+    </div>
+
+    <div id="c" class="page">
+        <button class="back" onclick="sh('m')">← НАЗАД</button>
+        <div style="clear:both"></div>
+        <div class="card">
+            <h2>Ryzen 5 5600X</h2>
+            <p>12,500 ₽</p>
+            <button class="buy" onclick="at('5600X', 12500)">В КОРЗИНУ</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let tg = window.Telegram.WebApp;
+    tg.expand();
+
+    function sh(id) {
+        document.getElementById('m').style.display = 'none';
+        document.getElementById('g').style.display = 'none';
+        document.getElementById('c').style.display = 'none';
+        document.getElementById(id).style.display = 'block';
+        if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+    }
+
+    function at(n, p) {
+        if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+        tg.sendData(JSON.stringify({item: n, price: p}));
+    }
+</script>
+
+</body>
+</html>
