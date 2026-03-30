@@ -12,8 +12,6 @@
     --brd: rgba(255,255,255,0.08); 
 }
 
-* { box-sizing: border-box; }
-
 body {
     margin: 0;
     background: var(--bg);
@@ -21,31 +19,24 @@ body {
     font-family: -apple-system, sans-serif;
 }
 
-/* Контейнер */
 .container {
     max-width: 360px;
     margin: 0 auto;
     padding: 20px;
-    position: relative;
 }
 
 /* Страницы */
 .page {
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    display: flex;
+    display: none;
     flex-direction: column;
     align-items: center;
     opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    transform: translateX(50px);
+    transition: opacity 0.3s ease;
 }
 
 .page.active {
+    display: flex;
     opacity: 1;
-    pointer-events: auto;
-    transform: translateX(0);
 }
 
 /* Логотип */
@@ -67,8 +58,8 @@ h1 {
     margin-bottom: 30px;
 }
 
-/* Кнопки меню */
-.menu-btn {
+/* Кнопки */
+.menu-btn, .buy-btn {
     background: var(--card);
     border: 1px solid var(--brd);
     border-radius: 18px;
@@ -80,11 +71,11 @@ h1 {
     transition: transform 0.15s ease, background 0.2s;
 }
 
-.menu-btn:hover {
+.menu-btn:hover, .buy-btn:hover {
     background: rgba(255,255,255,0.08);
 }
 
-.menu-btn:active {
+.menu-btn:active, .buy-btn:active {
     transform: scale(0.96);
 }
 
@@ -130,24 +121,6 @@ h1 {
     font-weight: bold;
 }
 
-/* Кнопка купить */
-.buy-btn {
-    margin-top: 15px;
-    padding: 15px;
-    width: 100%;
-    border: none;
-    border-radius: 10px;
-    background: #fff;
-    color: #000;
-    font-weight: bold;
-    cursor: pointer;
-    transition: transform 0.15s ease;
-}
-
-.buy-btn:active {
-    transform: scale(0.96);
-}
-
 /* Корзина */
 .cart-bar {
     position: fixed;
@@ -161,6 +134,7 @@ h1 {
     cursor: pointer;
     transition: bottom 0.3s ease;
 }
+
 .cart-bar.show {
     bottom: 20px;
 }
@@ -173,35 +147,57 @@ h1 {
 <!-- Главная -->
 <div id="home-screen" class="page active">
     <div class="logo-box">
-        <img src="https://raw.githubusercontent.com/rdlrik321-ui/NexTech-shop/main/logo.png" width="40">
+        <img src="https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/logo.png" width="40">
     </div>
     <h1>NEXTECH // TERMINAL</h1>
 
-    <button class="menu-btn" onclick="nav('gpu')"><b>ВИДЕОКАРТЫ</b></button>
-    <button class="menu-btn" onclick="nav('cpu')"><b>ПРОЦЕССОРЫ</b></button>
+    <button class="menu-btn" data-page="gpu">ВИДЕОКАРТЫ</button>
+    <button class="menu-btn" data-page="cpu">ПРОЦЕССОРЫ</button>
 </div>
 
 <!-- GPU -->
 <div id="pg-gpu" class="page">
-    <button class="btn-back" onclick="nav('home')">← Назад</button>
+    <button class="btn-back" data-page="home">← Назад</button>
 
     <div class="card">
-        <img src="https://raw.githubusercontent.com/rdlrik321-ui/NexTech-shop/main/gpu_photo.jpg">
+        <img src="https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/gpu_photo.jpg">
         <div><b>RX 580</b></div>
         <div class="price">5800 ₽</div>
-        <button class="buy-btn" onclick="add('RX 580',5800)">Купить</button>
+        <button class="buy-btn" data-name="RX 580" data-price="5800">Купить</button>
     </div>
 </div>
 
 <!-- CPU -->
 <div id="pg-cpu" class="page">
-    <button class="btn-back" onclick="nav('home')">← Назад</button>
+    <button class="btn-back" data-page="home">← Назад</button>
 
     <div class="card">
         <div><b>Ryzen 5 5600X</b></div>
         <div class="price">12500 ₽</div>
-        <button class="buy-btn" onclick="add('5600X',12500)">Купить</button>
+        <button class="buy-btn" data-name="5600X" data-price="12500">Купить</button>
     </div>
 </div>
 
 </div>
+
+<div class="cart-bar" id="cart-ui">
+Оформить (<span id="count">0</span>)
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', ()=>{
+
+    let tg = null;
+    if(window.Telegram && window.Telegram.WebApp){
+        tg = window.Telegram.WebApp;
+        tg.expand();
+    }
+
+    let cart = [];
+    let current = 'home-screen';
+
+    // Навигация
+    function showPage(id){
+        let next = (id==='home') ? 'home-screen' : 'pg-' + id;
+        document.getElementById(current).classList.remove('active');
+        document.getElementById(next).classList.add('active');
