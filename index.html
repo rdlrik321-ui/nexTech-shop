@@ -2,7 +2,8 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
@@ -12,55 +13,31 @@
     --brd: rgba(255,255,255,0.08); 
 }
 
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+* { box-sizing: border-box; }
 
 body {
-    background-color: var(--bg);
-    background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-                      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-    background-size: 30px 30px;
+    margin: 0;
+    background: var(--bg);
     color: #fff;
     font-family: -apple-system, sans-serif;
-    margin: 0;
-    overflow: hidden;
 }
 
 /* КОНТЕЙНЕР */
 .container {
-    position: relative;
-    width: 100%;
     max-width: 360px;
     margin: 0 auto;
-    height: 100vh;
+    padding: 20px;
 }
 
 /* СТРАНИЦЫ */
 .page {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    padding: 20px;
-
-    display: flex;
+    display: none;
     flex-direction: column;
     align-items: center;
-
-    opacity: 0;
-    transform: translateX(30px);
-    pointer-events: none;
-
-    transition: 0.25s ease;
 }
 
 .page.active {
-    opacity: 1;
-    transform: translateX(0);
-    pointer-events: all;
-}
-
-.page.back {
-    transform: translateX(-30px);
+    display: flex;
 }
 
 /* ЛОГО */
@@ -72,14 +49,13 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 40px 0 15px 0;
+    margin: 40px 0 15px;
 }
 
 h1 {
     font-size: 10px;
     letter-spacing: 4px;
     opacity: 0.4;
-    text-transform: uppercase;
     margin-bottom: 30px;
 }
 
@@ -88,73 +64,64 @@ h1 {
     background: var(--card);
     border: 1px solid var(--brd);
     border-radius: 18px;
-    padding: 24px;
+    padding: 20px;
     margin-bottom: 12px;
     width: 100%;
     text-align: center;
     cursor: pointer;
-    transition: 0.15s;
-    backdrop-filter: blur(10px);
 }
 
 .menu-btn:active {
     transform: scale(0.96);
-    background: rgba(255,255,255,0.08);
 }
 
 .menu-btn b {
     font-size: 15px;
-    letter-spacing: 1px;
 }
 
-/* КАРТОЧКА */
+/* КАРТОЧКИ */
 .card {
+    width: 100%;
     background: var(--card);
     border: 1px solid var(--brd);
-    border-radius: 24px;
+    border-radius: 20px;
     padding: 20px;
     text-align: center;
-    width: 100%;
 }
 
 .card img {
     width: 100%;
-    border-radius: 16px;
-    margin-bottom: 15px;
-    border: 1px solid var(--brd);
+    border-radius: 12px;
+    margin-bottom: 10px;
 }
 
+/* КНОПКА НАЗАД */
 .btn-back {
     align-self: flex-start;
+    margin-bottom: 10px;
     background: none;
     border: none;
     color: #fff;
-    opacity: 0.5;
-    font-size: 13px;
-    margin-bottom: 10px;
+    opacity: 0.6;
     cursor: pointer;
 }
 
+/* ЦЕНА */
 .price {
-    font-size: 24px;
-    font-weight: 800;
-    margin: 10px 0;
+    font-size: 22px;
+    font-weight: bold;
 }
 
-.desc {
-    font-size: 13px;
-    opacity: 0.6;
-}
-
+/* КНОПКА КУПИТЬ */
 .buy-btn {
+    margin-top: 15px;
+    padding: 15px;
+    width: 100%;
+    border: none;
+    border-radius: 10px;
     background: #fff;
     color: #000;
-    border: none;
-    padding: 18px;
-    border-radius: 14px;
-    font-weight: 800;
-    width: 100%;
-    margin-top: 20px;
+    font-weight: bold;
     cursor: pointer;
 }
 
@@ -166,12 +133,9 @@ h1 {
     transform: translateX(-50%);
     background: #fff;
     color: #000;
-    padding: 16px;
+    padding: 15px;
     border-radius: 30px;
-    font-weight: 800;
     display: none;
-    width: 85%;
-    text-align: center;
 }
 </style>
 </head>
@@ -183,8 +147,9 @@ h1 {
 <!-- ГЛАВНАЯ -->
 <div id="home-screen" class="page active">
     <div class="logo-box">
-        <img src="https://raw.githubusercontent.com/rdlrik321-ui/NexTech-shop/main/logo.png" width="45">
+        <img src="https://raw.githubusercontent.com/rdlrik321-ui/NexTech-shop/main/logo.png" width="40">
     </div>
+
     <h1>NEXTECH // TERMINAL</h1>
 
     <div class="menu-btn" onclick="nav('gpu')"><b>ВИДЕОКАРТЫ</b></div>
@@ -193,13 +158,54 @@ h1 {
 
 <!-- GPU -->
 <div id="pg-gpu" class="page">
-    <button class="btn-back" onclick="nav('home')">← НАЗАД</button>
+    <button class="btn-back" onclick="nav('home')">← Назад</button>
 
     <div class="card">
         <img src="https://raw.githubusercontent.com/rdlrik321-ui/NexTech-shop/main/gpu_photo.jpg">
-        <div><b>Sapphire Nitro+ RX 580</b></div>
-        <div class="desc">8GB | Отличное состояние</div>
-        <div class="price">5,800 ₽</div>
-        <button class="buy-btn" onclick="add('RX 580',5800)">В КОРЗИНУ</button>
+        <div><b>RX 580</b></div>
+        <div class="price">5800 ₽</div>
+        <button class="buy-btn" onclick="add('RX 580',5800)">Купить</button>
     </div>
 </div>
+
+<!-- CPU -->
+<div id="pg-cpu" class="page">
+    <button class="btn-back" onclick="nav('home')">← Назад</button>
+
+    <div class="card">
+        <div><b>Ryzen 5 5600X</b></div>
+        <div class="price">12500 ₽</div>
+        <button class="buy-btn" onclick="add('5600X',12500)">Купить</button>
+    </div>
+</div>
+
+</div>
+
+<div class="cart-bar" id="cart-ui" onclick="checkout()">
+Оформить (<span id="count">0</span>)
+</div>
+
+<script>
+let tg = window.Telegram?.WebApp;
+if (tg) tg.expand();
+
+let cart = [];
+let current = 'home-screen';
+
+function nav(id) {
+    let next = (id === 'home') ? 'home-screen' : 'pg-' + id;
+
+    document.getElementById(current).classList.remove('active');
+    document.getElementById(next).classList.add('active');
+
+    current = next;
+}
+
+function add(name, price) {
+    cart.push({name, price});
+    document.getElementById('count').innerText = cart.length;
+    document.getElementById('cart-ui').style.display = 'block';
+}
+
+function checkout() {
+    let total = cart.reduce((s, i) => s + i.
