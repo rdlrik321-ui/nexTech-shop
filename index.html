@@ -75,10 +75,6 @@ h1 {
     transform: scale(0.96);
 }
 
-.menu-btn b {
-    font-size: 15px;
-}
-
 /* КАРТОЧКИ */
 .card {
     width: 100%;
@@ -186,13 +182,22 @@ h1 {
 </div>
 
 <script>
-let tg = window.Telegram?.WebApp;
-if (tg) tg.expand();
+// ✅ безопасное подключение Telegram
+let tg = null;
 
+if (window.Telegram && window.Telegram.WebApp) {
+    tg = window.Telegram.WebApp;
+    tg.expand();
+}
+
+// корзина
 let cart = [];
 let current = 'home-screen';
 
+// навигация
 function nav(id) {
+    console.log("NAV:", id);
+
     let next = (id === 'home') ? 'home-screen' : 'pg-' + id;
 
     let currentEl = document.getElementById(current);
@@ -208,12 +213,3 @@ function nav(id) {
 
     current = next;
 }
-
-function add(name, price) {
-    cart.push({name, price});
-    document.getElementById('count').innerText = cart.length;
-    document.getElementById('cart-ui').style.display = 'block';
-}
-
-function checkout() {
-    let total = cart.reduce((s, i) => s + i.
