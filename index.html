@@ -5,57 +5,61 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root { --bg: #0d0d0f; --card: rgba(255,255,255,0.03); --brd: rgba(255,255,255,0.08); }
-        body { background: var(--bg); color: #fff; font-family: sans-serif; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        .btn-cat { background: var(--card); border: 1px solid var(--brd); border-radius: 15px; padding: 20px; width: 100%; margin-bottom: 10px; text-align: center; cursor: pointer; -webkit-tap-highlight-color: transparent; }
-        .btn-cat:active { background: rgba(255,255,255,0.1); transform: scale(0.98); }
-        .page { display: none; width: 100%; }
-        .back { display: none; background: #333; color: #fff; padding: 10px; margin-bottom: 10px; border-radius: 10px; border: none; }
+        :root { 
+            --bg: #0d0d0f; 
+            --card: rgba(255, 255, 255, 0.03); 
+            --brd: rgba(255, 255, 255, 0.08); 
+        }
+        body { 
+            background-color: var(--bg); 
+            background-image: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px), 
+                              linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 30px 30px;
+            color: #fff; font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
+            margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh;
+        }
+        .container { width: 100%; max-width: 400px; display: flex; flex-direction: column; align-items: center; }
+        
+        /* Лого и заголовки */
+        .logo-block { background: #fff; border-radius: 20px; width: 80px; height: 80px; display: flex; justify-content: center; align-items: center; margin: 40px 0 20px 0; }
+        .logo-block img { width: 70%; }
+        h1 { font-size: 11px; letter-spacing: 3px; opacity: 0.4; text-transform: uppercase; text-align: center; margin-bottom: 30px; }
+
+        /* Кнопки меню */
+        .btn-cat { 
+            background: var(--card); border: 1px solid var(--brd); border-radius: 18px; 
+            padding: 22px; width: 100%; margin-bottom: 12px; text-align: center; 
+            cursor: pointer; box-sizing: border-box; transition: 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .btn-cat:active { transform: scale(0.96); background: rgba(255, 255, 255, 0.07); }
+        .btn-cat h2 { margin: 0; font-size: 16px; letter-spacing: 1px; font-weight: 600; pointer-events: none; }
+
+        /* Страницы товаров */
+        .page { display: none; flex-direction: column; gap: 15px; width: 100%; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .card { background: var(--card); border: 1px solid var(--brd); border-radius: 24px; padding: 20px; text-align: center; box-sizing: border-box; }
+        .card img { width: 100%; border-radius: 16px; margin-bottom: 15px; }
+        
+        .desc { text-align: left; font-size: 13px; opacity: 0.7; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 14px; margin: 15px 0; line-height: 1.5; }
+        
+        .price { font-size: 24px; font-weight: 800; margin-bottom: 15px; color: #fff; }
+        
+        /* Кнопки действий */
+        .buy-btn { background: #fff; color: #000; border: none; padding: 18px; border-radius: 14px; font-weight: 800; width: 100%; cursor: pointer; text-transform: uppercase; font-size: 14px; }
+        .back-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--brd); color: #fff; padding: 10px 18px; border-radius: 12px; margin-bottom: 20px; align-self: flex-start; display: none; cursor: pointer; font-size: 12px; font-weight: 600; }
+        
+        /* Плавающая корзина */
+        .cart-float { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #fff; color: #000; padding: 16px 30px; border-radius: 30px; font-weight: 800; display: none; width: 80%; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.5); z-index: 100; }
     </style>
 </head>
 <body>
-    <button class="back" id="backBtn" onclick="location.reload()">← ПЕРЕЗАГРУЗИТЬ МЕНЮ</button>
+
+<div class="container">
+    <div class="logo-block" id="main-logo"><img src="https://raw.githubusercontent.com/rdlrik321-ui/NexTech-shop/main/logo.png"></div>
+    <button class="back-btn" id="btn-back" onclick="goHome()">← НАЗАД В МЕНЮ</button>
+    <h1 id="main-header">NEXTECH // TERMINAL</h1>
     
-    <div id="mainMenu" style="width: 100%;">
-        <div class="btn-cat" onclick="openP('gpu')"><h2>ВИДЕОКАРТЫ</h2></div>
-        <div class="btn-cat" onclick="openP('cpu')"><h2>ПРОЦЕССОРЫ</h2></div>
-    </div>
-
-    <div id="p-gpu" class="page">
-        <div style="background: var(--card); padding: 20px; border-radius: 20px; text-align: center;">
-            <img src="https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/gpu_photo.jpg" style="width: 100%; border-radius: 10px;">
-            <h3>RX 580 8GB</h3>
-            <button style="width: 100%; padding: 15px; background: #fff; border-radius: 10px;" onclick="alert('Добавлено!')">КУПИТЬ</button>
-        </div>
-    </div>
-
-    <div id="p-cpu" class="page">
-        <div style="background: var(--card); padding: 20px; border-radius: 20px; text-align: center;">
-            <h3>Ryzen 5 5600X</h3>
-            <button style="width: 100%; padding: 15px; background: #fff; border-radius: 10px;" onclick="alert('Добавлено!')">КУПИТЬ</button>
-        </div>
-    </div>
-
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-
-        function openP(id) {
-            // Если это сработает, ты увидишь окно
-            console.log('Нажата кнопка:', id);
-            
-            document.getElementById('mainMenu').style.display = 'none';
-            document.getElementById('p-gpu').style.display = 'none';
-            document.getElementById('p-cpu').style.display = 'none';
-            
-            const target = document.getElementById('p-' + id);
-            if (target) {
-                target.style.display = 'block';
-                document.getElementById('backBtn').style.display = 'block';
-            } else {
-                alert('Ошибка: страница не найдена');
-            }
-        }
-    </script>
-</body>
-</html>
+    <div id="menu-container" style="width: 100%;">
+        <div class="btn-cat" onclick="showPage('gpu')"><h2>ВИДЕОКАРТЫ</h2></div>
