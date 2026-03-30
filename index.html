@@ -5,99 +5,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root {
-            --bg: #0d0d0f;
-            --card-bg: rgba(255, 255, 255, 0.03);
-            --border: rgba(255, 255, 255, 0.08);
-        }
-
-        body {
-            background-color: var(--bg);
-            background-image: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-                              linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+        :root { --bg: #0d0d0f; --card-bg: rgba(255, 255, 255, 0.03); --border: rgba(255, 255, 255, 0.08); }
+        body { 
+            background-color: var(--bg); 
+            background-image: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
             background-size: 30px 30px;
-            color: #fff;
-            font-family: -apple-system, system-ui, sans-serif;
-            margin: 0; padding: 20px;
-            display: flex; flex-direction: column; align-items: center;
-            min-height: 100vh;
+            color: #fff; font-family: -apple-system, system-ui, sans-serif; margin: 0; padding: 20px; min-height: 100vh; display: flex; flex-direction: column; align-items: center; 
         }
+        .container { width: 100%; max-width: 400px; }
 
-        .container { width: 100%; max-width: 400px; display: flex; flex-direction: column; align-items: center; }
+        /* ПРОФИЛЬ */
+        .user-bar { display: flex; align-items: center; gap: 10px; background: var(--card-bg); padding: 10px 15px; border-radius: 15px; margin-bottom: 20px; border: 1px solid var(--border); backdrop-filter: blur(10px); }
+        .user-info { font-size: 13px; font-weight: 600; letter-spacing: 0.5px; }
 
-        .logo-block {
-            background: #fff; border-radius: 20px;
-            width: 85px; height: 85px;
-            display: flex; justify-content: center; align-items: center;
-            margin-bottom: 20px;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
-        }
-        .logo-block img { width: 70%; height: auto; }
+        .logo-block { background: #fff; border-radius: 20px; width: 80px; height: 80px; display: flex; justify-content: center; align-items: center; margin: 0 auto 20px auto; box-shadow: 0 0 20px rgba(255,255,255,0.1); }
+        .logo-block img { width: 70%; }
 
-        h1 { font-size: 11px; letter-spacing: 3px; opacity: 0.4; text-transform: uppercase; margin-bottom: 25px; }
+        h1 { font-size: 11px; letter-spacing: 3px; opacity: 0.4; text-transform: uppercase; text-align: center; margin-bottom: 25px; }
 
-        .btn-cat {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-radius: 18px;
-            padding: 30px 20px;
-            width: 100%;
-            margin-bottom: 12px;
-            text-align: center;
-            cursor: pointer;
-            box-sizing: border-box;
-        }
-        .btn-cat:active { background: rgba(255,255,255,0.07); transform: scale(0.98); }
-        .btn-cat h2 { margin: 0; font-size: 16px; letter-spacing: 1px; pointer-events: none; }
+        /* КАТЕГОРИИ */
+        .btn-cat { background: var(--card-bg); border: 1px solid var(--border); border-radius: 18px; padding: 25px; width: 100%; margin-bottom: 12px; text-align: center; cursor: pointer; backdrop-filter: blur(10px); transition: 0.2s; box-sizing: border-box; }
+        .btn-cat:active { transform: scale(0.98); background: rgba(255,255,255,0.05); }
+        .btn-cat h2 { margin: 0; font-size: 16px; letter-spacing: 1px; }
 
-        .back {
-            align-self: flex-start;
-            background: rgba(255,255,255,0.06);
-            border: 1px solid var(--border);
-            color: #fff; padding: 8px 16px; border-radius: 10px;
-            font-size: 13px; margin-bottom: 15px; display: none;
-            cursor: pointer;
-        }
-
-        .page { display: none; width: 100%; flex-direction: column; gap: 15px; }
+        /* СТРАНИЦЫ ТОВАРОВ */
+        .page { display: none; flex-direction: column; gap: 15px; width: 100%; }
+        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 20px; text-align: center; backdrop-filter: blur(10px); }
         
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 20px; padding: 20px; text-align: center;
+        .desc-box { text-align: left; font-size: 13px; opacity: 0.7; line-height: 1.4; margin: 15px 0; background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; }
+        
+        /* КНОПКА КОРЗИНЫ */
+        .cart-btn {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            background: #fff; color: #000; padding: 15px 30px; border-radius: 30px; 
+            font-weight: 800; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: none; z-index: 100; font-size: 14px; width: 80%; text-align: center;
         }
 
-        .buy {
-            background: #fff; color: #000; border: none;
-            padding: 12px 30px; border-radius: 12px;
-            font-weight: 800; text-transform: uppercase; font-size: 10px;
-            margin-top: 15px; cursor: pointer;
-        }
+        .buy { background: #fff; color: #000; border: none; padding: 14px; border-radius: 14px; font-weight: 800; width: 100%; cursor: pointer; text-transform: uppercase; font-size: 12px; }
+        .back { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: #fff; padding: 8px 15px; border-radius: 10px; margin-bottom: 15px; align-self: flex-start; display: none; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="logo-block" id="main-logo">
-            <img src="https://raw.githubusercontent.com/rdlrik321-ui/NexTech-shop/main/logo.png">
-        </div>
-        
-        <button class="back" id="back-link" onclick="goHome()">← НАЗАД</button>
-        <h1 id="title-text">NEXTECH // TERMINAL</h1>
+<div class="container">
+    <div class="user-bar">
+        <div class="user-info">ID: <span id="user-id">0000</span> | <span id="user-name">NEXTECH USER</span></div>
+    </div>
 
-        <div id="main-menu" style="width: 100%;">
-            <div class="btn-cat" onclick="openCat('gpu')">
-                <h2>ВИДЕОКАРТЫ</h2>
-            </div>
-            <div class="btn-cat" onclick="openCat('cpu')">
-                <h2>ПРОЦЕССОРЫ</h2>
-            </div>
-        </div>
+    <div class="logo-block" id="main-logo"><img src="https://raw.githubusercontent.com/rdlrik321-ui/NexTech-shop/main/logo.png"></div>
+    
+    <button class="back" id="back-link" onclick="goHome()">← НАЗАД</button>
+    <h1 id="title-text">NEXTECH // TERMINAL</h1>
+    
+    <div id="main-menu">
+        <div class="btn-cat" onclick="openCat('gpu')"><h2>ВИДЕОКАРТЫ</h2></div>
+        <div class="btn-cat" onclick="openCat('cpu')"><h2>ПРОЦЕССОРЫ</h2></div>
+    </div>
 
-        <div class="page" id="page-gpu">
-            <div class="card">
-                <img src="https://raw.githubusercontent.com/rdlrik321-ui/NexTech-shop/main/gpu_photo.jpg" style="width: 100%; border-radius: 12px; margin-bottom: 12px;">
-                <div style="font-weight: 600; font-size: 18px; margin-bottom: 8px;">Sapphire Nitro+ RX 580 8GB</div>
-                <div style="text-align: left; font-size: 13px; opacity: 0.
+    <div class="page" id="page-gpu">
+        <div class="card">
+            <img src="https://raw.
