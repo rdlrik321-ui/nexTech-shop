@@ -1,67 +1,59 @@
-<img src="https://raw.githubusercontent.com/rdlrik321-ui/NexTech-shop/main/gpu_photo.jpg" style="width: 100%; border-radius: 12px;">
-            <div style="font-weight: 700; font-size: 18px; margin-top: 15px; color: #fff;">Sapphire Nitro+ RX 580 8GB</div>
-            <div class="desc-box">
-                • Частота: 1411 МГц<br>• FurMark: 72°C (макс)<br>• Идеальна для CS2.
-            </div>
-            <video controls style="width: 100%; border-radius: 10px; margin-bottom: 15px; border: 1px solid var(--border);">
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root { 
+            --bg: #0d0d0f; 
+            --card: rgba(255, 255, 255, 0.03); 
+            --brd: rgba(255, 255, 255, 0.08); 
+        }
+        body { 
+            background-color: var(--bg); 
+            background-image: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px), 
+                              linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 30px 30px;
+            color: #fff; font-family: -apple-system, sans-serif; margin: 0; padding: 20px; 
+            display: flex; flex-direction: column; align-items: center; min-height: 100vh; 
+        }
+        .container { width: 100%; max-width: 400px; }
+        .logo-block { background: #fff; border-radius: 20px; width: 80px; height: 80px; display: flex; justify-content: center; align-items: center; margin: 40px auto 20px auto; }
+        .logo-block img { width: 70%; }
+        h1 { font-size: 11px; letter-spacing: 3px; opacity: 0.4; text-transform: uppercase; text-align: center; margin-bottom: 30px; }
+        .btn-cat { background: var(--card); border: 1px solid var(--brd); border-radius: 18px; padding: 25px; width: 100%; margin-bottom: 12px; text-align: center; cursor: pointer; }
+        .btn-cat h2 { margin: 0; font-size: 16px; letter-spacing: 1px; pointer-events: none; }
+        .page { display: none; flex-direction: column; gap: 15px; width: 100%; }
+        .card { background: var(--card); border: 1px solid var(--brd); border-radius: 20px; padding: 20px; text-align: center; }
+        .desc { text-align: left; font-size: 13px; opacity: 0.7; background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; margin: 15px 0; line-height: 1.4; }
+        .cart-btn { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #fff; color: #000; padding: 15px; border-radius: 30px; font-weight: 800; display: none; width: 80%; text-align: center; z-index: 100; box-shadow: 0 10px 30px #000; }
+        .buy { background: #fff; color: #000; border: none; padding: 15px; border-radius: 12px; font-weight: 800; width: 100%; cursor: pointer; text-transform: uppercase; }
+        .back { background: rgba(255,255,255,0.05); border: 1px solid var(--brd); color: #fff; padding: 8px 15px; border-radius: 10px; margin-bottom: 15px; align-self: flex-start; display: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="logo-block" id="logo-main"><img src="https://raw.githubusercontent.com/rdlrik321-ui/NexTech-shop/main/logo.png"></div>
+    <button class="back" id="back-btn" onclick="goHome()">← НАЗАД</button>
+    <h1 id="header">NEXTECH // TERMINAL</h1>
+    
+    <div id="menu-main" style="width: 100%;">
+        <div class="btn-cat" onclick="openPage('gpu')"><h2>ВИДЕОКАРТЫ</h2></div>
+        <div class="btn-cat" onclick="openPage('cpu')"><h2>ПРОЦЕССОРЫ</h2></div>
+    </div>
+
+    <div class="page" id="page-gpu">
+        <div class="card">
+            <img src="https://raw.githubusercontent.com/rdlrik321-ui/NexTech-shop/main/gpu_photo.jpg" style="width: 100%; border-radius: 12px;">
+            <div style="font-weight: 600; font-size: 18px; margin-top: 15px;">Sapphire Nitro+ RX 580</div>
+            <div class="desc">• 1411 МГц | 8GB<br>• FurMark: 72°C<br>• Тихая, обслужена.</div>
+            <video controls style="width: 100%; border-radius: 10px; margin-bottom: 15px; border: 1px solid var(--brd);">
                 <source src="https://raw.githubusercontent.com/rdlrik321-ui/NexTech-shop/main/gpu_test.mp4" type="video/mp4">
             </video>
-            <div style="font-size: 24px; font-weight: 800; margin-bottom: 15px; color: #fff;">5,800 ₽</div>
-            <button class="buy" onclick="addToCart('RX 580 Nitro+', 5800)">В КОРЗИНУ</button>
+            <div style="font-size: 24px; font-weight: 800; margin-bottom: 15px;">5,800 ₽</div>
+            <button class="buy" onclick="addToCart('RX 580', 5800)">В КОРЗИНУ</button>
         </div>
     </div>
 
     <div class="page" id="page-cpu">
-        <div class="card">
-            <div style="font-weight: 700; font-size: 18px; color: #fff;">AMD Ryzen 5 5600X</div>
-            <div class="desc-box">
-                • 6 ядер / 12 потоков<br>• Частота до 4.6 ГГц<br>• Состояние: новый.
-            </div>
-            <div style="font-size: 24px; font-weight: 800; margin-bottom: 15px; color: #fff;">12,500 ₽</div>
-            <button class="buy" onclick="addToCart('Ryzen 5 5600X', 12500)">В КОРЗИНУ</button>
-        </div>
-    </div>
-</div>
-
-<div class="cart-btn" id="cart-float" onclick="checkout()">ОФОРМИТЬ ЗАКАЗ (<span id="cart-count">0</span>)</div>
-
-<script>
-    let tg = window.Telegram.WebApp;
-    tg.expand();
-    
-    let cart = [];
-
-    function openCat(type) {
-        document.getElementById('main-menu').style.display = 'none';
-        document.getElementById('main-logo').style.display = 'none';
-        document.getElementById('page-gpu').style.display = 'none';
-        document.getElementById('page-cpu').style.display = 'none';
-        document.getElementById('page-' + type).style.display = 'flex';
-        document.getElementById('back-link').style.display = 'block';
-        document.getElementById('title-text').innerText = 'NEXTECH // ' + type.toUpperCase();
-    }
-
-    function goHome() {
-        document.getElementById('page-gpu').style.display = 'none';
-        document.getElementById('page-cpu').style.display = 'none';
-        document.getElementById('back-link').style.display = 'none';
-        document.getElementById('main-menu').style.display = 'block';
-        document.getElementById('main-logo').style.display = 'flex';
-        document.getElementById('title-text').innerText = 'NEXTECH // TERMINAL';
-    }
-
-    function addToCart(name, price) {
-        cart.push({name, price});
-        document.getElementById('cart-count').innerText = cart.length;
-        document.getElementById('cart-float').style.display = 'block';
-        if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-    }
-
-    function checkout() {
-        let total = cart.reduce((sum, item) => sum + item.price, 0);
-        let itemsSummary = cart.map(i => i.name).join(', ');
-        tg.sendData(JSON.stringify({action: 'order', items: itemsSummary, total: total}));
-    }
-</script>
-</body>
-</html>
