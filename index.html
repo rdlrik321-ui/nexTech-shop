@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
@@ -22,25 +21,34 @@ body {
     font-family: -apple-system, sans-serif;
 }
 
-/* КОНТЕЙНЕР */
+/* Контейнер */
 .container {
     max-width: 360px;
     margin: 0 auto;
     padding: 20px;
+    position: relative;
 }
 
-/* СТРАНИЦЫ */
+/* Страницы */
 .page {
-    display: none;
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    display: flex;
     flex-direction: column;
     align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    transform: translateX(50px);
 }
 
 .page.active {
-    display: flex;
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(0);
 }
 
-/* ЛОГО */
+/* Логотип */
 .logo-box {
     background: #fff;
     border-radius: 20px;
@@ -59,7 +67,7 @@ h1 {
     margin-bottom: 30px;
 }
 
-/* КНОПКИ */
+/* Кнопки меню */
 .menu-btn {
     background: var(--card);
     border: 1px solid var(--brd);
@@ -69,13 +77,18 @@ h1 {
     width: 100%;
     text-align: center;
     cursor: pointer;
+    transition: transform 0.15s ease, background 0.2s;
+}
+
+.menu-btn:hover {
+    background: rgba(255,255,255,0.08);
 }
 
 .menu-btn:active {
     transform: scale(0.96);
 }
 
-/* КАРТОЧКИ */
+/* Карточки */
 .card {
     width: 100%;
     background: var(--card);
@@ -83,6 +96,11 @@ h1 {
     border-radius: 20px;
     padding: 20px;
     text-align: center;
+    transition: transform 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
 }
 
 .card img {
@@ -91,7 +109,7 @@ h1 {
     margin-bottom: 10px;
 }
 
-/* КНОПКА НАЗАД */
+/* Кнопка назад */
 .btn-back {
     align-self: flex-start;
     margin-bottom: 10px;
@@ -102,13 +120,17 @@ h1 {
     cursor: pointer;
 }
 
-/* ЦЕНА */
+.btn-back:hover {
+    opacity: 1;
+}
+
+/* Цена */
 .price {
     font-size: 22px;
     font-weight: bold;
 }
 
-/* КНОПКА КУПИТЬ */
+/* Кнопка купить */
 .buy-btn {
     margin-top: 15px;
     padding: 15px;
@@ -119,37 +141,44 @@ h1 {
     color: #000;
     font-weight: bold;
     cursor: pointer;
+    transition: transform 0.15s ease;
 }
 
-/* КОРЗИНА */
+.buy-btn:active {
+    transform: scale(0.96);
+}
+
+/* Корзина */
 .cart-bar {
     position: fixed;
-    bottom: 20px;
+    bottom: -80px;
     left: 50%;
     transform: translateX(-50%);
     background: #fff;
     color: #000;
     padding: 15px;
     border-radius: 30px;
-    display: none;
+    cursor: pointer;
+    transition: bottom 0.3s ease;
+}
+.cart-bar.show {
+    bottom: 20px;
 }
 </style>
 </head>
 
 <body>
-
 <div class="container">
 
-<!-- ГЛАВНАЯ -->
+<!-- Главная -->
 <div id="home-screen" class="page active">
     <div class="logo-box">
         <img src="https://raw.githubusercontent.com/rdlrik321-ui/NexTech-shop/main/logo.png" width="40">
     </div>
-
     <h1>NEXTECH // TERMINAL</h1>
 
-    <div class="menu-btn" onclick="nav('gpu')"><b>ВИДЕОКАРТЫ</b></div>
-    <div class="menu-btn" onclick="nav('cpu')"><b>ПРОЦЕССОРЫ</b></div>
+    <button class="menu-btn" onclick="nav('gpu')"><b>ВИДЕОКАРТЫ</b></button>
+    <button class="menu-btn" onclick="nav('cpu')"><b>ПРОЦЕССОРЫ</b></button>
 </div>
 
 <!-- GPU -->
@@ -176,40 +205,3 @@ h1 {
 </div>
 
 </div>
-
-<div class="cart-bar" id="cart-ui" onclick="checkout()">
-Оформить (<span id="count">0</span>)
-</div>
-
-<script>
-// ✅ безопасное подключение Telegram
-let tg = null;
-
-if (window.Telegram && window.Telegram.WebApp) {
-    tg = window.Telegram.WebApp;
-    tg.expand();
-}
-
-// корзина
-let cart = [];
-let current = 'home-screen';
-
-// навигация
-function nav(id) {
-    console.log("NAV:", id);
-
-    let next = (id === 'home') ? 'home-screen' : 'pg-' + id;
-
-    let currentEl = document.getElementById(current);
-    let nextEl = document.getElementById(next);
-
-    if (!nextEl) {
-        console.error("НЕ НАЙДЕН:", next);
-        return;
-    }
-
-    currentEl.classList.remove('active');
-    nextEl.classList.add('active');
-
-    current = next;
-}
