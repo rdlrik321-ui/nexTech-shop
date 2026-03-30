@@ -16,27 +16,40 @@
                               linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
             background-size: 30px 30px;
             color: #fff; font-family: -apple-system, sans-serif; margin: 0; padding: 20px; 
-            display: flex; flex-direction: column; align-items: center; min-height: 100vh; 
+            display: flex; flex-direction: column; align-items: center; min-height: 100vh;
         }
-        .container { width: 100%; max-width: 400px; }
-        .logo-block { background: #fff; border-radius: 20px; width: 80px; height: 80px; display: flex; justify-content: center; align-items: center; margin: 40px auto 20px auto; }
+        .container { width: 100%; max-width: 400px; display: flex; flex-direction: column; align-items: center; }
+        
+        .logo-block { background: #fff; border-radius: 20px; width: 80px; height: 80px; display: flex; justify-content: center; align-items: center; margin: 40px 0 20px 0; }
         .logo-block img { width: 70%; }
-        h1 { font-size: 11px; letter-spacing: 3px; opacity: 0.4; text-transform: uppercase; text-align: center; margin-bottom: 30px; }
-        .btn-cat { background: var(--card); border: 1px solid var(--brd); border-radius: 18px; padding: 25px; width: 100%; margin-bottom: 12px; text-align: center; cursor: pointer; }
-        .btn-cat h2 { margin: 0; font-size: 16px; letter-spacing: 1px; pointer-events: none; }
+        
+        h1 { font-size: 11px; letter-spacing: 3px; opacity: 0.4; text-transform: uppercase; text-align: center; margin-bottom: 30px; width: 100%; }
+        
+        .btn-cat { 
+            background: var(--card); border: 1px solid var(--brd); border-radius: 18px; 
+            padding: 25px; width: 100%; margin-bottom: 12px; text-align: center; 
+            cursor: pointer; box-sizing: border-box; transition: 0.2s;
+        }
+        .btn-cat:active { transform: scale(0.98); background: rgba(255, 255, 255, 0.05); }
+        .btn-cat h2 { margin: 0; font-size: 16px; letter-spacing: 1px; color: #fff; }
+
         .page { display: none; flex-direction: column; gap: 15px; width: 100%; }
-        .card { background: var(--card); border: 1px solid var(--brd); border-radius: 20px; padding: 20px; text-align: center; }
+        .card { background: var(--card); border: 1px solid var(--brd); border-radius: 20px; padding: 20px; text-align: center; box-sizing: border-box; }
+        
         .desc { text-align: left; font-size: 13px; opacity: 0.7; background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; margin: 15px 0; line-height: 1.4; }
+        
         .cart-btn { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #fff; color: #000; padding: 15px; border-radius: 30px; font-weight: 800; display: none; width: 80%; text-align: center; z-index: 100; box-shadow: 0 10px 30px #000; }
-        .buy { background: #fff; color: #000; border: none; padding: 15px; border-radius: 12px; font-weight: 800; width: 100%; cursor: pointer; text-transform: uppercase; }
-        .back { background: rgba(255,255,255,0.05); border: 1px solid var(--brd); color: #fff; padding: 8px 15px; border-radius: 10px; margin-bottom: 15px; align-self: flex-start; display: none; cursor: pointer; }
+        
+        .buy { background: #fff; color: #000; border: none; padding: 15px; border-radius: 12px; font-weight: 800; width: 100%; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
+        
+        .back { background: rgba(255,255,255,0.05); border: 1px solid var(--brd); color: #fff; padding: 10px 20px; border-radius: 12px; margin-bottom: 20px; align-self: flex-start; display: none; cursor: pointer; font-size: 12px; }
     </style>
 </head>
 <body>
 <div class="container">
     <div class="logo-block" id="logo-main"><img src="https://raw.githubusercontent.com/rdlrik321-ui/NexTech-shop/main/logo.png"></div>
-    <button class="back" id="back-btn" onclick="goHome()">← НАЗАД</button>
-    <h1 id="header">NEXTECH // TERMINAL</h1>
+    <button class="back" id="back-btn" onclick="goHome()">← НАЗАД К МЕНЮ</button>
+    <h1 id="header-text">NEXTECH // TERMINAL</h1>
     
     <div id="menu-main" style="width: 100%;">
         <div class="btn-cat" onclick="openPage('gpu')"><h2>ВИДЕОКАРТЫ</h2></div>
@@ -48,12 +61,5 @@
             <img src="https://raw.githubusercontent.com/rdlrik321-ui/NexTech-shop/main/gpu_photo.jpg" style="width: 100%; border-radius: 12px;">
             <div style="font-weight: 600; font-size: 18px; margin-top: 15px;">Sapphire Nitro+ RX 580</div>
             <div class="desc">• 1411 МГц | 8GB<br>• FurMark: 72°C<br>• Тихая, обслужена.</div>
-            <video controls style="width: 100%; border-radius: 10px; margin-bottom: 15px; border: 1px solid var(--brd);">
-                <source src="https://raw.githubusercontent.com/rdlrik321-ui/NexTech-shop/main/gpu_test.mp4" type="video/mp4">
-            </video>
-            <div style="font-size: 24px; font-weight: 800; margin-bottom: 15px;">5,800 ₽</div>
-            <button class="buy" onclick="addToCart('RX 580', 5800)">В КОРЗИНУ</button>
-        </div>
-    </div>
-
-    <div class="page" id="page-cpu">
+            <video controls style="width: 100%; border-radius: 10px; margin-bottom: 15px;">
+                <source src="https://raw.githubusercontent.
