@@ -1,203 +1,74 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root { 
+            --bg: #0d0d0f; 
+            --card: rgba(255, 255, 255, 0.03); 
+            --brd: rgba(255, 255, 255, 0.08); 
+        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            background-color: var(--bg); 
+            background-image: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px), 
+                              linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 30px 30px;
+            color: #fff; font-family: -apple-system, sans-serif; 
+            margin: 0; padding: 20px; display: flex; justify-content: center; min-height: 100vh;
+        }
 
-<style>
-:root { 
-    --bg: #0d0d0f; 
-    --card: rgba(255,255,255,0.03); 
-    --brd: rgba(255,255,255,0.08); 
-}
+        .container { width: 100%; max-width: 360px; display: flex; flex-direction: column; align-items: center; }
 
-body {
-    margin: 0;
-    background: var(--bg);
-    color: #fff;
-    font-family: -apple-system, sans-serif;
-}
+        .logo-box { background: #fff; border-radius: 20px; width: 75px; height: 75px; display: flex; justify-content: center; align-items: center; margin: 40px 0 15px 0; }
+        h1 { font-size: 10px; letter-spacing: 4px; opacity: 0.4; text-transform: uppercase; margin-bottom: 30px; text-align: center; }
 
-.container {
-    max-width: 360px;
-    margin: 0 auto;
-    padding: 20px;
-}
+        .menu-btn { 
+            background: var(--card); border: 1px solid var(--brd); border-radius: 18px; 
+            padding: 24px; margin-bottom: 12px; width: 100%;
+            cursor: pointer; transition: 0.1s; text-align: center;
+        }
+        .menu-btn:active { transform: scale(0.97); background: rgba(255,255,255,0.08); }
+        .menu-btn b { font-size: 15px; letter-spacing: 1px; display: block; }
 
-/* Страницы */
-.page {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
+        .page { display: none; width: 100%; flex-direction: column; align-items: center; }
+        .card { background: var(--card); border: 1px solid var(--brd); border-radius: 24px; padding: 20px; text-align: center; width: 100%; }
+        .card img { width: 100%; border-radius: 16px; margin-bottom: 15px; border: 1px solid var(--brd); }
+        
+        .btn-back { 
+            align-self: flex-start; background: none; border: none; color: #fff; 
+            opacity: 0.5; font-size: 13px; padding: 10px 0; cursor: pointer; margin-bottom: 10px;
+        }
 
-.page.active {
-    display: flex;
-    opacity: 1;
-}
+        .buy-btn { background: #fff; color: #000; border: none; padding: 18px; border-radius: 14px; font-weight: 800; width: 100%; margin-top: 20px; text-transform: uppercase; cursor: pointer; }
+        .price { font-size: 24px; font-weight: 800; margin: 10px 0; }
+        .desc { font-size: 13px; opacity: 0.6; line-height: 1.4; margin-bottom: 10px; }
 
-/* Логотип */
-.logo-box {
-    background: #fff;
-    border-radius: 20px;
-    width: 75px;
-    height: 75px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 40px 0 15px;
-}
-
-h1 {
-    font-size: 10px;
-    letter-spacing: 4px;
-    opacity: 0.4;
-    margin-bottom: 30px;
-}
-
-/* Кнопки */
-.menu-btn, .buy-btn {
-    background: var(--card);
-    border: 1px solid var(--brd);
-    border-radius: 18px;
-    padding: 20px;
-    margin-bottom: 12px;
-    width: 100%;
-    text-align: center;
-    cursor: pointer;
-    transition: transform 0.15s ease, background 0.2s;
-}
-
-.menu-btn:hover, .buy-btn:hover {
-    background: rgba(255,255,255,0.08);
-}
-
-.menu-btn:active, .buy-btn:active {
-    transform: scale(0.96);
-}
-
-/* Карточки */
-.card {
-    width: 100%;
-    background: var(--card);
-    border: 1px solid var(--brd);
-    border-radius: 20px;
-    padding: 20px;
-    text-align: center;
-    transition: transform 0.2s ease;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-}
-
-.card img {
-    width: 100%;
-    border-radius: 12px;
-    margin-bottom: 10px;
-}
-
-/* Кнопка назад */
-.btn-back {
-    align-self: flex-start;
-    margin-bottom: 10px;
-    background: none;
-    border: none;
-    color: #fff;
-    opacity: 0.6;
-    cursor: pointer;
-}
-
-.btn-back:hover {
-    opacity: 1;
-}
-
-/* Цена */
-.price {
-    font-size: 22px;
-    font-weight: bold;
-}
-
-/* Корзина */
-.cart-bar {
-    position: fixed;
-    bottom: -80px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #fff;
-    color: #000;
-    padding: 15px;
-    border-radius: 30px;
-    cursor: pointer;
-    transition: bottom 0.3s ease;
-}
-
-.cart-bar.show {
-    bottom: 20px;
-}
-</style>
+        .cart-bar { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #fff; color: #000; padding: 16px; border-radius: 30px; font-weight: 800; display: none; width: 85%; text-align: center; z-index: 100; }
+    </style>
 </head>
-
 <body>
+
 <div class="container">
-
-<!-- Главная -->
-<div id="home-screen" class="page active">
-    <div class="logo-box">
-        <img src="https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/logo.png" width="40">
+    <div id="home-screen" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+        <div class="logo-box"><img src="https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/logo.png" width="45"></div>
+        <h1>NEXTECH // TERMINAL</h1>
+        <div class="menu-btn" onclick="nav('gpu')"><b>ВИДЕОКАРТЫ</b></div>
+        <div class="menu-btn" onclick="nav('cpu')"><b>ПРОЦЕССОРЫ</b></div>
     </div>
-    <h1>NEXTECH // TERMINAL</h1>
 
-    <button class="menu-btn" data-page="gpu">ВИДЕОКАРТЫ</button>
-    <button class="menu-btn" data-page="cpu">ПРОЦЕССОРЫ</button>
-</div>
-
-<!-- GPU -->
-<div id="pg-gpu" class="page">
-    <button class="btn-back" data-page="home">← Назад</button>
-
-    <div class="card">
-        <img src="https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/gpu_photo.jpg">
-        <div><b>RX 580</b></div>
-        <div class="price">5800 ₽</div>
-        <button class="buy-btn" data-name="RX 580" data-price="5800">Купить</button>
+    <div id="pg-gpu" class="page">
+        <button class="btn-back" onclick="nav('home')">← НАЗАД К МЕНЮ</button>
+        <div class="card">
+            <img src="https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/gpu_photo.jpg">
+            <div style="font-size: 18px; font-weight: 700;">Sapphire Nitro+ RX 580</div>
+            <div class="desc">• 8GB GDDR5 | 1411 MHz<br>• FurMark: 72°C стабильно</div>
+            <div class="price">5,800 ₽</div>
+            <button class="buy-btn" onclick="add('RX 580', 5800)">В КОРЗИНУ</button>
+        </div>
     </div>
-</div>
 
-<!-- CPU -->
-<div id="pg-cpu" class="page">
-    <button class="btn-back" data-page="home">← Назад</button>
-
-    <div class="card">
-        <div><b>Ryzen 5 5600X</b></div>
-        <div class="price">12500 ₽</div>
-        <button class="buy-btn" data-name="5600X" data-price="12500">Купить</button>
-    </div>
-</div>
-
-</div>
-
-<div class="cart-bar" id="cart-ui">
-Оформить (<span id="count">0</span>)
-</div>
-
-<script>
-document.addEventListener('DOMContentLoaded', ()=>{
-
-    let tg = null;
-    if(window.Telegram && window.Telegram.WebApp){
-        tg = window.Telegram.WebApp;
-        tg.expand();
-    }
-
-    let cart = [];
-    let current = 'home-screen';
-
-    // Навигация
-    function showPage(id){
-        let next = (id==='home') ? 'home-screen' : 'pg-' + id;
-        document.getElementById(current).classList.remove('active');
-        document.getElementById(next).classList.add('active');
+    <div id="pg-cpu" class="page">
