@@ -195,8 +195,16 @@ let current = 'home-screen';
 function nav(id) {
     let next = (id === 'home') ? 'home-screen' : 'pg-' + id;
 
-    document.getElementById(current).classList.remove('active');
-    document.getElementById(next).classList.add('active');
+    let currentEl = document.getElementById(current);
+    let nextEl = document.getElementById(next);
+
+    if (!nextEl) {
+        console.error("НЕ НАЙДЕН:", next);
+        return;
+    }
+
+    currentEl.classList.remove('active');
+    nextEl.classList.add('active');
 
     current = next;
 }
