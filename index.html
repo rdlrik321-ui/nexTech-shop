@@ -22,9 +22,10 @@
         .btn-cat { 
             background: var(--card); border: 1px solid var(--brd); border-radius: 18px; 
             padding: 25px; width: 100%; margin-bottom: 12px; text-align: center; 
-            cursor: pointer; box-sizing: border-box; transition: transform 0.1s;
+            cursor: pointer; box-sizing: border-box; transition: 0.1s;
+            -webkit-tap-highlight-color: transparent;
         }
-        .btn-cat:active { transform: scale(0.96); background: rgba(255,255,255,0.08); }
+        .btn-cat:active { transform: scale(0.95); background: rgba(255,255,255,0.1); }
         .btn-cat h2 { margin: 0; font-size: 16px; pointer-events: none; }
 
         .page { display: none; flex-direction: column; gap: 15px; width: 100%; }
@@ -36,18 +37,18 @@
 </head>
 <body>
 <div class="container">
-    <div class="logo-block" id="logo-main"><img src="https://raw.githubusercontent.com/rdlrik321-ui/NexTech-shop/main/logo.png"></div>
+    <div class="logo-block" id="logo-main"><img src="https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/logo.png"></div>
     <button class="back" id="back-btn">← НАЗАД К МЕНЮ</button>
     <h1 id="header-text">NEXTECH // TERMINAL</h1>
     
     <div id="menu-main" style="width: 100%;">
-        <div class="btn-cat" id="btn-gpu"><h2>ВИДЕОКАРТЫ</h2></div>
-        <div class="btn-cat" id="btn-cpu"><h2>ПРОЦЕССОРЫ</h2></div>
+        <div class="btn-cat" id="gpu-trigger"><h2>ВИДЕОКАРТЫ</h2></div>
+        <div class="btn-cat" id="cpu-trigger"><h2>ПРОЦЕССОРЫ</h2></div>
     </div>
 
     <div class="page" id="page-gpu">
         <div class="card">
-            <img src="https://raw.githubusercontent.com/rdlrik321-ui/NexTech-shop/main/gpu_photo.jpg" style="width: 100%; border-radius: 12px;">
+            <img src="https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/gpu_photo.jpg" style="width: 100%; border-radius: 12px;">
             <h3>Sapphire RX 580</h3>
             <p>5,800 ₽</p>
             <button class="buy" onclick="addToCart('RX 580', 5800)">В КОРЗИНУ</button>
@@ -66,10 +67,10 @@
 <div class="cart-btn" id="cart-float" onclick="checkout()">ОФОРМИТЬ (<span id="count">0</span>)</div>
 
 <script>
-    let tg = window.Telegram.WebApp;
+    const tg = window.Telegram.WebApp;
     tg.expand();
     let cart = [];
 
-    // Привязываем кнопки категорий
-    document.getElementById('btn-gpu').addEventListener('click', () => openPage('gpu'));
-    document.getElementById('btn-cpu').
+    // Функция переключения страниц
+    function openPage(name) {
+        document.getElementById('menu-main').style.
