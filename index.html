@@ -8,40 +8,39 @@
         body { 
             background: #0d0d0f; color: #fff; font-family: -apple-system, sans-serif; 
             margin: 0; padding: 20px; text-align: center;
-            background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), 
-                              linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-            background-size: 30px 30px;
         }
-        .container { max-width: 380px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; }
+        .container { max-width: 380px; margin: 0 auto; }
         
-        /* БОЛЬШОЙ ЛОГОТИП */
+        /* ЛОГОТИП (Центрированный и большой) */
         .logo-main { 
             background: #fff; border-radius: 25px; 
             width: 90px; height: 90px; 
-            margin: 50px auto 15px; 
+            margin: 40px auto 10px; 
             display: flex; align-items: center; justify-content: center;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        h1 { font-size: 12px; letter-spacing: 4px; opacity: 0.4; margin-bottom: 40px; text-transform: uppercase; }
+        h1 { font-size: 11px; letter-spacing: 4px; opacity: 0.4; margin-bottom: 40px; text-transform: uppercase; }
         
+        /* КНОПКИ (iOS Style) */
         .nav-btn { 
-            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); 
-            border-radius: 22px; padding: 28px; margin-bottom: 15px; width: 100%;
-            cursor: pointer; color: #fff; font-weight: bold; font-size: 17px;
-            transition: 0.2s;
+            display: block; background: rgba(255,255,255,0.06); 
+            border: 1px solid rgba(255,255,255,0.1); 
+            border-radius: 22px; padding: 25px; margin-bottom: 15px; 
+            color: #fff; text-decoration: none; font-weight: bold; font-size: 17px;
+            -webkit-appearance: none; cursor: pointer; width: 100%;
         }
-        .nav-btn:active { background: rgba(255,255,255,0.1); transform: scale(0.97); }
+        .nav-btn:active { background: rgba(255,255,255,0.15); transform: scale(0.97); }
 
-        .page { display: none; width: 100%; text-align: left; }
-        .back-link { color: #fff; opacity: 0.5; text-decoration: none; font-size: 15px; display: inline-block; margin-bottom: 20px; cursor: pointer; }
+        .page { display: none; }
+        .back-btn { color: #fff; opacity: 0.5; padding: 15px; display: inline-block; cursor: pointer; margin-bottom: 10px; }
         
-        .item-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 25px; padding: 20px; text-align: center; }
-        .item-card img { width: 100%; border-radius: 15px; margin-bottom: 15px; }
+        .card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 25px; padding: 20px; }
+        .card img { width: 100%; border-radius: 15px; margin-bottom: 15px; }
         
         .price { font-size: 26px; font-weight: 800; margin: 15px 0; }
-        .buy-now { background: #fff; color: #000; border: none; padding: 18px; border-radius: 15px; font-weight: 900; width: 100%; cursor: pointer; text-transform: uppercase; }
+        .buy-btn { background: #fff; color: #000; border: none; padding: 18px; border-radius: 15px; font-weight: 900; width: 100%; cursor: pointer; }
         
-        #cart-panel { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); background: #fff; color: #000; padding: 18px; border-radius: 35px; font-weight: 800; display: none; width: 85%; text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.5); }
+        #cart-notif { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); background: #fff; color: #000; padding: 18px; border-radius: 35px; font-weight: 800; display: none; width: 85%; box-shadow: 0 15px 40px rgba(0,0,0,0.5); }
     </style>
 </head>
 <body>
@@ -50,28 +49,44 @@
     <div id="home-screen">
         <div class="logo-main"><img src="https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/logo.png" width="55"></div>
         <h1>NEXTECH // TERMINAL</h1>
-        <button class="nav-btn" onclick="showPage('gpu-page')">ВИДЕОКАРТЫ</button>
-        <button class="nav-btn" onclick="showPage('cpu-page')">ПРОЦЕССОРЫ</button>
+        <button class="nav-btn" onclick="openPage('gpu-page')">ВИДЕОКАРТЫ</button>
+        <button class="nav-btn" onclick="openPage('cpu-page')">ПРОЦЕССОРЫ</button>
     </div>
 
     <div id="gpu-page" class="page">
-        <div class="back-link" onclick="showPage('home-screen')">← НАЗАД</div>
-        <div class="item-card">
+        <div class="back-btn" onclick="openPage('home-screen')">← НАЗАД</div>
+        <div class="card">
             <img src="https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/gpu_photo.jpg">
-            <h2 style="margin:0">Sapphire RX 580</h2>
-            <p style="opacity:0.5; font-size:14px">8GB GDDR5 • Nitro+ Edition</p>
+            <h3>Sapphire RX 580</h3>
             <div class="price">5,800 ₽</div>
-            <button class="buy-now" onclick="addToCart('RX 580', 5800)">В КОРЗИНУ</button>
+            <button class="buy-btn" onclick="addItem('RX 580', 5800)">В КОРЗИНУ</button>
         </div>
     </div>
 
     <div id="cpu-page" class="page">
-        <div class="back-link" onclick="showPage('home-screen')">← НАЗАД</div>
-        <div class="item-card">
-            <h2 style="margin:0">Ryzen 5 5600X</h2>
-            <p style="opacity:0.5; font-size:14px">6 ядер / 12 потоков • AM4</p>
+        <div class="back-btn" onclick="openPage('home-screen')">← НАЗАД</div>
+        <div class="card">
+            <h3>Ryzen 5 5600X</h3>
             <div class="price">12,500 ₽</div>
-            <button class="buy-now" onclick="addToCart('5600X', 12500)">В КОРЗИНУ</button>
+            <button class="buy-btn" onclick="addItem('5600X', 12500)">В КОРЗИНУ</button>
         </div>
     </div>
 </div>
+
+<div id="cart-notif" onclick="sendData()">ОФОРМИТЬ (<span id="cart-count">0</span>)</div>
+
+<script>
+    let tg = window.Telegram.WebApp;
+    tg.expand();
+    let cart = [];
+
+    function openPage(id) {
+        // Прячем всё
+        document.getElementById('home-screen').style.display = 'none';
+        document.getElementById('gpu-page').style.display = 'none';
+        document.getElementById('cpu-page').style.display = 'none';
+        
+        // Показываем нужное
+        document.getElementById(id).style.display = 'block';
+        
+        if(tg.HapticFeedback) tg.
