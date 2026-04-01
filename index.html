@@ -4,442 +4,142 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <title>NexTech Premium Shop</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@700;900&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* CSS ПЕРЕМЕННЫЕ И ОСНОВА */
         :root {
-            --bg-color: #0d0d0f;
-            --card-bg: rgba(255, 255, 255, 0.05);
-            --card-border: rgba(255, 255, 255, 0.1);
-            --accent-color: #ffffff;
-            --secondary-text: rgba(255, 255, 255, 0.4);
-            --danger-color: #ff3b30;
-            --success-color: #34c759;
-            --font-main: 'Inter', sans-serif;
-            --font-mono: 'Roboto Mono', monospace;
+            --bg: #0d0d0f;
+            --grid: rgba(255, 255, 255, 0.03);
+            --card: rgba(255, 255, 255, 0.06);
+            --border: rgba(255, 255, 255, 0.1);
+            --accent: #ffffff;
         }
 
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-            margin: 0; padding: 0;
-            user-select: none;
-        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
 
         body {
-            background-color: var(--bg-color);
-            color: #fff;
-            font-family: var(--font-mono);
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
-            /* Фоновая сетка */
-            background-image: 
-                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-            background-size: 32px 32px;
+            background-color: var(--bg);
+            background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+            background-size: 30px 30px;
+            color: #fff; font-family: 'Roboto Mono', monospace;
+            height: 100vh; overflow: hidden;
         }
 
-        /* КОНТЕЙНЕР ПРИЛОЖЕНИЯ */
-        #app-wrapper {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            overflow-y: auto;
-            overflow-x: hidden;
-            padding-bottom: 110px; /* Место под таб-бар */
+        #viewport {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            overflow-y: auto; overflow-x: hidden; padding-bottom: 110px;
             -webkit-overflow-scrolling: touch;
         }
 
-        /* ЭКРАНЫ */
-        .screen {
-            display: none;
-            padding: 20px;
-            width: 100%;
-            min-height: 100%;
-            animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-        }
-
+        .screen { display: none; padding: 20px; animation: fadeIn 0.3s ease forwards; }
         .screen.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* HEADER */
+        .header { display: flex; flex-direction: column; align-items: center; margin: 40px 0 30px; }
+        .logo-box { 
+            background: #fff; border-radius: 26px; width: 95px; height: 95px;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 15px 45px rgba(0,0,0,0.8); margin-bottom: 20px;
         }
+        .logo-box img { width: 55px; }
+        .brand-label { font-size: 11px; letter-spacing: 7px; opacity: 0.4; text-transform: uppercase; font-weight: 700; }
 
-        /* ШАПКА */
-        .main-header {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 45px 0 35px;
-        }
-
-        .brand-logo {
-            background: #fff;
-            border-radius: 26px;
-            width: 90px;
-            height: 90px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-            margin-bottom: 20px;
-        }
-
-        .brand-logo img { width: 55px; filter: contrast(1.1); }
-
-        .brand-title {
-            font-size: 11px;
-            letter-spacing: 7px;
-            color: var(--secondary-text);
-            text-transform: uppercase;
-            font-weight: 700;
-        }
-
-        /* КАТЕГОРИИ НА ГЛАВНОЙ */
-        .category-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 28px;
-            padding: 40px 25px;
-            margin-bottom: 16px;
-            cursor: pointer;
-            text-align: center;
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .category-card::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.03));
-        }
-
-        .category-card:active {
-            transform: scale(0.96);
-            background: rgba(255, 255, 255, 0.08);
-        }
-
-        .category-card h2 {
-            font-family: var(--font-main);
-            font-weight: 900;
-            font-size: 20px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* ПОИСК */
-        .search-sticky {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            background: var(--bg-color);
-            padding: 5px 0 15px;
-        }
-
+        /* SEARCH СТИЛЬ ПРЕЖНИЙ */
+        .search-container { position: sticky; top: 0; z-index: 100; background: var(--bg); padding: 5px 0 15px; }
         .search-bar {
-            width: 100%;
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 22px;
-            padding: 18px 24px;
-            color: #fff;
-            font-family: var(--font-mono);
-            font-size: 15px;
-            outline: none;
-            backdrop-filter: blur(15px);
-            transition: border-color 0.3s;
+            width: 100%; background: var(--card); border: 1px solid var(--border);
+            border-radius: 22px; padding: 18px 24px; color: #fff; font-family: 'Roboto Mono';
+            font-size: 14px; outline: none; backdrop-filter: blur(15px);
         }
 
-        .search-bar:focus {
-            border-color: rgba(255,255,255,0.3);
+        /* КАТЕГОРИИ */
+        .btn-main {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 28px; padding: 35px 25px; font-family: 'Inter';
+            font-weight: 900; font-size: 20px; text-transform: uppercase;
+            margin-bottom: 16px; cursor: pointer; text-align: center;
         }
 
-        /* КАРТОЧКА ТОВАРА В СПИСКЕ */
-        .item-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 32px;
-            margin-bottom: 24px;
-            overflow: hidden;
-            transition: transform 0.2s;
-        }
+        /* КАРТОЧКИ ТОВАРОВ */
+        .p-card { background: var(--card); border: 1px solid var(--border); border-radius: 32px; margin-bottom: 24px; overflow: hidden; }
+        .p-img { width: 100%; height: 230px; object-fit: cover; background: #161618; }
+        .p-info { padding: 22px; }
+        .p-title { font-family: 'Inter'; font-size: 24px; font-weight: 900; margin-bottom: 8px; }
+        .p-price { font-size: 19px; font-weight: 700; }
 
-        .item-card:active { transform: scale(0.98); }
-
-        .item-card-img {
-            width: 100%;
-            height: 230px;
-            object-fit: cover;
-            background: #151517;
-        }
-
-        .item-card-body { padding: 22px; }
-
-        .item-card-title {
-            font-family: var(--font-main);
-            font-weight: 900;
-            font-size: 22px;
-            margin-bottom: 8px;
-        }
-
-        .item-card-price {
-            font-size: 19px;
-            font-weight: 700;
-            color: var(--accent-color);
-        }
-
-        /* СЛАЙДЕР ВНУТРИ ТОВАРА */
-        .product-slider {
-            position: relative;
-            border-radius: 32px;
-            overflow: hidden;
-            margin-bottom: 25px;
-            border: 1px solid var(--card-border);
-            height: 320px;
-        }
-
-        .slider-track {
-            display: flex;
-            height: 100%;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            scrollbar-width: none;
-        }
-
+        /* СЛАЙДЕР */
+        .slider { position: relative; border-radius: 32px; overflow: hidden; margin-bottom: 25px; border: 1px solid var(--border); }
+        .slider-track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
         .slider-track::-webkit-scrollbar { display: none; }
+        .slide { flex: 0 0 100%; height: 320px; scroll-snap-align: center; }
+        .slide img { width: 100%; height: 100%; object-fit: cover; }
+        .dots { display: flex; justify-content: center; gap: 8px; margin-top: -35px; padding-bottom: 25px; position: relative; }
+        .dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.3); transition: 0.3s; }
+        .dot.active { background: #fff; transform: scale(1.6); }
 
-        .slide-unit {
-            flex: 0 0 100%;
-            height: 100%;
-            scroll-snap-align: center;
+        /* FPS & SPECS */
+        .spec-item { 
+            background: rgba(255,255,255,0.03); padding: 18px; border-radius: 20px; 
+            margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;
         }
+        .bar-bg { width: 70px; height: 5px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; }
+        .bar-fill { height: 100%; background: #fff; }
 
-        .slide-unit img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        /* NAV BAR */
+        .nav-bar {
+            position: fixed; bottom: 0; left: 0; right: 0; height: 95px;
+            background: rgba(0,0,0,0.97); backdrop-filter: blur(25px);
+            border-top: 1px solid var(--border); display: flex; z-index: 1000;
         }
+        .nav-tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: rgba(255,255,255,0.35); position: relative; }
+        .nav-tab.active { color: #fff; }
+        .nav-pill { position: absolute; width: 65px; height: 38px; background: rgba(255,255,255,0.12); border-radius: 20px; top: 15px; opacity: 0; transition: 0.3s; }
+        .nav-tab.active .nav-pill { opacity: 1; }
+        .nav-icon { width: 24px; height: 24px; background: currentColor; mask-size: contain; -webkit-mask-image: var(--i); margin-bottom: 28px; }
+        .nav-label { position: absolute; bottom: 18px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; }
+        
+        .badge { position: absolute; top: 12px; right: 20%; background: #ff3b30; color: #fff; font-size: 9px; font-weight: 800; min-width: 17px; height: 17px; border-radius: 10px; display: none; align-items: center; justify-content: center; border: 2px solid #000; }
 
-        .slider-dots {
-            position: absolute;
-            bottom: 20px;
-            left: 0; right: 0;
-            display: flex;
-            justify-content: center;
-            gap: 10px;
+        /* КНОПКИ */
+        .btn-buy {
+            background: #fff; color: #000; border: none; padding: 25px; border-radius: 24px;
+            font-family: 'Inter'; font-weight: 900; font-size: 18px; width: 100%; margin-top: 20px;
         }
+        .btn-back { font-size: 11px; opacity: 0.4; padding: 15px 0; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; }
 
-        .dot-node {
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.3);
-            transition: 0.3s;
-        }
-
-        .dot-node.active {
-            background: #fff;
-            transform: scale(1.5);
-        }
-
-        /* ТЕХНИЧЕСКИЕ ТЕСТЫ (FPS) */
-        .bench-container {
-            margin: 25px 0;
-        }
-
-        .bench-row {
-            background: rgba(255,255,255,0.03);
-            border-radius: 20px;
-            padding: 16px 20px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .bench-label { font-size: 13px; color: var(--secondary-text); }
-        .bench-value { font-weight: 700; font-size: 15px; }
-
-        .bench-bar-bg {
-            width: 80px;
-            height: 4px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 2px;
-            margin-left: 15px;
-            overflow: hidden;
-        }
-
-        .bench-bar-fill {
-            height: 100%;
-            background: #fff;
-            border-radius: 2px;
-        }
-
-        /* КНОПКИ ДЕЙСТВИЯ */
-        .btn-action {
-            background: #fff;
-            color: #000;
-            border: none;
-            padding: 24px;
-            border-radius: 24px;
-            width: 100%;
-            font-family: var(--font-main);
-            font-weight: 900;
-            font-size: 17px;
-            text-transform: uppercase;
-            cursor: pointer;
-            margin-top: 15px;
-            transition: background 0.2s;
-        }
-
-        .btn-action:active { background: #e0e0e0; }
-
-        .btn-ghost {
-            background: transparent;
-            color: var(--secondary-text);
-            font-size: 11px;
-            text-transform: uppercase;
-            padding: 15px 0;
-            display: inline-block;
-            cursor: pointer;
-            letter-spacing: 2px;
-        }
-
-        /* ТАБ-БАР (НИЖНИЙ) */
-        .tab-bar {
-            position: fixed;
-            bottom: 0; left: 0; right: 0;
-            height: 95px;
-            background: rgba(0,0,0,0.98);
-            backdrop-filter: blur(30px);
-            border-top: 1px solid var(--card-border);
-            display: flex;
-            z-index: 1000;
-        }
-
-        .tab-btn {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            color: var(--secondary-text);
-        }
-
-        .tab-btn.active { color: #fff; }
-
-        .tab-active-pill {
-            position: absolute;
-            top: 15px;
-            width: 65px;
-            height: 38px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 20px;
-            opacity: 0;
-            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .tab-btn.active .tab-active-pill { opacity: 1; }
-
-        .tab-icon {
-            width: 24px;
-            height: 24px;
-            background: currentColor;
-            mask-size: contain;
-            -webkit-mask-image: var(--icon);
-            margin-bottom: 28px;
-            z-index: 2;
-        }
-
-        .tab-text {
-            position: absolute;
-            bottom: 18px;
-            font-size: 10px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-        }
-
-        /* БЕЙДЖ КОРЗИНЫ */
-        .cart-badge {
-            position: absolute;
-            top: 12px;
-            right: 22%;
-            background: var(--danger-color);
-            color: #fff;
-            font-size: 9px;
-            font-weight: 800;
-            min-width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid #000;
-            z-index: 5;
-        }
-
-        /* КОРЗИНА */
-        .cart-item {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            padding: 22px;
-            border-radius: 26px;
-            margin-bottom: 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .cart-item-info b { font-family: var(--font-main); font-size: 17px; display: block; margin-bottom: 4px; }
-        .cart-item-info span { opacity: 0.5; font-size: 14px; }
-
-        .cart-remove-btn {
-            color: var(--danger-color);
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            padding: 10px;
-        }
-
-        .total-block {
-            margin: 30px 0;
-            text-align: right;
-            padding: 0 10px;
-        }
-
-        .total-label { font-size: 12px; color: var(--secondary-text); letter-spacing: 2px; margin-bottom: 5px; }
-        .total-amount { font-family: var(--font-main); font-weight: 900; font-size: 28px; }
-
+        .cart-row { background: var(--card); padding: 22px; border-radius: 24px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); }
     </style>
 </head>
 <body>
 
-<div id="app-wrapper">
+<div id="viewport">
     
-    <div id="screen-home" class="screen active">
-        <div class="main-header">
-            <div class="brand-logo">
-                <img src="https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/logo.png">
-            </div>
-            <div class="brand-title">NEXTECH // TERMINAL</div>
+    <div id="scr-home" class="screen active">
+        <div class="header">
+            <div class="logo-box"><img src="https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/logo.png"></div>
+            <div class="brand-label">NEXTECH // PREMIUM</div>
         </div>
-        
-        <div class="category-card" onclick="openCategory('gpu')">
-            <h2>Видеокарты // GPU</h2>
-        </div>
-        <div class="category-card" onclick="openCategory('cpu')">
-            <h2>Процессоры // CPU</h2>
-        </div>
-        <div class="category-card" style="opacity: 0.5; pointer-events: none;">
-            <h2>Периферия // Soon</h2>
-        </div>
+        <div class="btn-main" onclick="openCat('gpu')">VIDEO CARDS // GPU</div>
+        <div class="btn-main" onclick="openCat('cpu')">PROCESSORS // CPU</div>
     </div>
 
-    <div id="screen-catalog" class="screen">
-        <div class="btn
+    <div id="scr-catalog" class="screen">
+        <div class="btn-back" onclick="nav('home')">← НА ГЛАВНУЮ</div>
+        <div class="search-container">
+            <input type="text" class="search-bar" id="q" placeholder="Поиск в базе данных..." oninput="renderCat()">
+        </div>
+        <div id="cat-list"></div>
+    </div>
+
+    <div id="scr-item" class="screen">
+        <div class="btn-back" onclick="nav('catalog')">← К СПИСКУ</div>
+        <div id="item-content"></div>
+    </div>
+
+    <div id="scr-cart" class="screen">
+        <div class="header"><div class="brand-label">STORAGE // КОРЗИНА</div></div>
+        <div id="cart-list"></div>
+        <div id="cart-empty" style="text-align:center; padding:100px; opacity:0.2; font-size:14px;">[ ПУСТО ]</div>
+    </div>
+
+</div>
