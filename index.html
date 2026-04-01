@@ -7,351 +7,184 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #0d0d0f;
-            --grid-color: rgba(255, 255, 255, 0.03);
-            --card-bg: rgba(255, 255, 255, 0.06); 
-            --card-border: rgba(255, 255, 255, 0.1);
-            --hotbar-bg: rgba(0, 0, 0, 0.95);
-            --pill-color: rgba(255, 255, 255, 0.1);
-            --accent-color: #ffffff;
-            --font-premium: 'Inter', sans-serif;
-            --font-mono: 'Roboto Mono', monospace;
+            --bg: #0d0d0f;
+            --grid: rgba(255, 255, 255, 0.03);
+            --card: rgba(255, 255, 255, 0.06);
+            --border: rgba(255, 255, 255, 0.1);
+            --accent: #ffffff;
+            --font-main: 'Inter', sans-serif;
+            --font-code: 'Roboto Mono', monospace;
         }
 
-        /* RESET & BASE */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
-        
+
         body {
-            background-color: var(--bg-color);
-            background-image: 
-                linear-gradient(var(--grid-color) 1px, transparent 1px),
-                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-color: var(--bg);
+            background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
             background-size: 30px 30px;
-            color: #fff;
-            font-family: var(--font-mono);
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden; /* Важно: само тело не скроллится */
+            color: #fff; font-family: var(--font-code);
+            height: 100vh; width: 100vw; overflow: hidden;
         }
 
-        /* VIEWPORT SCROLL FIX */
-        #main-container {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            overflow-y: auto;
-            overflow-x: hidden;
-            padding-bottom: 120px;
+        /* ОСНОВНОЙ СКРОЛЛ-КОНТЕЙНЕР */
+        #app-shell {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            overflow-y: auto; overflow-x: hidden; padding-bottom: 110px;
             -webkit-overflow-scrolling: touch;
-            scroll-behavior: auto; /* Мгновенный скролл для JS */
         }
 
-        /* ANIMATIONS */
-        @keyframes screenIn {
-            from { opacity: 0; transform: translateY(20px); filter: blur(5px); }
-            to { opacity: 1; transform: translateY(0); filter: blur(0); }
+        .screen { display: none; padding: 20px; width: 100%; }
+        .screen.active { display: block; animation: slideUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .screen {
-            display: none;
-            padding: 20px;
-            width: 100%;
+        /* ПОИСК И ФИЛЬТРЫ */
+        .search-container {
+            margin-bottom: 20px; position: sticky; top: 0; z-index: 100;
+            background: var(--bg); padding: 10px 0;
         }
-
-        .screen.active {
-            display: block;
-            animation: screenIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        .search-input {
+            width: 100%; background: var(--card); border: 1px solid var(--border);
+            border-radius: 15px; padding: 15px 20px; color: #fff; font-family: var(--font-code);
+            font-size: 14px; outline: none; transition: 0.3s;
         }
+        .search-input:focus { border-color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); }
 
-        /* HEADER & LOGO */
-        .header {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 45px 0 35px;
+        .filter-bar { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; scrollbar-width: none; }
+        .filter-bar::-webkit-scrollbar { display: none; }
+        .filter-tag {
+            white-space: nowrap; background: var(--card); border: 1px solid var(--border);
+            padding: 8px 16px; border-radius: 12px; font-size: 10px; text-transform: uppercase;
         }
+        .filter-tag.active { background: #fff; color: #000; }
 
+        /* HEADER */
+        .header { display: flex; flex-direction: column; align-items: center; margin: 40px 0 30px; }
         .logo-box { 
-            background: #fff; 
-            border-radius: 24px; 
-            width: 95px; 
-            height: 95px;
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.6); 
-            margin-bottom: 18px;
-            transition: 0.3s;
+            background: #fff; border-radius: 22px; width: 90px; height: 90px;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 15px;
         }
+        .logo-box img { width: 55px; }
 
-        .logo-box img { width: 55px; height: auto; }
-
-        .brand-name {
-            font-size: 11px;
-            letter-spacing: 6px;
-            opacity: 0.4;
-            text-transform: uppercase;
-            font-weight: 700;
+        /* КАРТОЧКИ */
+        .card {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 25px; margin-bottom: 15px; overflow: hidden;
+            transition: transform 0.2s; position: relative;
         }
+        .card:active { transform: scale(0.98); }
+        .card-img { width: 100%; height: 200px; object-fit: cover; }
+        .card-content { padding: 18px; }
+        .card-price { font-family: var(--font-main); font-size: 18px; margin-top: 8px; }
 
-        /* BUTTONS & CARDS */
-        .btn-category {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 24px;
-            padding: 32px 20px;
-            font-family: var(--font-premium);
-            font-weight: 700;
-            font-size: 18px;
-            text-align: center;
-            text-transform: uppercase;
-            color: #fff;
-            margin-bottom: 16px;
-            backdrop-filter: blur(10px);
-            cursor: pointer;
-            transition: transform 0.2s, background 0.2s;
-        }
-
-        .btn-category:active { transform: scale(0.97); background: rgba(255,255,255,0.1); }
-
-        .product-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 28px;
-            margin-bottom: 22px;
-            overflow: hidden;
-            transition: 0.3s;
-        }
-
-        .card-preview {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            background: #161618;
-        }
-
-        .card-info { padding: 20px; }
-
-        .card-title { font-family: var(--font-premium); font-size: 20px; margin-bottom: 6px; }
-        .card-price { font-family: var(--font-premium); font-size: 18px; color: #fff; }
-        .card-desc { font-size: 12px; opacity: 0.4; margin-bottom: 15px; line-height: 1.4; }
-
-        /* SLIDER SYSTEM */
-        .slider-box {
-            position: relative;
-            width: 100%;
-            margin-bottom: 25px;
-            border-radius: 30px;
-            overflow: hidden;
-            border: 1px solid var(--card-border);
-        }
-
-        .slider-track {
-            display: flex;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            scrollbar-width: none;
-            background: #161618;
-        }
-        .slider-track::-webkit-scrollbar { display: none; }
-
-        .slide {
-            flex: 0 0 100%;
-            height: 300px;
-            scroll-snap-align: center;
-        }
+        /* СЛАЙДЕР В ТОВАРЕ */
+        .slider-wrap { position: relative; border-radius: 25px; overflow: hidden; margin-bottom: 20px; border: 1px solid var(--border); }
+        .slider-inner { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+        .slider-inner::-webkit-scrollbar { display: none; }
+        .slide { flex: 0 0 100%; height: 300px; scroll-snap-align: center; }
         .slide img { width: 100%; height: 100%; object-fit: cover; }
-
-        .slider-dots {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-top: -35px;
-            padding-bottom: 25px;
-            position: relative;
-            z-index: 10;
-        }
-        .dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.2); transition: 0.3s; }
+        .dots { display: flex; justify-content: center; gap: 8px; margin-top: -30px; padding-bottom: 20px; position: relative; }
+        .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.3); transition: 0.3s; }
         .dot.active { background: #fff; transform: scale(1.4); }
 
-        /* INFO LINES */
-        .spec-line {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(255,255,255,0.03);
-            padding: 16px;
-            border-radius: 16px;
-            margin-bottom: 10px;
-            font-size: 13px;
+        /* ANIMATION: FLY EFFECT */
+        .fly-item {
+            position: fixed; z-index: 9999; pointer-events: none;
+            width: 50px; height: 50px; border-radius: 12px;
+            background-size: cover; background-position: center;
+            transition: all 0.8s cubic-bezier(0.1, 0.7, 0.3, 1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
         }
-        .spec-label { opacity: 0.4; text-transform: uppercase; font-size: 10px; }
 
-        /* HOT BAR / NAVIGATION */
+        /* NAVBAR */
         .navbar {
-            position: fixed;
-            bottom: 0; left: 0; right: 0;
-            height: 95px;
-            background: var(--hotbar-bg);
-            backdrop-filter: blur(25px);
-            border-top: 1px solid rgba(255,255,255,0.08);
-            display: flex;
-            justify-content: space-around;
-            padding: 0 10px;
-            z-index: 10000;
+            position: fixed; bottom: 0; left: 0; right: 0; height: 90px;
+            background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border); display: flex; z-index: 1000;
         }
+        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: rgba(255,255,255,0.4); position: relative; }
+        .nav-item.active { color: #fff; }
+        .nav-pill { position: absolute; width: 60px; height: 35px; background: rgba(255,255,255,0.1); border-radius: 18px; top: 15px; opacity: 0; transition: 0.3s; }
+        .nav-item.active .nav-pill { opacity: 1; }
+        .nav-icon { width: 22px; height: 22px; background: currentColor; mask-size: contain; -webkit-mask-image: var(--i); margin-bottom: 25px; }
+        .nav-label { position: absolute; bottom: 15px; font-size: 9px; font-weight: 700; text-transform: uppercase; }
 
-        .nav-btn {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            color: rgba(255,255,255,0.35);
-            transition: 0.3s;
+        /* КНОПКИ */
+        .btn-action {
+            background: #fff; color: #000; border: none; padding: 22px; border-radius: 20px;
+            font-family: var(--font-main); font-weight: 700; font-size: 16px; width: 100%; margin-top: 20px;
         }
+        .btn-secondary { background: var(--card); color: #fff; border: 1px solid var(--border); margin-top: 10px; }
 
-        .nav-btn.active { color: #fff; }
-
-        .nav-pill {
-            position: absolute;
-            width: 65px;
-            height: 38px;
-            background: var(--pill-color);
-            border-radius: 20px;
-            top: 15px;
-            z-index: -1;
-            opacity: 0;
-            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .nav-btn.active .nav-pill { opacity: 1; }
-
-        .nav-icon {
-            width: 24px;
-            height: 24px;
-            background: currentColor;
-            mask-size: contain;
-            -webkit-mask-image: var(--icon);
-            -webkit-mask-repeat: no-repeat;
-            -webkit-mask-position: center;
-            margin-bottom: 28px;
-        }
-
-        .nav-text {
-            position: absolute;
-            bottom: 16px;
-            font-size: 10px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* BACK BUTTON */
-        .back-link {
-            display: inline-flex;
-            align-items: center;
-            padding: 12px 0;
-            color: rgba(255,255,255,0.4);
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            cursor: pointer;
-        }
-
-        /* CART STYLES */
-        .cart-item {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            padding: 20px;
-            border-radius: 24px;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .buy-now-btn {
-            background: #fff;
-            color: #000;
-            border: none;
-            padding: 24px;
-            border-radius: 22px;
-            font-family: var(--font-premium);
-            font-weight: 700;
-            font-size: 17px;
-            width: 100%;
-            margin-top: 25px;
-            cursor: pointer;
-            box-shadow: 0 10px 30px rgba(255,255,255,0.1);
-        }
-
-        .pay-confirm-btn {
-            background: #34c759;
-            color: #fff;
-        }
+        .cart-row { background: var(--card); padding: 18px; border-radius: 20px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
     </style>
 </head>
 <body>
 
-<div id="main-container">
+<div id="app-shell">
     
     <div id="scr-home" class="screen active">
         <div class="header">
-            <div class="logo-box">
-                <img src="https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/logo.png">
-            </div>
-            <div class="brand-name">NEXTECH // TERMINAL</div>
+            <div class="logo-box"><img src="https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/logo.png"></div>
+            <div style="font-size: 10px; letter-spacing: 5px; opacity: 0.4;">NEXTECH // MAIN</div>
         </div>
-        <div class="btn-category" onclick="openCatalog('gpu')">GPU // Видеокарты</div>
-        <div class="btn-category" onclick="openCatalog('cpu')">CPU // Процессоры</div>
+        <div class="btn-action" style="background: var(--card); color: #fff; border: 1px solid var(--border); margin-bottom: 12px; padding: 30px;" onclick="openCatalog('gpu')">ВИДЕОКАРТЫ</div>
+        <div class="btn-action" style="background: var(--card); color: #fff; border: 1px solid var(--border); padding: 30px;" onclick="openCatalog('cpu')">ПРОЦЕССОРЫ</div>
     </div>
 
     <div id="scr-catalog" class="screen">
-        <div class="back-link" onclick="navigate('home')">← Вернуться</div>
-        <div class="header" style="margin: 15px 0 30px;">
-            <h1 id="cat-title-text" style="font-size: 12px; opacity:0.6;">КАТАЛОГ</h1>
+        <div onclick="navigate('home')" style="opacity:0.4; font-size:11px; margin-bottom:15px;">← ГЛАВНАЯ</div>
+        
+        <div class="search-container">
+            <input type="text" class="search-input" id="search-bar" placeholder="Поиск железа..." oninput="filterProducts()">
         </div>
-        <div id="catalog-render-area"></div>
+        
+        <div class="filter-bar">
+            <div class="filter-tag active" id="sort-default" onclick="setSort('default')">Все</div>
+            <div class="filter-tag" id="sort-price" onclick="setSort('price')">Сначала дешевле</div>
+        </div>
+
+        <div id="catalog-list"></div>
     </div>
 
-    <div id="scr-details" class="screen">
-        <div class="back-link" onclick="navigate('catalog')">← К списку</div>
-        <div id="details-render-area"></div>
+    <div id="scr-item" class="screen">
+        <div onclick="navigate('catalog')" style="opacity:0.4; font-size:11px; margin-bottom:15px;">← НАЗАД</div>
+        <div id="item-details"></div>
     </div>
 
     <div id="scr-cart" class="screen">
-        <div class="header">
-            <div class="brand-name">STORAGE // КОРЗИНА</div>
-        </div>
-        <div id="cart-render-area"></div>
-        <div id="cart-empty-msg" style="text-align:center; padding:60px; opacity:0.2;">[ КОРЗИНА ПУСТА ]</div>
+        <div class="header"><div style="font-size: 10px; letter-spacing: 5px; opacity: 0.4;">CART // STORAGE</div></div>
+        <div id="cart-items"></div>
+        <div id="cart-empty" style="text-align:center; padding:50px; opacity:0.2;">[ ПУСТО ]</div>
     </div>
 
     <div id="scr-profile" class="screen">
-        <div class="header">
-            <div class="brand-name">USER // ПРОФИЛЬ</div>
-        </div>
-        <div class="btn-category" style="padding: 20px; font-size: 14px;">История заказов</div>
-        <div class="btn-category" style="padding: 20px; font-size: 14px; opacity: 0.5;">Служба поддержки</div>
+        <div class="header"><div style="font-size: 10px; letter-spacing: 5px; opacity: 0.4;">USER // TERMINAL</div></div>
+        <div class="btn-action btn-secondary" style="text-align:left; padding: 20px;">Мои заказы <span style="float:right; opacity:0.3;">0</span></div>
+        <div class="btn-action btn-secondary" style="text-align:left; padding: 20px;">Адрес доставки</div>
     </div>
 
 </div>
 
 <div class="navbar">
-    <div class="nav-btn active" onclick="tabHandler(this, 'home')">
+    <div id="nav-home" class="nav-item active" onclick="handleTab(this, 'home')">
         <div class="nav-pill"></div>
-        <div class="nav-icon" style="--icon: url('https://cdn-icons-png.flaticon.com/512/1170/1170678.png')"></div>
-        <span class="nav-text">Шоп</span>
+        <div class="nav-icon" style="--i: url('https://cdn-icons-png.flaticon.com/512/1170/1170678.png')"></div>
+        <span class="nav-label">Шоп</span>
     </div>
-    <div class="nav-btn" onclick="tabHandler(this, 'cart')">
+    <div id="nav-cart" class="nav-item" onclick="handleTab(this, 'cart')">
         <div class="nav-pill"></div>
-        <div class="nav-icon" style="--icon: url('https://cdn-icons-png.flaticon.com/512/263/263142.png')"></div>
-        <span class="nav-text">Корзина</span>
+        <div class="nav-icon" style="--i: url('https://cdn-icons-png.flaticon.com/512/263/263142.png')"></div>
+        <span class="nav-label">Корзина</span>
     </div>
-    <div class="nav-btn" onclick="tabHandler(this, 'profile')">
+    <div id="nav-profile" class="nav-item" onclick="handleTab(this, 'profile')">
         <div class="nav-pill"></div>
-        <div class="nav-icon" style="--icon: url('https://cdn-icons-png.flaticon.com/512/1077/1077063.png')"></div>
-        <span class="nav-text">Профиль</span>
+        <div class="nav-icon" style="--i: url('https://cdn-icons-png.flaticon.com/512/1077/1077063.png')"></div>
+        <span class="nav-label">Профиль</span>
     </div>
 </div>
 
@@ -359,173 +192,146 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    // DATABASE
-    const products = {
+    const db = {
         'gpu': [
-            { 
-                id: 101, name: 'RX 580 4GB', price: 5800, 
-                imgs: ['photo_2026-04-01_13-15-04.jpg', 'https://via.placeholder.com/600x400/161618/ffffff?text=BACK+SIDE', 'https://via.placeholder.com/600x400/161618/ffffff?text=CONNECTORS'],
-                short: 'Надежное решение для FullHD.',
-                full: 'Видеокарта прошла полное обслуживание. Новые термопрокладки, заменена паста. Идеальна для киберспорта.',
-                specs: [{l:'Чип', v:'Polaris 20'}, {l:'Память', v:'4GB GDDR5'}, {l:'Шина', v:'256 bit'}]
-            },
-            { 
-                id: 102, name: 'RTX 3060 12GB', price: 23500, 
-                imgs: ['https://via.placeholder.com/600x400/161618/ffffff?text=RTX+3060+PRO'],
-                short: 'Лучи и DLSS в каждом кадре.',
-                full: 'Мощная видеокарта с огромным запасом видеопамяти. Состояние новой.',
-                specs: [{l:'Чип', v:'GA106'}, {l:'Память', v:'12GB GDDR6'}, {l:'LHR', v:'Нет'}]
-            }
+            { id: 1, name: 'RX 580 4GB', price: 5800, imgs: ['photo_2026-04-01_13-15-04.jpg', 'https://via.placeholder.com/600x400/161618/ffffff?text=Cooling'], desc: 'Обслужена, новые прокладки.' },
+            { id: 2, name: 'RTX 3060 12GB', price: 23500, imgs: ['https://via.placeholder.com/600x400/161618/ffffff?text=RTX+3060'], desc: 'Идеальное состояние, чек.' },
+            { id: 4, name: 'GTX 1660 Super', price: 12000, imgs: ['https://via.placeholder.com/600x400/161618/ffffff?text=GTX+1660'], desc: 'Топ за свои деньги для 1080p.' }
         ],
         'cpu': [
-            { 
-                id: 201, name: 'Ryzen 5 5600X', price: 13200, 
-                imgs: ['photo_2026-04-01_13-21-49.jpg', 'https://via.placeholder.com/600x400/161618/ffffff?text=AMD+RYZEN+BOX'],
-                short: 'Лучший выбор для сокета AM4.',
-                full: 'Процессор без дефектов, ножки ровные. Полный комплект с коробкой.',
-                specs: [{l:'Ядра', v:'6'}, {l:'Потоки', v:'12'}, {l:'Частота', v:'4.6 GHz'}]
-            }
+            { id: 3, name: 'Ryzen 5 5600X', price: 13200, imgs: ['photo_2026-04-01_13-21-49.jpg', 'https://via.placeholder.com/600x400/161618/ffffff?text=Socket+AM4'], desc: '6 ядер, 12 потоков, BOX.' }
         ]
     };
 
-    let shoppingCart = [];
+    let cart = [];
+    let currentCat = '';
+    let sortMode = 'default';
 
-    // NAVIGATION SYSTEM WITH SCROLL RESET
-    function navigate(screenId) {
-        // Жесткий сброс позиции скролла перед переключением
-        const container = document.getElementById('main-container');
-        container.scrollTo(0, 0);
-
-        document.querySelectorAll('.screen').forEach(s => {
-            s.classList.remove('active');
-            s.style.display = 'none';
-        });
-
-        const target = document.getElementById('scr-' + screenId);
+    function navigate(id) {
+        document.getElementById('app-shell').scrollTo(0, 0);
+        document.querySelectorAll('.screen').forEach(s => { s.classList.remove('active'); s.style.display = 'none'; });
+        const target = document.getElementById('scr-' + id);
         target.style.display = 'block';
-        
-        // Маленький таймаут для запуска CSS анимации
-        setTimeout(() => target.classList.add('active'), 15);
-        
-        if(screenId === 'cart') renderCartUI();
+        setTimeout(() => target.classList.add('active'), 10);
+        if(id === 'cart') renderCart();
         tg.HapticFeedback.impactOccurred('light');
     }
 
-    function tabHandler(el, id) {
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    function handleTab(el, id) {
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         el.classList.add('active');
         navigate(id);
     }
 
-    // CATALOG RENDERER
-    function openCatalog(category) {
-        const area = document.getElementById('catalog-render-area');
-        document.getElementById('cat-title-text').innerText = category.toUpperCase() + ' // КАТАЛОГ';
-        area.innerHTML = '';
+    function openCatalog(cat) {
+        currentCat = cat;
+        filterProducts();
+        navigate('catalog');
+    }
 
-        products[category].forEach(p => {
-            area.innerHTML += `
-                <div class="product-card" onclick="openProduct('${category}', ${p.id})">
-                    <img src="${p.imgs[0]}" class="card-preview">
-                    <div class="card-info">
-                        <div class="card-title">${p.name}</div>
-                        <div class="card-desc">${p.short}</div>
+    function filterProducts() {
+        const query = document.getElementById('search-bar').value.toLowerCase();
+        const list = document.getElementById('catalog-list');
+        list.innerHTML = '';
+
+        let items = [...db[currentCat]];
+
+        // Поиск
+        if(query) items = items.filter(i => i.name.toLowerCase().includes(query));
+
+        // Сортировка
+        if(sortMode === 'price') items.sort((a, b) => a.price - b.price);
+
+        items.forEach(p => {
+            list.innerHTML += `
+                <div class="card" onclick="openItem('${currentCat}', ${p.id})">
+                    <img src="${p.imgs[0]}" class="card-img" id="img-${p.id}">
+                    <div class="card-content">
+                        <div style="font-family:var(--font-main); font-size:18px;">${p.name}</div>
+                        <div style="font-size:12px; opacity:0.4; margin-top:5px;">${p.desc}</div>
                         <div class="card-price">${p.price.toLocaleString()} ₽</div>
                     </div>
                 </div>`;
         });
-        navigate('catalog');
     }
 
-    // PRODUCT DETAILS RENDERER
-    function openProduct(cat, id) {
-        const p = products[cat].find(x => x.id === id);
-        const area = document.getElementById('details-render-area');
-        
-        let slides = p.imgs.map(src => `<div class="slide"><img src="${src}"></div>`).join('');
+    function setSort(mode) {
+        sortMode = mode;
+        document.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
+        document.getElementById('sort-' + mode).classList.add('active');
+        filterProducts();
+    }
+
+    function openItem(cat, id) {
+        const p = db[cat].find(x => x.id === id);
+        const area = document.getElementById('item-details');
+        let slides = p.imgs.map(s => `<div class="slide"><img src="${s}"></div>`).join('');
         let dots = p.imgs.map((_, i) => `<div class="dot ${i===0?'active':''}"></div>`).join('');
-        let specs = p.specs.map(s => `<div class="spec-line"><span class="spec-label">${s.l}</span><b>${s.v}</b></div>`).join('');
 
         area.innerHTML = `
-            <div class="slider-box">
-                <div class="slider-track" onscroll="updateSliderDots(this)">${slides}</div>
-                <div class="slider-dots">${dots}</div>
+            <div class="slider-wrap">
+                <div class="slider-inner" onscroll="updateDots(this)">${slides}</div>
+                <div class="dots">${dots}</div>
             </div>
-            <div style="padding: 0 5px;">
-                <h2 style="font-family:var(--font-premium); font-size:28px; margin-bottom:15px;">${p.name}</h2>
-                <p style="opacity:0.5; font-size:14px; line-height:1.7; margin-bottom:25px;">${p.full}</p>
-                <div style="font-size:10px; letter-spacing:2px; opacity:0.3; margin-bottom:12px;">СПЕЦИФИКАЦИИ</div>
-                ${specs}
-                <button class="buy-now-btn" onclick="addToCart('${p.name}', ${p.price})">В КОРЗИНУ — ${p.price.toLocaleString()} ₽</button>
-            </div>`;
-        navigate('details');
+            <h2 style="font-family:var(--font-main); font-size:26px;">${p.name}</h2>
+            <p style="opacity:0.5; margin:15px 0; line-height:1.6;">${p.desc} Экземпляр прошел полную проверку в стресс-тестах FurMark и OCCT. Гарантия от нашего сервиса.</p>
+            <button class="btn-action" id="buy-btn-${p.id}" onclick="animateFly(${p.id}, '${p.imgs[0]}', '${p.name}', ${p.price})">В КОРЗИНУ — ${p.price.toLocaleString()} ₽</button>
+        `;
+        navigate('item');
     }
 
-    // SLIDER LOGIC
-    function updateSliderDots(el) {
-        const index = Math.round(el.scrollLeft / el.offsetWidth);
-        const dots = el.parentElement.querySelectorAll('.dot');
-        dots.forEach((d, i) => d.classList.toggle('active', i === index));
+    function updateDots(el) {
+        const idx = Math.round(el.scrollLeft / el.offsetWidth);
+        el.parentElement.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === idx));
     }
 
-    // CART LOGIC
-    function addToCart(name, price) {
-        shoppingCart.push({name, price, uid: Date.now()});
-        tg.HapticFeedback.notificationOccurred('success');
-        tg.MainButton.setText(`ОФОРМИТЬ (${shoppingCart.length})`).show();
+    // АНИМАЦИЯ ПОЛЕТА
+    function animateFly(id, imgSrc, name, price) {
+        const btn = document.getElementById(`buy-btn-${id}`);
+        const cartIcon = document.getElementById('nav-cart');
+        const rect = btn.getBoundingClientRect();
+        const cartRect = cartIcon.getBoundingClientRect();
+
+        const flyer = document.createElement('div');
+        flyer.className = 'fly-item';
+        flyer.style.backgroundImage = `url(${imgSrc})`;
+        flyer.style.left = rect.left + (rect.width/2) - 25 + 'px';
+        flyer.style.top = rect.top + 'px';
+        document.body.appendChild(flyer);
+
+        setTimeout(() => {
+            flyer.style.left = cartRect.left + (cartRect.width/2) - 25 + 'px';
+            flyer.style.top = cartRect.top + 'px';
+            flyer.style.transform = 'scale(0.2) rotate(360deg)';
+            flyer.style.opacity = '0';
+        }, 50);
+
+        setTimeout(() => {
+            flyer.remove();
+            cart.push({name, price, uid: Date.now()});
+            tg.HapticFeedback.notificationOccurred('success');
+        }, 800);
     }
 
-    function renderCartUI() {
-        const area = document.getElementById('cart-render-area');
-        const emptyMsg = document.getElementById('cart-empty-msg');
+    function renderCart() {
+        const area = document.getElementById('cart-items');
+        const empty = document.getElementById('cart-empty');
         area.innerHTML = '';
+        if(cart.length === 0) { empty.style.display = 'block'; return; }
+        empty.style.display = 'none';
         
-        if(shoppingCart.length === 0) {
-            emptyMsg.style.display = 'block';
-            tg.MainButton.hide();
-            return;
-        }
-
-        emptyMsg.style.display = 'none';
         let total = 0;
-
-        shoppingCart.forEach(item => {
-            total += item.price;
-            area.innerHTML += `
-                <div class="cart-item">
-                    <div>
-                        <div style="font-family:var(--font-premium); font-size:15px;">${item.name}</div>
-                        <div style="font-size:13px; opacity:0.4;">${item.price.toLocaleString()} ₽</div>
-                    </div>
-                    <div onclick="removeFromCart(${item.uid})" style="color:#ff3b30; font-size:11px; font-weight:700; padding:10px;">УДАЛИТЬ</div>
-                </div>`;
+        cart.forEach(i => {
+            total += i.price;
+            area.innerHTML += `<div class="cart-row"><div>${i.name}<br><small>${i.price} ₽</small></div><div onclick="removeFromCart(${i.uid})" style="color:red; font-size:10px;">УДАЛИТЬ</div></div>`;
         });
-
-        area.innerHTML += `
-            <div style="margin-top:30px; padding:20px; background:rgba(255,255,255,0.02); border-radius:24px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                    <span style="opacity:0.4;">ИТОГО К ОПЛАТЕ:</span>
-                    <span style="font-family:var(--font-premium); font-size:22px;">${total.toLocaleString()} ₽</span>
-                </div>
-                <button class="buy-now-btn pay-confirm-btn" onclick="processOrder()">ОПЛАТИТЬ ЗАКАЗ</button>
-            </div>`;
+        area.innerHTML += `<div style="padding:20px; text-align:right;">ИТОГО: <b>${total.toLocaleString()} ₽</b></div><button class="btn-action" onclick="alert('Оплата временно недоступна')">ОПЛАТИТЬ</button>`;
     }
 
     function removeFromCart(uid) {
-        shoppingCart = shoppingCart.filter(i => i.uid !== uid);
-        renderCartUI();
-        if(shoppingCart.length > 0) {
-            tg.MainButton.setText(`ОФОРМИТЬ (${shoppingCart.length})`);
-        } else {
-            tg.MainButton.hide();
-        }
-    }
-
-    function processOrder() {
-        tg.HapticFeedback.notificationOccurred('warning');
-        alert("Заказ сформирован! Модуль оплаты будет доступен в ближайшее время.");
+        cart = cart.filter(i => i.uid !== uid);
+        renderCart();
     }
 </script>
-
 </body>
 </html>
