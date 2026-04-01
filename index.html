@@ -4,111 +4,138 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
     <style>
         :root {
-            --ios-bg: rgba(20, 20, 22, 0.85);
-            --ios-active: #007AFF; /* Стандартный синий iOS */
-            --ios-inactive: #8e8e93;
+            --bg-color: #000000;
+            --grid-color: rgba(255, 255, 255, 0.05);
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.15);
+            --tab-bg: rgba(10, 10, 10, 0.8);
+            --accent: #ffffff;
+            --ios-blue: #007AFF;
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+        * { 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; 
+            margin: 0; padding: 0; 
+        }
 
-        body { 
-            background-color: #0d0d0f; 
-            background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), 
-                              linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-            background-size: 30px 30px;
+        body {
+            background-color: var(--bg-color);
+            /* Сетка как на скриншоте */
+            background-image: 
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 35px 35px;
             color: #fff;
-            font-family: -apple-system, system-ui, sans-serif;
-            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+            height: 100vh;
+            overflow: hidden;
             display: flex;
-            justify-content: center;
-            overflow: hidden; /* Чтобы скроллился только контент */
+            flex-direction: column;
         }
 
-        .container {
-            width: 100%;
-            max-width: 380px;
-            padding: 20px;
-            height: calc(100vh - 84px); /* Оставляем место под таббар */
+        /* Контентная область с плавными переходами */
+        .app-container {
+            flex: 1;
+            position: relative;
             overflow-y: auto;
-            padding-bottom: 40px;
+            padding-bottom: 100px; /* Отступ под Tab Bar */
         }
 
-        /* ТВОЙ СТАРЫЙ ДИЗАЙН ХЕДЕРА */
+        .screen {
+            position: absolute;
+            top: 0; left: 0; width: 100%;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(0.98);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .screen.active {
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1);
+        }
+
+        /* ЛОГОТИП ИЗ СКРИНШОТА */
         .header {
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin: 50px 0 40px 0;
+            margin-top: 60px;
+            margin-bottom: 40px;
         }
 
-        .logo-box { 
+        .logo-wrapper {
             background: #fff;
-            border-radius: 25px;
             width: 100px;
             height: 100px;
+            border-radius: 28px; /* iOS Squircle */
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            margin-bottom: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 0 20px rgba(255,255,255,0.1);
         }
 
-        h1 {
+        .logo-wrapper img {
+            width: 65px;
+            height: auto;
+        }
+
+        .terminal-text {
             font-size: 11px;
             letter-spacing: 5px;
-            opacity: 0.4;
-            text-align: center;
+            color: rgba(255, 255, 255, 0.4);
+            text-transform: uppercase;
+            font-weight: 600;
         }
 
-        /* ТВОЕ СТАРОЕ МЕНЮ */
-        .page { display: none; }
-        .page.active { display: block; animation: fadeIn 0.3s ease; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.98); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        .menu {
+        /* КНОПКИ-ПЛИТКИ ИЗ СКРИНШОТА */
+        .main-menu {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 12px;
+            width: 100%;
+            max-width: 340px;
+            margin: 0 auto;
         }
 
-        .btn {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 22px;
-            padding: 25px;
-            font-weight: 800;
-            font-size: 17px;
+        .menu-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 35px 20px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             text-align: center;
             cursor: pointer;
-            transition: 0.2s;
+            transition: background 0.2s, transform 0.1s;
         }
 
-        .btn:active {
-            background: rgba(255,255,255,0.15);
-            transform: scale(0.96);
+        .menu-btn:active {
+            background: rgba(255, 255, 255, 0.08);
+            transform: scale(0.97);
         }
 
-        /* ТАБ БАР КАК В TELEGRAM IOS */
+        /* ТАБ БАР В СТИЛЕ TELEGRAM/IOS */
         .tab-bar {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 84px; /* Стандартная высота с учетом Home Indicator */
-            background: var(--ios-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-top: 0.5px solid rgba(255, 255, 255, 0.1);
+            bottom: 0; left: 0; right: 0;
+            height: 85px;
+            background: var(--tab-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-top: 0.5px solid rgba(255,255,255,0.1);
             display: flex;
             justify-content: space-around;
-            padding-top: 10px;
+            padding-top: 8px;
             padding-bottom: env(safe-area-inset-bottom);
             z-index: 1000;
         }
@@ -117,14 +144,13 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            color: #8e8e93;
             flex: 1;
-            color: var(--ios-inactive);
-            text-decoration: none;
-            transition: color 0.2s;
+            transition: color 0.3s;
         }
 
         .tab-item.active {
-            color: var(--ios-active);
+            color: var(--ios-blue);
         }
 
         .tab-icon {
@@ -135,8 +161,7 @@
             mask-size: contain;
             -webkit-mask-size: contain;
             mask-repeat: no-repeat;
-            -webkit-mask-repeat: no-repeat;
-            mask-position: center;
+            -webkit-mask-position: center;
         }
 
         .tab-label {
@@ -144,52 +169,78 @@
             font-weight: 500;
         }
 
-        /* СТИЛЬ КАРТОЧКИ ТОВАРА ИЗ СТАРОГО КОДА */
-        .card {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 25px;
-            padding: 20px;
-            text-align: center;
-        }
-        .card img { width: 100%; border-radius: 15px; margin-bottom: 15px; }
-        .price { font-size: 24px; font-weight: 900; margin: 10px 0; color: #fff; }
-        .buy { background: #fff; color: #000; border: none; padding: 18px; border-radius: 18px; font-weight: 900; width: 100%; }
-
     </style>
 </head>
-
 <body>
 
-<div class="container">
-    <div id="home-page" class="page active">
+<div class="app-container">
+    <div id="catalog" class="screen active">
         <div class="header">
-            <div class="logo-box">
-                <img src="https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/logo.png" width="60">
+            <div class="logo-wrapper">
+                <img src="https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/logo.png" alt="nexTech">
             </div>
-            <h1>NEXTECH // TERMINAL</h1>
+            <div class="terminal-text">NEXTECH // TERMINAL</div>
         </div>
 
-        <div class="menu">
-            <div class="card">
-                <img src="https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/gpu_photo.jpg">
-                <p>Sapphire RX 580</p>
-                <div class="price">5,800 ₽</div>
-                <button class="buy" onclick="addToCart('RX 580', 5800)">КУПИТЬ</button>
-            </div>
+        <div class="main-menu">
+            <div class="menu-btn">ВИДЕОКАРТЫ</div>
+            <div class="menu-btn">ПРОЦЕССОРЫ</div>
         </div>
     </div>
 
-    <div id="search-page" class="page">
-        <div class="header"><h1>SEARCH // MODULE</h1></div>
-        <div class="btn">ПОИСК ПО КАТЕГОРИЯМ</div>
+    <div id="cart" class="screen">
+        <div class="header">
+            <div class="terminal-text">ВАША КОРЗИНА</div>
+        </div>
+        <p style="text-align: center; opacity: 0.5; margin-top: 50px;">Здесь будет список покупок</p>
     </div>
 
-    <div id="cart-page" class="page">
-        <div class="header"><h1>STORAGE // CART</h1></div>
-        <div id="cart-content" style="text-align: center; opacity: 0.5;">Тут пока пусто</div>
+    <div id="profile" class="screen">
+        <div class="header">
+            <div class="terminal-text">ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ</div>
+        </div>
+        <div class="main-menu">
+            <div class="menu-btn" style="padding: 20px;">ИСТОРИЯ ЗАКАЗОВ</div>
+            <div class="menu-btn" style="padding: 20px;">НАСТРОЙКИ</div>
+        </div>
     </div>
 </div>
 
 <div class="tab-bar">
-    <div class="tab-item active" onclick="switchTab(this, 'home-
+    <div class="tab-item active" onclick="nav('catalog', this)">
+        <div class="tab-icon" style="-webkit-mask-image: url('https://cdn-icons-png.flaticon.com/512/1170/1170678.png')"></div>
+        <span class="tab-label">Каталог</span>
+    </div>
+    <div class="tab-item" onclick="nav('cart', this)">
+        <div class="tab-icon" style="-webkit-mask-image: url('https://cdn-icons-png.flaticon.com/512/263/263142.png')"></div>
+        <span class="tab-label">Корзина</span>
+    </div>
+    <div class="tab-item" onclick="nav('profile', this)">
+        <div class="tab-icon" style="-webkit-mask-image: url('https://cdn-icons-png.flaticon.com/512/1077/1077063.png')"></div>
+        <span class="tab-label">Профиль</span>
+    </div>
+</div>
+
+<script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+    tg.backgroundColor = '#000000';
+    tg.headerColor = '#000000';
+
+    function nav(screenId, el) {
+        // Убираем активный класс у кнопок
+        document.querySelectorAll('.tab-item').forEach(i => i.classList.remove('active'));
+        el.classList.add('active');
+
+        // Переключаем экраны с анимацией
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        const activeScreen = document.getElementById(screenId);
+        activeScreen.classList.add('active');
+
+        // Легкая тактильная отдача iOS
+        tg.HapticFeedback.impactOccurred('light');
+    }
+</script>
+
+</body>
+</html>
