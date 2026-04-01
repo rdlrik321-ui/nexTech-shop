@@ -15,15 +15,11 @@
             --hotbar-bg: rgba(0, 0, 0, 0.9);
             --hotbar-pill-bg: rgba(255, 255, 255, 0.1);
             --font-main: 'Roboto Mono', monospace;
-            /* ШРИФТ ДЛЯ КНОПОК */
             --font-premium: 'Inter', sans-serif;
+            --accent: #fff;
         }
 
-        * { 
-            box-sizing: border-box; 
-            -webkit-tap-highlight-color: transparent; 
-            margin: 0; padding: 0; 
-        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
 
         body {
             background-color: var(--bg-color);
@@ -68,6 +64,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* HEADER */
         .header {
             display: flex;
             flex-direction: column;
@@ -86,7 +83,6 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             margin-bottom: 15px;
         }
-
         .logo-box img { width: 60px; height: auto; }
 
         h1 {
@@ -97,18 +93,14 @@
             text-transform: uppercase;
         }
 
-        .menu {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
+        /* BUTTONS & CARDS */
+        .menu { display: flex; flex-direction: column; gap: 15px; }
 
         .btn {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
             border-radius: 22px;
             padding: 28px;
-            /* ПРИМЕНЕНИЕ ПРЕМИАЛЬНОГО ШРИФТА */
             font-family: var(--font-premium);
             font-weight: 700;
             font-size: 17px;
@@ -119,13 +111,51 @@
             letter-spacing: 0.5px;
             display: block;
             width: 100%;
+            color: #fff;
         }
 
-        .btn:active {
-            background: rgba(255,255,255,0.12);
-            transform: scale(0.97);
+        .btn:active { background: rgba(255,255,255,0.12); transform: scale(0.97); }
+
+        .product-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 25px;
+            padding: 20px;
+            margin-bottom: 15px;
+            text-align: center;
         }
 
+        .product-card h3 { font-family: var(--font-premium); margin-bottom: 10px; font-size: 18px; }
+        
+        .price-tag {
+            font-family: var(--font-premium);
+            font-size: 22px;
+            margin: 15px 0;
+            color: #fff;
+        }
+
+        .buy-small {
+            background: #fff;
+            color: #000;
+            border: none;
+            padding: 15px;
+            border-radius: 15px;
+            font-family: var(--font-premium);
+            font-weight: 700;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .back-btn {
+            font-size: 12px;
+            opacity: 0.5;
+            padding: 10px;
+            margin-bottom: 20px;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        /* TAB BAR */
         .tab-bar {
             position: fixed;
             bottom: 0; left: 0; right: 0;
@@ -185,7 +215,6 @@
             font-weight: 500;
             opacity: 0.6;
         }
-
     </style>
 </head>
 <body>
@@ -201,19 +230,27 @@
                 <h1>NEXTECH // TERMINAL</h1>
             </div>
             <div class="menu">
-                <div class="btn" onclick="openCategory('gpu')">Видеокарты</div>
-                <div class="btn" onclick="openCategory('cpu')">Процессоры</div>
+                <div class="btn" onclick="showCatalog('gpu')">Видеокарты</div>
+                <div class="btn" onclick="showCatalog('cpu')">Процессоры</div>
             </div>
+        </div>
+
+        <div id="catalog" class="screen">
+            <div class="back-btn" onclick="showScreen('shop')">← НАЗАД</div>
+            <div class="header" style="margin-top: 0;"><h1 id="catalog-title">КАТАЛОГ</h1></div>
+            <div id="catalog-list" class="menu"></div>
         </div>
 
         <div id="cart" class="screen">
             <div class="header"><h1>STORAGE // CART</h1></div>
-            <p style="text-align: center; opacity: 0.3; margin-top: 50px;">Корзина пуста</p>
+            <div id="cart-items" style="text-align: center; opacity: 0.5;">
+                [ КОРЗИНА ПУСТА ]
+            </div>
         </div>
 
         <div id="profile" class="screen">
             <div class="header"><h1>USER // PROFILE</h1></div>
-            <div class="btn" style="padding: 15px;">Мои заказы</div>
+            <div class="btn" style="padding: 15px; font-size: 14px;">Мои заказы</div>
         </div>
 
     </div>
@@ -243,18 +280,51 @@
     tg.backgroundColor = '#0d0d0f';
     tg.headerColor = '#0d0d0f';
 
-    function switchTab(el, screenId) {
-        document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
-        el.classList.add('active');
+    const products = {
+        'gpu': [
+            { name: 'RX 580 4GB', price: 5800 },
+            { name: 'RTX 3060', price: 23000 }
+        ],
+        'cpu': [
+            { name: 'Ryzen 5 5600X', price: 13500 }
+        ]
+    };
 
+    function showScreen(screenId) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById(screenId).classList.add('active');
-
         tg.HapticFeedback.impactOccurred('light');
     }
 
-    function openCategory(type) {
-        tg.HapticFeedback.impactOccurred('medium');
+    function switchTab(el, screenId) {
+        document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+        el.classList.add('active');
+        showScreen(screenId);
+    }
+
+    function showCatalog(category) {
+        const list = document.getElementById('catalog-list');
+        const title = document.getElementById('catalog-title');
+        list.innerHTML = '';
+        
+        title.innerText = category === 'gpu' ? 'GPU // КАТАЛОГ' : 'CPU // КАТАЛОГ';
+        
+        products[category].forEach(p => {
+            list.innerHTML += `
+                <div class="product-card">
+                    <h3>${p.name}</h3>
+                    <div class="price-tag">${p.price.toLocaleString()} ₽</div>
+                    <button class="buy-small" onclick="addToCart('${p.name}', ${p.price})">В КОРЗИНУ</button>
+                </div>
+            `;
+        });
+        
+        showScreen('catalog');
+    }
+
+    function addToCart(name, price) {
+        tg.HapticFeedback.notificationOccurred('success');
+        // Логика добавления будет тут
     }
 </script>
 
