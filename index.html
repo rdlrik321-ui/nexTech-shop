@@ -4,100 +4,111 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
     <style>
-        :root { 
-            --bg: #0a0a0a; 
-            --accent: #0088cc; /* Цвет Telegram Blue */
-            --grid-color: rgba(0, 255, 255, 0.05);
-            --tab-bg: rgba(22, 22, 22, 0.75);
-            --brd: rgba(255, 255, 255, 0.1);
+        :root {
+            --ios-bg: rgba(20, 20, 22, 0.85);
+            --ios-active: #007AFF; /* Стандартный синий iOS */
+            --ios-inactive: #8e8e93;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
-        
+
         body { 
-            background-color: var(--bg); 
-            color: #fff; 
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", sans-serif; 
-            overflow: hidden;
-            height: 100vh;
-            /* Сетка на фоне как в старой версии */
-            background-image: 
-                linear-gradient(var(--grid-color) 1px, transparent 1px),
-                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-color: #0d0d0f; 
+            background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), 
+                              linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
             background-size: 30px 30px;
+            color: #fff;
+            font-family: -apple-system, system-ui, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            overflow: hidden; /* Чтобы скроллился только контент */
         }
 
-        /* КОНТЕЙНЕР ДЛЯ ЭКРАНОВ */
-        .app-content {
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            bottom: 84px; 
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-            padding-bottom: 20px;
-        }
-
-        .screen { 
-            display: none; 
+        .container {
+            width: 100%;
+            max-width: 380px;
             padding: 20px;
-            animation: fadeIn 0.3s ease;
+            height: calc(100vh - 84px); /* Оставляем место под таббар */
+            overflow-y: auto;
+            padding-bottom: 40px;
         }
+
+        /* ТВОЙ СТАРЫЙ ДИЗАЙН ХЕДЕРА */
+        .header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 50px 0 40px 0;
+        }
+
+        .logo-box { 
+            background: #fff;
+            border-radius: 25px;
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            font-size: 11px;
+            letter-spacing: 5px;
+            opacity: 0.4;
+            text-align: center;
+        }
+
+        /* ТВОЕ СТАРОЕ МЕНЮ */
+        .page { display: none; }
+        .page.active { display: block; animation: fadeIn 0.3s ease; }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
         }
 
-        .active { display: block; }
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
 
-        /* ЛОГОТИП (Верхняя часть) */
-        .header-logo {
+        .btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 22px;
+            padding: 25px;
+            font-weight: 800;
+            font-size: 17px;
             text-align: center;
-            padding: 40px 0 20px;
-        }
-        
-        .logo-text {
-            font-size: 28px;
-            font-weight: 900;
-            letter-spacing: 5px;
-            text-transform: uppercase;
-            color: #fff;
-            text-shadow: 0 0 15px rgba(0, 136, 204, 0.8);
+            cursor: pointer;
+            transition: 0.2s;
         }
 
-        /* КАРТОЧКИ ТОВАРОВ */
-        .card { 
-            background: rgba(255, 255, 255, 0.03); 
-            border: 1px solid var(--brd);
-            border-radius: 16px; 
-            padding: 16px; 
-            margin-bottom: 16px; 
-            backdrop-filter: blur(10px);
+        .btn:active {
+            background: rgba(255,255,255,0.15);
+            transform: scale(0.96);
         }
-        .card img { width: 100%; border-radius: 10px; margin-bottom: 12px; }
-        .card h3 { font-size: 18px; margin-bottom: 6px; }
-        .price { font-size: 16px; color: var(--accent); font-weight: bold; margin-bottom: 12px; }
-        
-        .buy-btn { 
-            background: var(--accent); color: #fff; border: none; 
-            padding: 12px; border-radius: 10px; font-weight: 600; width: 100%; 
-            transition: transform 0.1s;
-        }
-        .buy-btn:active { transform: scale(0.97); }
 
-        /* TAB BAR (iOS Telegram Style) */
+        /* ТАБ БАР КАК В TELEGRAM IOS */
         .tab-bar {
             position: fixed;
-            bottom: 0; left: 0; right: 0;
-            height: 84px;
-            background: var(--tab-bg);
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
-            border-top: 0.3px solid var(--brd);
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 84px; /* Стандартная высота с учетом Home Indicator */
+            background: var(--ios-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 0.5px solid rgba(255, 255, 255, 0.1);
             display: flex;
             justify-content: space-around;
-            padding-top: 6px;
+            padding-top: 10px;
             padding-bottom: env(safe-area-inset-bottom);
             z-index: 1000;
         }
@@ -106,18 +117,20 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            color: #8e8e93; /* Цвет неактивных иконок iOS */
             flex: 1;
+            color: var(--ios-inactive);
+            text-decoration: none;
             transition: color 0.2s;
         }
 
-        .tab-item.active-tab {
-            color: var(--accent);
+        .tab-item.active {
+            color: var(--ios-active);
         }
 
         .tab-icon {
-            width: 26px; height: 26px;
-            margin-bottom: 3px;
+            width: 26px;
+            height: 26px;
+            margin-bottom: 4px;
             background: currentColor;
             mask-size: contain;
             -webkit-mask-size: contain;
@@ -131,45 +144,52 @@
             font-weight: 500;
         }
 
-        /* Стили для пустых разделов */
-        .placeholder {
+        /* СТИЛЬ КАРТОЧКИ ТОВАРА ИЗ СТАРОГО КОДА */
+        .card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 25px;
+            padding: 20px;
             text-align: center;
-            color: #8e8e93;
-            margin-top: 50px;
         }
+        .card img { width: 100%; border-radius: 15px; margin-bottom: 15px; }
+        .price { font-size: 24px; font-weight: 900; margin: 10px 0; color: #fff; }
+        .buy { background: #fff; color: #000; border: none; padding: 18px; border-radius: 18px; font-weight: 900; width: 100%; }
 
     </style>
 </head>
+
 <body>
 
-<div class="app-content">
-    <div id="shop" class="screen active">
-        <div class="header-logo">
-            <div class="logo-text">NEXTECH</div>
+<div class="container">
+    <div id="home-page" class="page active">
+        <div class="header">
+            <div class="logo-box">
+                <img src="https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/logo.png" width="60">
+            </div>
+            <h1>NEXTECH // TERMINAL</h1>
         </div>
-        
-        <div class="card">
-            <img src="https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/gpu_photo.jpg" alt="GPU">
-            <h3>Sapphire RX 580</h3>
-            <div class="price">5,800 ₽</div>
-            <button class="buy-btn" onclick="addToCart('RX 580', 5800)">В корзину</button>
+
+        <div class="menu">
+            <div class="card">
+                <img src="https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/gpu_photo.jpg">
+                <p>Sapphire RX 580</p>
+                <div class="price">5,800 ₽</div>
+                <button class="buy" onclick="addToCart('RX 580', 5800)">КУПИТЬ</button>
+            </div>
         </div>
     </div>
 
-    <div id="search" class="screen">
-        <div class="header-logo"><div class="logo-text">ПОИСК</div></div>
-        <div class="placeholder">Начните вводить название...</div>
+    <div id="search-page" class="page">
+        <div class="header"><h1>SEARCH // MODULE</h1></div>
+        <div class="btn">ПОИСК ПО КАТЕГОРИЯМ</div>
     </div>
 
-    <div id="cart" class="screen">
-        <div class="header-logo"><div class="logo-text">КОРЗИНА</div></div>
-        <div id="cart-items"></div>
-        <div id="total-price" style="margin-top: 20px; font-weight: 700; font-size: 20px; text-align: center; color: var(--accent);"></div>
+    <div id="cart-page" class="page">
+        <div class="header"><h1>STORAGE // CART</h1></div>
+        <div id="cart-content" style="text-align: center; opacity: 0.5;">Тут пока пусто</div>
     </div>
 </div>
 
 <div class="tab-bar">
-    <div class="tab-item active-tab" onclick="switchTab(this, 'shop')">
-        <div class="tab-icon" style="-webkit-mask-image: url('https://cdn-icons-png.flaticon.com/512/263/263142.png')"></div>
-        <span class="tab-label">Магазин</span>
-    </div>
+    <div class="tab-item active" onclick="switchTab(this, 'home-
