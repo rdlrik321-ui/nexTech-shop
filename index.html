@@ -16,6 +16,7 @@
             --hotbar-pill-bg: rgba(255, 255, 255, 0.1);
             --font-main: 'Roboto Mono', monospace;
             --font-premium: 'Inter', sans-serif;
+            --accent-green: #30d158; /* iOS Green для успеха */
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
@@ -51,7 +52,7 @@
             width: 100%;
             max-width: 400px;
             margin: 0 auto;
-            animation: fadeIn 0.3s ease;
+            animation: fadeIn 0.4s ease;
         }
 
         .screen.active { display: block; }
@@ -86,6 +87,13 @@
             padding: 15px;
             margin-bottom: 20px;
             backdrop-filter: blur(10px);
+            opacity: 0;
+            animation: cardSlideIn 0.5s ease forwards;
+        }
+
+        @keyframes cardSlideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .product-image-placeholder {
@@ -122,6 +130,7 @@
             margin-bottom: 15px;
         }
 
+        /* КНОПКА С АНИМАЦИЕЙ УСПЕХА */
         .buy-btn {
             background: #fff;
             color: #000;
@@ -132,10 +141,17 @@
             font-weight: 700;
             width: 100%;
             cursor: pointer;
-            transition: 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
         }
 
-        .buy-btn:active { transform: scale(0.98); opacity: 0.9; }
+        .buy-btn:active { transform: scale(0.98); }
+
+        .buy-btn.added {
+            background: var(--accent-green);
+            color: #fff;
+        }
 
         .back-btn { font-size: 12px; opacity: 0.5; padding: 10px 0; margin-bottom: 10px; cursor: pointer; display: inline-block; }
 
@@ -149,9 +165,15 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            animation: cartItemIn 0.3s ease;
         }
 
-        .remove-btn { color: #ff453a; font-size: 11px; font-weight: 700; cursor: pointer; }
+        @keyframes cartItemIn {
+            from { opacity: 0; transform: translateX(10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .remove-btn { color: #ff453a; font-size: 11px; font-weight: 700; cursor: pointer; padding: 5px;}
 
         .total-section {
             margin-top: 30px;
@@ -170,12 +192,82 @@
 
         .tab-item { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; position: relative; color: rgba(255,255,255,0.4); cursor: pointer; }
         .tab-item.active { color: #fff; }
-        .tab-pill { position: absolute; width: 60px; height: 35px; background: var(--hotbar-pill-bg); border-radius: 20px; opacity: 0; top: 15px; z-index: -1; transition: 0.3s; }
+        .tab-pill { position: absolute; width: 60px; height: 35px; background: var(--hotbar-pill-bg); border-radius: 20px; opacity: 0; top: 15px; z-index: -1; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .tab-item.active .tab-pill { opacity: 1; }
-        .tab-icon { width: 24px; height: 24px; background: currentColor; mask-size: contain; -webkit-mask-size: contain; mask-repeat: no-repeat; mask-position: center; margin-bottom: 25px; }
+        
+        /* КОНТЕЙНЕР ДЛЯ ИКОНКИ И БЭЙДЖА */
+        .icon-wrapper {
+            position: relative;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tab-icon { width: 24px; height: 24px; background: currentColor; mask-size: contain; -webkit-mask-size: contain; mask-repeat: no-repeat; mask-position: center; }
+        
+        /* БЭЙДЖ СЧЕТЧИКА */
+        .cart-badge {
+            position: absolute;
+            top: -6px;
+            right: -10px;
+            background: #fff;
+            color: #000;
+            font-size: 9px;
+            font-family: var(--font-premium);
+            font-weight: 700;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .cart-badge.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+
         .tab-label { position: absolute; bottom: 15px; font-size: 10px; font-weight: 500; opacity: 0.6; }
 
-        .btn-main { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 22px; padding: 28px; font-family: var(--font-premium); font-weight: 700; font-size: 17px; text-align: center; cursor: pointer; text-transform: uppercase; width: 100%; color: #fff; margin-bottom: 15px; }
+        .btn-main { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 22px; padding: 28px; font-family: var(--font-premium); font-weight: 700; font-size: 17px; text-align: center; cursor: pointer; text-transform: uppercase; width: 100%; color: #fff; margin-bottom: 15px; transition: all 0.2s; }
+        .btn-main:active { background: rgba(255,255,255,0.1); transform: scale(0.98); }
+
+        /* СКЕЛЕТОН ЗАГРУЗКА */
+        .skeleton-card {
+            background: rgba(255,255,255,0.01);
+            border: 1px solid var(--card-border);
+            border-radius: 25px;
+            padding: 15px;
+            margin-bottom: 20px;
+            height: 380px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .skeleton-card::after {
+            content: "";
+            position: absolute;
+            top: 0; right: 0; bottom: 0; left: 0;
+            transform: translateX(-100%);
+            background-image: linear-gradient(
+                90deg,
+                rgba(255, 255, 255, 0) 0,
+                rgba(255, 255, 255, 0.03) 20%,
+                rgba(255, 255, 255, 0.06) 60%,
+                rgba(255, 255, 255, 0)
+            );
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            100% { transform: translateX(100%); }
+        }
+
     </style>
 </head>
 <body>
@@ -190,150 +282,3 @@
             </div>
             <div class="btn-main" onclick="showCatalog('gpu')">Видеокарты</div>
             <div class="btn-main" onclick="showCatalog('cpu')">Процессоры</div>
-        </div>
-
-        <div id="catalog" class="screen">
-            <div class="back-btn" onclick="showScreen('shop')">← НАЗАД</div>
-            <div class="header" style="margin: 20px 0;"><h1 id="cat-title">КАТАЛОГ</h1></div>
-            <div id="product-list"></div>
-        </div>
-
-        <div id="cart" class="screen">
-            <div class="header"><h1>STORAGE // CART</h1></div>
-            <div id="cart-content"></div>
-            <div id="cart-footer" class="total-section" style="display:none">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
-                    <span style="opacity:0.5">ИТОГО:</span>
-                    <span id="total-price" style="font-family: var(--font-premium); font-size: 24px;">0 ₽</span>
-                </div>
-                <button class="buy-btn" onclick="checkout()">ОФОРМИТЬ ЗАКАЗ</button>
-            </div>
-        </div>
-
-        <div id="profile" class="screen">
-            <div class="header"><h1>USER // PROFILE</h1></div>
-            <div class="btn-main" style="padding:20px; font-size:14px">История заказов</div>
-        </div>
-
-    </div>
-</div>
-
-<div class="tab-bar">
-    <div class="tab-item active" onclick="switchTab(this, 'shop')">
-        <div class="tab-pill"></div>
-        <div class="tab-icon" style="-webkit-mask-image: url('https://cdn-icons-png.flaticon.com/512/1170/1170678.png')"></div>
-        <span class="tab-label">Шоп</span>
-    </div>
-    <div class="tab-item" onclick="switchTab(this, 'cart')">
-        <div class="tab-pill"></div>
-        <div class="tab-icon" style="-webkit-mask-image: url('https://cdn-icons-png.flaticon.com/512/263/263142.png')"></div>
-        <span class="tab-label">Корзина</span>
-    </div>
-    <div class="tab-item" onclick="switchTab(this, 'profile')">
-        <div class="tab-pill"></div>
-        <div class="tab-icon" style="-webkit-mask-image: url('https://cdn-icons-png.flaticon.com/512/1077/1077063.png')"></div>
-        <span class="tab-label">Профиль</span>
-    </div>
-</div>
-
-<script>
-    const tg = window.Telegram.WebApp;
-    tg.expand();
-    tg.backgroundColor = '#0d0d0f';
-    tg.headerColor = '#0d0d0f';
-
-    const products = {
-        'gpu': [
-            { id: 1, name: 'RX 580 4GB', price: 5800, desc: 'Бюджетное решение для Full HD гейминга. Надежная архитектура Polaris, 4 ГБ видеопамяти GDDR5.' },
-            { id: 2, name: 'RTX 3060', price: 23000, desc: 'Мощная карта с поддержкой трассировки лучей и DLSS. 12 ГБ видеопамяти для самых требовательных игр.' }
-        ],
-        'cpu': [
-            { id: 3, name: 'Ryzen 5 5600X', price: 13500, desc: '6 ядер, 12 потоков. Идеальный баланс производительности для игр и работы. Архитектура Zen 3.' }
-        ]
-    };
-
-    let cart = [];
-
-    function showScreen(id) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        if(id === 'cart') renderCart();
-        tg.HapticFeedback.impactOccurred('light');
-    }
-
-    function switchTab(el, id) {
-        document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
-        el.classList.add('active');
-        showScreen(id);
-    }
-
-    function showCatalog(cat) {
-        const list = document.getElementById('product-list');
-        document.getElementById('cat-title').innerText = cat.toUpperCase() + ' // КАТАЛОГ';
-        list.innerHTML = '';
-        
-        products[cat].forEach(p => {
-            list.innerHTML += `
-                <div class="product-card">
-                    <div class="product-image-placeholder">PHOTO // COMING SOON</div>
-                    <h3>${p.name}</h3>
-                    <div class="product-desc">${p.desc}</div>
-                    <div class="price-tag">${p.price.toLocaleString()} ₽</div>
-                    <button class="buy-btn" onclick="addToCart(${p.id}, '${p.name}', ${p.price})">ДОБАВИТЬ В КОРЗИНУ</button>
-                </div>
-            `;
-        });
-        showScreen('catalog');
-    }
-
-    function addToCart(id, name, price) {
-        cart.push({ id, name, price, uid: Date.now() });
-        tg.HapticFeedback.notificationOccurred('success');
-        tg.MainButton.setText(`В КОРЗИНЕ: ${cart.length} ТОВ.`).show();
-        tg.MainButton.onClick(() => switchTab(document.querySelectorAll('.tab-item')[1], 'cart'));
-    }
-
-    function renderCart() {
-        const cont = document.getElementById('cart-content');
-        const foot = document.getElementById('cart-footer');
-        cont.innerHTML = '';
-        
-        if(cart.length === 0) {
-            cont.innerHTML = '<div style="text-align:center; opacity:0.3; margin-top:50px">[ КОРЗИНА ПУСТА ]</div>';
-            foot.style.display = 'none';
-            tg.MainButton.hide();
-            return;
-        }
-
-        foot.style.display = 'block';
-        let total = 0;
-        cart.forEach(item => {
-            total += item.price;
-            cont.innerHTML += `
-                <div class="cart-item">
-                    <div>
-                        <div style="font-family:var(--font-premium); font-size:14px">${item.name}</div>
-                        <div style="opacity:0.5; font-size:12px">${item.price.toLocaleString()} ₽</div>
-                    </div>
-                    <div class="remove-btn" onclick="removeItem(${item.uid})">УДАЛИТЬ</div>
-                </div>
-            `;
-        });
-        document.getElementById('total-price').innerText = total.toLocaleString() + ' ₽';
-    }
-
-    function removeItem(uid) {
-        cart = cart.filter(i => i.uid !== uid);
-        renderCart();
-        tg.HapticFeedback.impactOccurred('medium');
-    }
-
-    function checkout() {
-        tg.showConfirm("Подтвердить заказ?", (ok) => {
-            if(ok) tg.close();
-        });
-    }
-</script>
-
-</body>
-</html>
