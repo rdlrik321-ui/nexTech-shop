@@ -4,17 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-color: #0d0d0f;
             --grid-color: rgba(255, 255, 255, 0.03);
-            /* Твой цвет кнопок со скрина: серый полупрозрачный */
             --card-bg: rgba(255, 255, 255, 0.05); 
             --card-border: rgba(255, 255, 255, 0.1);
             --hotbar-bg: rgba(0, 0, 0, 0.9);
             --hotbar-pill-bg: rgba(255, 255, 255, 0.1);
             --font-main: 'Roboto Mono', monospace;
+            /* ШРИФТ ДЛЯ КНОПОК */
+            --font-premium: 'Inter', sans-serif;
         }
 
         * { 
@@ -35,7 +37,6 @@
             overflow: hidden;
         }
 
-        /* Основной контейнер */
         .app-content {
             position: relative;
             height: 100%;
@@ -45,11 +46,10 @@
             z-index: 1;
         }
 
-        /* Скролл-зона */
         .screens-wrapper {
             flex: 1;
             overflow-y: auto;
-            padding-bottom: 120px; /* Чтобы контент не заходил под хот-бар */
+            padding-bottom: 120px;
         }
 
         .screen {
@@ -68,7 +68,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* ШАПКА КАК НА СКРИНЕ */
         .header {
             display: flex;
             flex-direction: column;
@@ -98,7 +97,6 @@
             text-transform: uppercase;
         }
 
-        /* МЕНЮ КАК НА СКРИНЕ */
         .menu {
             display: flex;
             flex-direction: column;
@@ -110,14 +108,16 @@
             border: 1px solid var(--card-border);
             border-radius: 22px;
             padding: 28px;
+            /* ПРИМЕНЕНИЕ ПРЕМИАЛЬНОГО ШРИФТА */
+            font-family: var(--font-premium);
             font-weight: 700;
             font-size: 17px;
             text-align: center;
             cursor: pointer;
             transition: 0.2s;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            display: block; /* Гарантируем кликабельность */
+            letter-spacing: 0.5px;
+            display: block;
             width: 100%;
         }
 
@@ -126,7 +126,6 @@
             transform: scale(0.97);
         }
 
-        /* ХОТ-БАР (TELEGRAM PREMIUM STYLE) */
         .tab-bar {
             position: fixed;
             bottom: 0; left: 0; right: 0;
@@ -154,7 +153,6 @@
 
         .tab-item.active { color: #fff; }
 
-        /* Овальная подложка */
         .tab-pill {
             position: absolute;
             width: 60px;
@@ -177,7 +175,7 @@
             -webkit-mask-size: contain;
             mask-repeat: no-repeat;
             mask-position: center;
-            margin-bottom: 25px; /* Чтобы текст был ниже */
+            margin-bottom: 25px;
         }
 
         .tab-label {
@@ -257,7 +255,6 @@
 
     function openCategory(type) {
         tg.HapticFeedback.impactOccurred('medium');
-        alert('Открываем категорию: ' + type);
     }
 </script>
 
