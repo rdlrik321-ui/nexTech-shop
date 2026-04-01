@@ -4,19 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-color: #0d0d0f;
             --grid-color: rgba(255, 255, 255, 0.03);
-            --card-bg: rgba(255, 255, 255, 0.05); 
+            --card-bg: rgba(255, 255, 255, 0.06); 
             --card-border: rgba(255, 255, 255, 0.1);
-            --hotbar-bg: rgba(0, 0, 0, 0.9);
-            --hotbar-pill-bg: rgba(255, 255, 255, 0.1);
-            --font-main: 'Roboto Mono', monospace;
+            --hotbar-bg: rgba(0, 0, 0, 0.95);
+            --hotbar-pill: rgba(255, 255, 255, 0.1);
             --font-premium: 'Inter', sans-serif;
-            --accent-green: #30d158; /* iOS Green для успеха */
+            --font-mono: 'Roboto Mono', monospace;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
@@ -28,37 +26,33 @@
                 linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
             background-size: 30px 30px;
             color: #fff;
-            font-family: var(--font-main);
+            font-family: var(--font-mono);
             height: 100vh;
             overflow: hidden;
         }
 
-        .app-content {
-            position: relative;
-            height: 100%;
+        .app-container {
             display: flex;
             flex-direction: column;
+            height: 100%;
         }
 
-        .screens-wrapper {
+        .scroll-area {
             flex: 1;
             overflow-y: auto;
-            padding-bottom: 120px;
+            padding-bottom: 100px; /* место под хот-бар */
         }
 
         .screen {
             display: none;
             padding: 20px;
-            width: 100%;
-            max-width: 400px;
-            margin: 0 auto;
-            animation: fadeIn 0.4s ease;
+            animation: fadeIn 0.3s ease-out;
         }
 
         .screen.active { display: block; }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(5px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
@@ -67,7 +61,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin: 50px 0 40px 0;
+            margin: 50px 0 40px;
         }
 
         .logo-box { 
@@ -79,6 +73,24 @@
 
         h1 { font-size: 11px; letter-spacing: 5px; opacity: 0.4; text-align: center; text-transform: uppercase; }
 
+        /* КНОПКИ МЕНЮ */
+        .btn-main {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 22px;
+            padding: 28px;
+            font-family: var(--font-premium);
+            font-weight: 700;
+            font-size: 17px;
+            text-align: center;
+            text-transform: uppercase;
+            color: #fff;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+
+        .btn-main:active { background: rgba(255,255,255,0.12); transform: scale(0.98); }
+
         /* КАРТОЧКА ТОВАРА */
         .product-card {
             background: var(--card-bg);
@@ -86,199 +98,212 @@
             border-radius: 25px;
             padding: 15px;
             margin-bottom: 20px;
-            backdrop-filter: blur(10px);
-            opacity: 0;
-            animation: cardSlideIn 0.5s ease forwards;
         }
 
-        @keyframes cardSlideIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .product-image-placeholder {
-            width: 100%;
-            height: 180px;
+        .img-placeholder {
+            width: 100%; height: 180px;
             background: rgba(255,255,255,0.02);
             border-radius: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
             margin-bottom: 15px;
             border: 1px dashed rgba(255,255,255,0.1);
             color: rgba(255,255,255,0.2);
             font-size: 10px;
-            text-transform: uppercase;
         }
 
-        .product-card h3 { 
-            font-family: var(--font-premium); 
-            font-size: 18px; 
-            margin-bottom: 8px; 
-        }
+        .product-card h3 { font-family: var(--font-premium); font-size: 18px; margin-bottom: 8px; }
+        .product-desc { font-size: 12px; line-height: 1.5; color: rgba(255,255,255,0.5); margin-bottom: 15px; }
+        .price { font-family: var(--font-premium); font-size: 20px; margin-bottom: 15px; }
 
-        .product-desc {
-            font-size: 12px;
-            line-height: 1.5;
-            color: rgba(255,255,255,0.5);
-            margin-bottom: 15px;
-        }
-
-        .price-tag {
-            font-family: var(--font-premium);
-            font-size: 20px;
-            margin-bottom: 15px;
-        }
-
-        /* КНОПКА С АНИМАЦИЕЙ УСПЕХА */
         .buy-btn {
-            background: #fff;
-            color: #000;
-            border: none;
-            padding: 16px;
-            border-radius: 16px;
-            font-family: var(--font-premium);
-            font-weight: 700;
-            width: 100%;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
+            background: #fff; color: #000; border: none; padding: 16px;
+            border-radius: 16px; font-family: var(--font-premium);
+            font-weight: 700; width: 100%; cursor: pointer;
         }
 
-        .buy-btn:active { transform: scale(0.98); }
+        .back-btn { font-size: 12px; opacity: 0.4; padding: 10px 0; margin-bottom: 10px; cursor: pointer; }
 
-        .buy-btn.added {
-            background: var(--accent-green);
-            color: #fff;
+        /* TAB BAR (HOT BAR) */
+        .tab-bar {
+            position: fixed; bottom: 0; left: 0; right: 0; height: 90px;
+            background: var(--hotbar-bg); backdrop-filter: blur(20px);
+            border-top: 0.5px solid rgba(255,255,255,0.1);
+            display: flex; justify-content: space-around;
+            padding-bottom: env(safe-area-inset-bottom);
         }
 
-        .back-btn { font-size: 12px; opacity: 0.5; padding: 10px 0; margin-bottom: 10px; cursor: pointer; display: inline-block; }
+        .tab-item {
+            flex: 1; display: flex; flex-direction: column; align-items: center;
+            justify-content: center; position: relative; color: rgba(255,255,255,0.4);
+        }
+
+        .tab-item.active { color: #fff; }
+
+        .tab-pill {
+            position: absolute; width: 60px; height: 35px;
+            background: var(--hotbar-pill); border-radius: 18px;
+            opacity: 0; z-index: -1; top: 15px; transition: 0.2s;
+        }
+
+        .tab-item.active .tab-pill { opacity: 1; }
+
+        .tab-icon {
+            width: 24px; height: 24px; background: currentColor;
+            mask-size: contain; -webkit-mask-size: contain;
+            mask-repeat: no-repeat; mask-position: center;
+            margin-bottom: 25px;
+        }
+
+        .tab-label { position: absolute; bottom: 15px; font-size: 10px; opacity: 0.6; }
 
         /* КОРЗИНА */
         .cart-item {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 20px;
-            padding: 15px;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            animation: cartItemIn 0.3s ease;
+            background: var(--card-bg); padding: 15px; border-radius: 18px;
+            margin-bottom: 10px; display: flex; justify-content: space-between;
         }
-
-        @keyframes cartItemIn {
-            from { opacity: 0; transform: translateX(10px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        .remove-btn { color: #ff453a; font-size: 11px; font-weight: 700; cursor: pointer; padding: 5px;}
-
-        .total-section {
-            margin-top: 30px;
-            padding: 20px;
-            border-top: 1px solid var(--card-border);
-        }
-
-        /* TAB BAR */
-        .tab-bar {
-            position: fixed; bottom: 0; left: 0; right: 0; height: 90px;
-            background: var(--hotbar-bg); backdrop-filter: blur(25px);
-            border-top: 0.5px solid rgba(255,255,255,0.1);
-            display: flex; justify-content: space-around;
-            padding-bottom: env(safe-area-inset-bottom); z-index: 1000;
-        }
-
-        .tab-item { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; position: relative; color: rgba(255,255,255,0.4); cursor: pointer; }
-        .tab-item.active { color: #fff; }
-        .tab-pill { position: absolute; width: 60px; height: 35px; background: var(--hotbar-pill-bg); border-radius: 20px; opacity: 0; top: 15px; z-index: -1; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .tab-item.active .tab-pill { opacity: 1; }
-        
-        /* КОНТЕЙНЕР ДЛЯ ИКОНКИ И БЭЙДЖА */
-        .icon-wrapper {
-            position: relative;
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .tab-icon { width: 24px; height: 24px; background: currentColor; mask-size: contain; -webkit-mask-size: contain; mask-repeat: no-repeat; mask-position: center; }
-        
-        /* БЭЙДЖ СЧЕТЧИКА */
-        .cart-badge {
-            position: absolute;
-            top: -6px;
-            right: -10px;
-            background: #fff;
-            color: #000;
-            font-size: 9px;
-            font-family: var(--font-premium);
-            font-weight: 700;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transform: scale(0.5);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .cart-badge.show {
-            opacity: 1;
-            transform: scale(1);
-        }
-
-        .tab-label { position: absolute; bottom: 15px; font-size: 10px; font-weight: 500; opacity: 0.6; }
-
-        .btn-main { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 22px; padding: 28px; font-family: var(--font-premium); font-weight: 700; font-size: 17px; text-align: center; cursor: pointer; text-transform: uppercase; width: 100%; color: #fff; margin-bottom: 15px; transition: all 0.2s; }
-        .btn-main:active { background: rgba(255,255,255,0.1); transform: scale(0.98); }
-
-        /* СКЕЛЕТОН ЗАГРУЗКА */
-        .skeleton-card {
-            background: rgba(255,255,255,0.01);
-            border: 1px solid var(--card-border);
-            border-radius: 25px;
-            padding: 15px;
-            margin-bottom: 20px;
-            height: 380px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .skeleton-card::after {
-            content: "";
-            position: absolute;
-            top: 0; right: 0; bottom: 0; left: 0;
-            transform: translateX(-100%);
-            background-image: linear-gradient(
-                90deg,
-                rgba(255, 255, 255, 0) 0,
-                rgba(255, 255, 255, 0.03) 20%,
-                rgba(255, 255, 255, 0.06) 60%,
-                rgba(255, 255, 255, 0)
-            );
-            animation: shimmer 1.5s infinite;
-        }
-
-        @keyframes shimmer {
-            100% { transform: translateX(100%); }
-        }
+        .remove { color: #ff453a; font-size: 11px; font-weight: 700; }
 
     </style>
 </head>
 <body>
 
-<div class="app-content">
-    <div class="screens-wrapper">
+<div class="app-container">
+    <div class="scroll-area">
         
         <div id="shop" class="screen active">
             <div class="header">
                 <div class="logo-box"><img src="https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/logo.png"></div>
                 <h1>NEXTECH // TERMINAL</h1>
             </div>
-            <div class="btn-main" onclick="showCatalog('gpu')">Видеокарты</div>
-            <div class="btn-main" onclick="showCatalog('cpu')">Процессоры</div>
+            <div class="btn-main" onclick="openCatalog('gpu')">Видеокарты</div>
+            <div class="btn-main" onclick="openCatalog('cpu')">Процессоры</div>
+        </div>
+
+        <div id="catalog" class="screen">
+            <div class="back-btn" onclick="showScreen('shop')">← НАЗАД</div>
+            <div class="header" style="margin: 20px 0;"><h1 id="cat-title">КАТАЛОГ</h1></div>
+            <div id="catalog-list"></div>
+        </div>
+
+        <div id="cart" class="screen">
+            <div class="header"><h1>STORAGE // CART</h1></div>
+            <div id="cart-list"></div>
+            <div id="cart-empty" style="text-align:center; opacity:0.2; margin-top:50px;">[ ПУСТО ]</div>
+        </div>
+
+        <div id="profile" class="screen">
+            <div class="header"><h1>USER // PROFILE</h1></div>
+            <div class="btn-main" style="padding: 20px; font-size: 14px;">Мои заказы</div>
+        </div>
+
+    </div>
+</div>
+
+<div class="tab-bar">
+    <div class="tab-item active" onclick="switchTab(this, 'shop')">
+        <div class="tab-pill"></div>
+        <div class="tab-icon" style="-webkit-mask-image: url('https://cdn-icons-png.flaticon.com/512/1170/1170678.png')"></div>
+        <span class="tab-label">Шоп</span>
+    </div>
+    <div class="tab-item" onclick="switchTab(this, 'cart')">
+        <div class="tab-pill"></div>
+        <div class="tab-icon" style="-webkit-mask-image: url('https://cdn-icons-png.flaticon.com/512/263/263142.png')"></div>
+        <span class="tab-label">Корзина</span>
+    </div>
+    <div class="tab-item" onclick="switchTab(this, 'profile')">
+        <div class="tab-pill"></div>
+        <div class="tab-icon" style="-webkit-mask-image: url('https://cdn-icons-png.flaticon.com/512/1077/1077063.png')"></div>
+        <span class="tab-label">Профиль</span>
+    </div>
+</div>
+
+<script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+    tg.backgroundColor = '#0d0d0f';
+    tg.headerColor = '#0d0d0f';
+
+    const data = {
+        'gpu': [
+            { id: 1, name: 'RX 580 4GB', price: 5800, desc: 'Бюджетное решение для Full HD гейминга.' },
+            { id: 2, name: 'RTX 3060', price: 23000, desc: 'Мощная карта с поддержкой трассировки лучей.' }
+        ],
+        'cpu': [
+            { id: 3, name: 'Ryzen 5 5600X', price: 13500, desc: '6 ядер, 12 потоков. Идеальный баланс.' }
+        ]
+    };
+
+    let cart = [];
+
+    function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        if(id === 'cart') renderCart();
+        tg.HapticFeedback.impactOccurred('light');
+    }
+
+    function switchTab(el, id) {
+        document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+        el.classList.add('active');
+        showScreen(id);
+    }
+
+    function openCatalog(cat) {
+        const list = document.getElementById('catalog-list');
+        document.getElementById('cat-title').innerText = cat.toUpperCase() + ' // КАТАЛОГ';
+        list.innerHTML = '';
+        
+        data[cat].forEach(p => {
+            list.innerHTML += `
+                <div class="product-card">
+                    <div class="img-placeholder">PHOTO // COMING SOON</div>
+                    <h3>${p.name}</h3>
+                    <div class="product-desc">${p.desc}</div>
+                    <div class="price">${p.price.toLocaleString()} ₽</div>
+                    <button class="buy-btn" onclick="addToCart('${p.name}', ${p.price})">В КОРЗИНУ</button>
+                </div>
+            `;
+        });
+        showScreen('catalog');
+    }
+
+    function addToCart(name, price) {
+        cart.push({ name, price, uid: Date.now() });
+        tg.HapticFeedback.notificationOccurred('success');
+        tg.MainButton.setText(`В КОРЗИНЕ: ${cart.length}`).show();
+    }
+
+    function renderCart() {
+        const list = document.getElementById('cart-list');
+        const empty = document.getElementById('cart-empty');
+        list.innerHTML = '';
+        
+        if(cart.length === 0) {
+            empty.style.display = 'block';
+            return;
+        }
+        
+        empty.style.display = 'none';
+        cart.forEach(item => {
+            list.innerHTML += `
+                <div class="cart-item">
+                    <div>
+                        <div style="font-family:var(--font-premium); font-size:14px">${item.name}</div>
+                        <div style="opacity:0.5; font-size:12px">${item.price.toLocaleString()} ₽</div>
+                    </div>
+                    <div class="remove" onclick="removeItem(${item.uid})">УДАЛИТЬ</div>
+                </div>
+            `;
+        });
+    }
+
+    function removeItem(uid) {
+        cart = cart.filter(i => i.uid !== uid);
+        renderCart();
+        if(cart.length === 0) tg.MainButton.hide();
+        else tg.MainButton.setText(`В КОРЗИНЕ: ${cart.length}`);
+    }
+</script>
+
+</body>
+</html>
