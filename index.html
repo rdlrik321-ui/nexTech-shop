@@ -20,7 +20,7 @@
             background-color: var(--bg);
             /* СЕТКА НА ФОНЕ */
             background-image: 
-                linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
             background-size: 35px 35px;
             color: var(--text-main); 
@@ -120,7 +120,7 @@
     <div id="scr-home" class="screen active">
         <div class="header">
             <div class="logo-box"><img src="https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/logo.png"></div>
-            <div class="brand-text">NEXTECH // ПРЕМИУМ</div>
+            <div class="brand-text">NEXTECH // ТЕРМИНАЛ</div>
         </div>
         <div class="btn-cat" onclick="openCat('gpu')">ВИДЕОКАРТЫ</div>
         <div class="btn-cat" onclick="openCat('cpu')">ПРОЦЕССОРЫ</div>
@@ -179,8 +179,8 @@
 
     const db = {
         'gpu': [
-            { id: 1, name: 'RX 580 4GB NITRO+', price: 5800, imgs: ['photo_2026-04-01_13-15-04.jpg', 'https://via.placeholder.com/800x600/161618/fff?text=Backplate'], desc: 'Карта в отличном состоянии. Новые термопрокладки, заменена паста. Идеально для бюджетного ПК.', tests: [{n:'Dota 2', v:'95 FPS', p:75}, {n:'CS2', v:'120 FPS', p:85}] },
-            { id: 2, name: 'RTX 3060 12GB', price: 23500, imgs: ['https://via.placeholder.com/800x600/161618/fff?text=RTX+3060'], desc: 'Видеокарта проверенная временем.', tests: [{n:'Cyberpunk', v:'65 FPS', p:90}, {n:'Warzone', v:'95 FPS', p:80}] }
+            { id: 1, name: 'RX 580 4GB NITRO+', price: 5800, imgs: ['photo_2026-04-01_13-15-04.jpg', 'https://via.placeholder.com/800x600/161618/fff?text=Backplate'], desc: 'Видеокарта проверенная врменем,Идеально для бюджетного ПК.', tests: [{n:'Dota 2', v:'95 FPS', p:75}, {n:'CS2', v:'120 FPS', p:85}] },
+            { id: 2, name: 'RTX 3060 12GB', price: 23500, imgs: ['https://via.placeholder.com/800x600/161618/fff?text=RTX+3060'], desc: 'Незабываемая классика', tests: [{n:'Cyberpunk', v:'65 FPS', p:90}, {n:'Warzone', v:'95 FPS', p:80}] }
         ],
         'cpu': [
             { id: 3, name: 'RYZEN 5 5600X', price: 13200, imgs: ['photo_2026-04-01_13-21-49.jpg'], desc: 'BOX версия, с кулером. Отличный процессор для игр и работы.', tests: [{n:'Многозадачность', v:'Топ', p:95}] }
