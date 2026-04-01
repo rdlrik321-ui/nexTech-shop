@@ -5,62 +5,75 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* ПРЕМИУМ ШРИФТЫ APPLE */
         :root { 
             --bg: #0d0d0f; 
             --card: rgba(255, 255, 255, 0.04); 
-            --brd: rgba(255, 255, 255, 0.08); 
-            --font-apple: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --brd: rgba(255, 255, 255, 0.1); 
         }
-        
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; margin: 0; padding: 0; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
         
         body { 
             background-color: var(--bg); 
-            /* ВОЗВРАЩАЕМ СЕТКУ */
             background-image: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
             background-size: 30px 30px;
-            color: #fff; font-family: var(--font-apple); 
-            margin: 0; padding: 20px; display: flex; justify-content: center; min-height: 100vh; overflow-x: hidden;
+            color: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            display: flex; justify-content: center; min-height: 100vh;
         }
 
-        .container { width: 100%; max-width: 380px; display: flex; flex-direction: column; align-items: center; position: relative; }
+        .container { width: 100%; max-width: 380px; padding: 20px; }
 
-        /* Шапка nexTech */
-        .header-area { display: flex; flex-direction: column; align-items: center; width: 100%; transition: opacity 0.3s; margin-top: 40px; }
-        .logo-box { background: #fff; border-radius: 20px; width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        /* ЭКРАНЫ */
+        .screen { display: none; width: 100%; flex-direction: column; align-items: center; }
+        .active { display: flex; }
+
+        /* ЛОГО И ГЛАВНАЯ */
+        .header { margin: 50px 0 30px 0; text-align: center; }
+        .logo-box { background: #fff; border-radius: 22px; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; }
         .logo-box img { width: 60%; }
-        h1 { font-size: 10px; letter-spacing: 4px; opacity: 0.3; text-transform: uppercase; margin: 15px 0 30px 0; }
+        h1 { font-size: 11px; letter-spacing: 4px; opacity: 0.3; text-transform: uppercase; }
 
-        /* Кнопки меню Премиум */
-        .menu-list { width: 100%; display: flex; flex-direction: column; gap: 12px; }
-        .btn-premium { 
+        /* КНОПКИ МЕНЮ */
+        .menu { width: 100%; display: flex; flex-direction: column; gap: 12px; }
+        .btn-main { 
             background: var(--card); border: 1px solid var(--brd); border-radius: 20px; 
-            padding: 26px; width: 100%; cursor: pointer; text-align: center;
-            transition: transform 0.1s ease, background 0.2s; position: relative; z-index: 10;
-            color: #fff; text-decoration: none;
+            padding: 24px; color: #fff; font-size: 16px; font-weight: 500; 
+            letter-spacing: 1px; cursor: pointer; text-align: center; transition: 0.2s;
         }
-        /* Эффект свечения при нажатии */
-        .btn-premium:active { transform: scale(0.97); background: rgba(255,255,255,0.07); box-shadow: 0 0 15px rgba(255,255,255,0.1); }
-        .btn-premium b { font-size: 15px; font-weight: 400; letter-spacing: 1.5px; display: block; text-transform: uppercase; }
+        .btn-main:active { background: rgba(255, 255, 255, 0.1); transform: scale(0.97); }
 
-        /* Плавные страницы */
-        .page { display: none; width: 100%; flex-direction: column; animation: iosSlide 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        @keyframes iosSlide { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Исправленная карточка товара */
-        .card-prem { background: var(--card); border: 1px solid var(--brd); border-radius: 28px; padding: 20px; text-align: center; width: 100%; margin-top: 10px; }
-        .card-prem img { width: 100%; border-radius: 18px; margin-bottom: 15px; border: 1px solid var(--brd); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        /* КАРТОЧКИ ТОВАРА */
+        .card { background: var(--card); border: 1px solid var(--brd); border-radius: 28px; padding: 20px; width: 100%; text-align: center; }
+        .card img { width: 100%; border-radius: 18px; margin-bottom: 15px; }
         
-        /* Кнопка Назад iOS Style */
-        .back-nav { width: 100%; display: flex; justify-content: flex-start; margin-bottom: 10px; }
-        .btn-back-ios { 
-            background: none; border: none; color: #fff; 
-            font-size: 15px; font-weight: 500; cursor: pointer; 
-            padding: 10px 0; display: flex; align-items: center; opacity: 0.6;
-        }
-        .btn-back-ios:active { opacity: 1; }
+        .btn-back { align-self: flex-start; background: none; border: none; color: #fff; opacity: 0.5; padding: 10px 0; margin-bottom: 10px; font-size: 15px; cursor: pointer; }
+        .price { font-size: 26px; font-weight: 700; margin: 10px 0; }
+        .buy-btn { background: #fff; color: #000; border: none; padding: 18px; border-radius: 16px; font-weight: 700; width: 100%; cursor: pointer; text-transform: uppercase; margin-top: 15px; }
 
-        .buy-btn { background: #fff; color: #000; border: none; padding: 18px; border-radius: 16px; font-weight: 700; width: 100%; margin-top: 20px; text-transform: uppercase; cursor: pointer; font-size: 14px; letter-spacing: 1px; }
-        .price-ios { font-size: 26px; font-weight: 700; margin: 10px 0; color: #fff; }
-        .desc-ios { font-size: 13px; opacity: 0.5; line-height: 1.
+        #cart-panel { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #fff; color: #000; padding: 18px; border-radius: 35px; font-weight: 700; display: none; width: 85%; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="home" class="screen active">
+        <div class="header">
+            <div class="logo-box"><img src="https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/logo.png"></div>
+            <h1>NEXTECH // TERMINAL</h1>
+        </div>
+        <div class="menu">
+            <div class="btn-main" onclick="showPage('gpu')">ВИДЕОКАРТЫ</div>
+            <div class="btn-main" onclick="showPage('cpu')">ПРОЦЕССОРЫ</div>
+        </div>
+    </div>
+
+    <div id="gpu" class="screen">
+        <button class="btn-back" onclick="showPage('home')">← НАЗАД</button>
+        <div class="card">
+            <img src="https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/gpu_photo.jpg">
+            <h2 style="font-weight: 500;">Sapphire RX 580</h2>
+            <div class="price">5,800 ₽</div>
+            <button class="buy-btn" onclick="add('RX 580', 5800)">В КОРЗИНУ</button>
+        </div>
+    </div>
+
+    <div id="cpu" class="screen">
