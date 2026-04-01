@@ -13,6 +13,7 @@
             --card-border: rgba(255, 255, 255, 0.1);
             --hotbar-bg: rgba(0, 0, 0, 0.95);
             --pill-color: rgba(255, 255, 255, 0.1);
+            --accent: #fff;
             --font-premium: 'Inter', sans-serif;
             --font-mono: 'Roboto Mono', monospace;
         }
@@ -25,124 +26,79 @@
                 linear-gradient(var(--grid-color) 1px, transparent 1px),
                 linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
             background-size: 30px 30px;
-            color: #fff;
-            font-family: var(--font-mono);
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden; /* Фиксируем всё тело */
+            color: #fff; font-family: var(--font-mono);
+            height: 100vh; overflow: hidden;
         }
 
-        /* ОСНОВНОЙ КОНТЕЙНЕР (Viewport) */
         .app-viewport {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            overflow-y: auto;
-            overflow-x: hidden;
-            padding-bottom: 120px;
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            overflow-y: auto; overflow-x: hidden; padding-bottom: 120px;
             -webkit-overflow-scrolling: touch;
         }
 
         .screen {
-            display: none;
-            padding: 20px;
-            opacity: 0;
+            display: none; padding: 20px; opacity: 0;
             transform: translateY(15px);
             transition: opacity 0.4s ease, transform 0.4s ease;
         }
 
-        .screen.active {
-            display: block;
-            opacity: 1;
-            transform: translateY(0);
-        }
+        .screen.active { display: block; opacity: 1; transform: translateY(0); }
 
         /* HEADER */
         .header { display: flex; flex-direction: column; align-items: center; margin: 40px 0 30px; }
         .logo-box { 
-            background: #fff; border-radius: 22px; width: 90px; height: 90px;
+            background: #fff; border-radius: 22px; width: 85px; height: 85px;
             display: flex; align-items: center; justify-content: center;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 15px;
         }
-        .logo-box img { width: 55px; height: auto; }
+        .logo-box img { width: 50px; height: auto; }
         h1 { font-size: 10px; letter-spacing: 5px; opacity: 0.4; text-transform: uppercase; }
 
-        /* КНОПКИ ГЛАВНОЙ */
-        .btn-main {
-            background: var(--card-bg); border: 1px solid var(--card-border);
-            border-radius: 22px; padding: 28px; font-family: var(--font-premium);
-            font-weight: 700; font-size: 17px; text-align: center;
-            text-transform: uppercase; color: #fff; margin-bottom: 15px; cursor: pointer;
-        }
-
-        /* СЛАЙДЕР ФОТО (CAROUSEL) */
-        .slider-wrapper {
-            position: relative;
-            width: 100%;
-            margin-bottom: 20px;
-        }
-
+        /* PHOTO SLIDER */
+        .slider-wrapper { position: relative; width: 100%; margin-bottom: 20px; }
         .photo-slider {
-            display: flex;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            scroll-behavior: smooth;
-            border-radius: 25px;
-            background: #1a1a1c;
-            border: 1px solid var(--card-border);
-            -ms-overflow-style: none; /* hide scrollbar */
+            display: flex; overflow-x: auto; scroll-snap-type: x mandatory;
+            border-radius: 25px; background: #1a1a1c; border: 1px solid var(--card-border);
             scrollbar-width: none;
         }
         .photo-slider::-webkit-scrollbar { display: none; }
-
-        .slide {
-            flex: 0 0 100%;
-            height: 280px;
-            scroll-snap-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        .slide { flex: 0 0 100%; height: 280px; scroll-snap-align: center; }
         .slide img { width: 100%; height: 100%; object-fit: cover; }
-
-        .dots {
-            display: flex; justify-content: center; gap: 8px; margin-top: 12px;
-        }
+        .dots { display: flex; justify-content: center; gap: 8px; margin-top: 12px; }
         .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.2); transition: 0.3s; }
         .dot.active { background: #fff; transform: scale(1.3); }
 
-        /* КАРТОЧКА КАТАЛОГА */
-        .product-card {
+        /* UI ELEMENTS */
+        .btn-main {
             background: var(--card-bg); border: 1px solid var(--card-border);
-            border-radius: 25px; margin-bottom: 20px; overflow: hidden;
+            border-radius: 22px; padding: 25px; font-family: var(--font-premium);
+            font-weight: 700; font-size: 16px; text-align: center;
+            text-transform: uppercase; color: #fff; margin-bottom: 15px; cursor: pointer;
         }
-        .preview-img { width: 100%; height: 180px; object-fit: cover; background: #1a1a1c; }
-        .product-info { padding: 18px; }
-
-        /* ТЕСТЫ */
-        .test-line {
-            display: flex; justify-content: space-between; align-items: center;
-            background: rgba(255,255,255,0.03); padding: 14px;
-            border-radius: 14px; margin-bottom: 10px; font-size: 12px;
-        }
+        .product-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 25px; margin-bottom: 20px; overflow: hidden; }
+        .preview-img { width: 100%; height: 180px; object-fit: cover; }
+        .test-line { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 14px; border-radius: 14px; margin-bottom: 8px; font-size: 12px; }
         .bar-bg { width: 60px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; }
         .bar-fill { height: 100%; background: #fff; border-radius: 2px; }
 
-        /* HOT BAR */
+        /* TAB BAR */
         .tab-bar {
             position: fixed; bottom: 0; left: 0; right: 0; height: 90px;
             background: var(--hotbar-bg); backdrop-filter: blur(25px);
             border-top: 0.5px solid rgba(255,255,255,0.1); display: flex;
             justify-content: space-around; z-index: 10000;
         }
-        .tab-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; color: rgba(255,255,255,0.4); }
+        .tab-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; color: rgba(255,255,255,0.4); transition: 0.2s; }
         .tab-item.active { color: #fff; }
-        .pill { position: absolute; width: 60px; height: 35px; background: var(--pill-color); border-radius: 20px; top: 15px; z-index: -1; opacity: 0; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .pill { position: absolute; width: 60px; height: 35px; background: var(--pill-color); border-radius: 18px; top: 15px; z-index: -1; opacity: 0; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .tab-item.active .pill { opacity: 1; }
         .tab-icon { width: 22px; height: 22px; background: currentColor; mask-size: contain; -webkit-mask-image: var(--icon); margin-bottom: 25px; }
-        .tab-label { position: absolute; bottom: 15px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        .tab-label { position: absolute; bottom: 15px; font-size: 9px; font-weight: 700; text-transform: uppercase; }
 
-        .back-btn { font-size: 11px; opacity: 0.4; padding: 10px 0; cursor: pointer; text-transform: uppercase; margin-bottom: 10px; display: inline-block; }
-        .buy-btn { background: #fff; color: #000; border: none; padding: 22px; border-radius: 20px; font-family: var(--font-premium); font-weight: 700; width: 100%; margin-top: 20px; font-size: 16px; }
+        /* BUTTONS */
+        .back-btn { font-size: 11px; opacity: 0.4; padding: 10px 0; cursor: pointer; text-transform: uppercase; margin-bottom: 5px; display: inline-block; }
+        .action-btn { background: #fff; color: #000; border: none; padding: 22px; border-radius: 20px; font-family: var(--font-premium); font-weight: 700; width: 100%; font-size: 16px; margin-top: 15px; cursor: pointer; }
+        .pay-btn { background: #34c759; color: #fff; } /* Зеленая для оплаты */
 
         .cart-item { background: var(--card-bg); padding: 18px; border-radius: 22px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
     </style>
@@ -175,6 +131,13 @@
         <div class="header"><h1>STORAGE // CART</h1></div>
         <div id="cart-list"></div>
         <div id="cart-empty" style="text-align:center; opacity:0.2; margin-top:50px;">[ ПУСТО ]</div>
+        <div id="cart-footer"></div>
+    </div>
+
+    <div id="profile" class="screen">
+        <div class="header"><h1>USER // PROFILE</h1></div>
+        <div class="btn-main" style="padding: 20px; font-size: 14px;">Мои заказы</div>
+        <div class="btn-main" style="padding: 20px; font-size: 14px; opacity: 0.5;">Настройки</div>
     </div>
 
 </div>
@@ -190,36 +153,40 @@
         <div class="tab-icon" style="--icon: url('https://cdn-icons-png.flaticon.com/512/263/263142.png')"></div>
         <span class="tab-label">Корзина</span>
     </div>
+    <div class="tab-item" onclick="switchTab(this, 'profile')">
+        <div class="pill"></div>
+        <div class="tab-icon" style="--icon: url('https://cdn-icons-png.flaticon.com/512/1077/1077063.png')"></div>
+        <span class="tab-label">Профиль</span>
+    </div>
 </div>
 
 <script>
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    // БАЗА ДАННЫХ С МАССИВОМ ФОТО
     const data = {
         'gpu': [
             { 
                 id: 1, name: 'RX 580 4GB', price: 5800, 
-                imgs: ['photo_2026-04-01_13-15-04.jpg', 'https://via.placeholder.com/400x280/1a1a1c/ffffff?text=BACK+PLATE', 'https://via.placeholder.com/400x280/1a1a1c/ffffff?text=PORTS'],
+                imgs: ['photo_2026-04-01_13-15-04.jpg', 'https://via.placeholder.com/400x280/1a1a1c/ffffff?text=COOLING', 'https://via.placeholder.com/400x280/1a1a1c/ffffff?text=BACK'],
                 desc: 'Бюджетный топ для 1080p.', 
-                full: 'Проверенная временем видеокарта. Тихая работа и отличный потенциал для разгона.', 
+                full: 'Легендарная карта с отличным охлаждением. Идеальна для киберспорта.', 
                 tests: [{n:'CS2', v:'120 FPS', p:80}, {n:'Dota 2', v:'140 FPS', p:90}] 
             },
             { 
                 id: 2, name: 'RTX 3060 12GB', price: 23000, 
-                imgs: ['https://via.placeholder.com/400x280/1a1a1c/ffffff?text=RTX+3060+Front'], 
-                desc: 'RTX + DLSS за свои деньги.', 
-                full: 'Мощный чип и 12 ГБ видеопамяти — хватит на долго.', 
+                imgs: ['https://via.placeholder.com/400x280/1a1a1c/ffffff?text=RTX+3060'], 
+                desc: 'RTX + DLSS.', 
+                full: 'Современная карта для любых задач.', 
                 tests: [{n:'Cyberpunk', v:'60 FPS', p:85}, {n:'RDR 2', v:'75 FPS', p:80}] 
             }
         ],
         'cpu': [
             { 
                 id: 3, name: 'Ryzen 5 5600X', price: 13500, 
-                imgs: ['photo_2026-04-01_13-21-49.jpg', 'https://via.placeholder.com/400x280/1a1a1c/ffffff?text=BOX+PACK'],
-                desc: 'Король гейминга на AM4.', 
-                full: '6 ядер, 12 потоков. Идеальный баланс для любой современной сборки.', 
+                imgs: ['photo_2026-04-01_13-21-49.jpg', 'https://via.placeholder.com/400x280/1a1a1c/ffffff?text=AMD+RYZEN'],
+                desc: 'Игровой стандарт.', 
+                full: '6 ядер и 12 потоков для максимальной производительности.', 
                 tests: [{n:'Cinebench', v:'11500', p:85}, {n:'Gaming', v:'Elite', p:95}] 
             }
         ]
@@ -228,19 +195,11 @@
     let cart = [];
 
     function showScreen(id) {
-        // КЛЮЧЕВОЙ МОМЕНТ: Сбрасываем скролл контейнера
-        const root = document.getElementById('scroll-root');
-        root.scrollTo(0, 0); 
-        
-        document.querySelectorAll('.screen').forEach(s => {
-            s.classList.remove('active');
-            s.style.display = 'none';
-        });
-
+        document.getElementById('scroll-root').scrollTo(0, 0); 
+        document.querySelectorAll('.screen').forEach(s => { s.classList.remove('active'); s.style.display = 'none'; });
         const target = document.getElementById(id);
         target.style.display = 'block';
         setTimeout(() => target.classList.add('active'), 20);
-
         if(id === 'cart') renderCart();
         tg.HapticFeedback.impactOccurred('light');
     }
@@ -259,13 +218,11 @@
             list.innerHTML += `
                 <div class="product-card" onclick="openDetails('${cat}', ${p.id})">
                     <img src="${p.imgs[0]}" class="preview-img">
-                    <div class="product-info">
-                        <div style="font-family:var(--font-premium); font-size:18px; margin-bottom:5px;">${p.name}</div>
-                        <div style="font-size:12px; opacity:0.5; margin-bottom:15px;">${p.desc}</div>
-                        <div style="font-family:var(--font-premium); font-size:17px;">${p.price.toLocaleString()} ₽</div>
+                    <div class="product-info" style="padding:15px;">
+                        <div style="font-family:var(--font-premium); font-size:18px;">${p.name}</div>
+                        <div style="font-family:var(--font-premium); margin-top:5px;">${p.price.toLocaleString()} ₽</div>
                     </div>
-                </div>
-            `;
+                </div>`;
         });
         showScreen('catalog');
     }
@@ -273,75 +230,63 @@
     function openDetails(cat, id) {
         const p = data[cat].find(x => x.id === id);
         const cont = document.getElementById('details-content');
-        
-        // Рендерим слайды
-        let slidesHtml = p.imgs.map(src => `<div class="slide"><img src="${src}"></div>`).join('');
-        let dotsHtml = p.imgs.map((_, i) => `<div class="dot ${i===0?'active':''}" id="dot-${i}"></div>`).join('');
-        
-        let tHtml = p.tests.map(t => `
-            <div class="test-line">
-                <span>${t.n}</span>
-                <div style="display:flex; align-items:center; gap:10px;">
-                    <b>${t.v}</b>
-                    <div class="bar-bg"><div class="bar-fill" style="width:${t.p}%"></div></div>
-                </div>
-            </div>
-        `).join('');
+        let slides = p.imgs.map(src => `<div class="slide"><img src="${src}"></div>`).join('');
+        let dots = p.imgs.map((_, i) => `<div class="dot ${i===0?'active':''}"></div>`).join('');
+        let tests = p.tests.map(t => `<div class="test-line"><span>${t.n}</span><div><b>${t.v}</b></div></div>`).join('');
 
         cont.innerHTML = `
             <div class="slider-wrapper">
-                <div class="photo-slider" id="product-slider" onscroll="updateDots(this)">
-                    ${slidesHtml}
-                </div>
-                <div class="dots">${dotsHtml}</div>
+                <div class="photo-slider" onscroll="updateDots(this)">${slides}</div>
+                <div class="dots">${dots}</div>
             </div>
-            
-            <h2 style="font-family:var(--font-premium); font-size:26px; margin-bottom:12px;">${p.name}</h2>
-            <p style="font-size:14px; color:rgba(255,255,255,0.6); line-height:1.7; margin-bottom:25px;">${p.full}</p>
-            <div style="font-size:10px; opacity:0.3; margin-bottom:15px; letter-spacing:2px;">TECHNICAL BENCHMARKS</div>
-            ${tHtml}
-            <button class="buy-btn" onclick="addToCart('${p.name}', ${p.price})">В КОРЗИНУ — ${p.price.toLocaleString()} ₽</button>
-        `;
+            <h2 style="font-family:var(--font-premium); font-size:26px;">${p.name}</h2>
+            <p style="font-size:14px; opacity:0.6; margin: 15px 0 25px; line-height:1.6;">${p.full}</p>
+            ${tests}
+            <button class="action-btn" onclick="addToCart('${p.name}', ${p.price})">В КОРЗИНУ — ${p.price.toLocaleString()} ₽</button>`;
         showScreen('details');
     }
 
-    // Обновление точек слайдера
     function updateDots(el) {
-        const scrollIndex = Math.round(el.scrollLeft / el.offsetWidth);
-        document.querySelectorAll('.dot').forEach((d, i) => {
-            d.classList.toggle('active', i === scrollIndex);
-        });
+        const index = Math.round(el.scrollLeft / el.offsetWidth);
+        el.parentElement.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === index));
     }
 
     function addToCart(name, price) {
         cart.push({name, price, uid: Date.now()});
         tg.HapticFeedback.notificationOccurred('success');
-        tg.MainButton.setText(`ОФОРМИТЬ: ${cart.length} ТОВ.`).show();
     }
 
     function renderCart() {
         const list = document.getElementById('cart-list');
-        const empty = document.getElementById('cart-empty');
-        list.innerHTML = '';
-        if(cart.length === 0) { empty.style.display = 'block'; tg.MainButton.hide(); return; }
-        empty.style.display = 'none';
+        const footer = document.getElementById('cart-footer');
+        list.innerHTML = ''; footer.innerHTML = '';
+        if(cart.length === 0) { document.getElementById('cart-empty').style.display = 'block'; return; }
+        document.getElementById('cart-empty').style.display = 'none';
+        
+        let total = 0;
         cart.forEach(i => {
-            list.innerHTML += `
-                <div class="cart-item">
-                    <div>
-                        <div style="font-family:var(--font-premium); font-size:15px; margin-bottom:4px;">${i.name}</div>
-                        <div style="font-size:13px; opacity:0.5;">${i.price.toLocaleString()} ₽</div>
-                    </div>
-                    <div style="color:#ff453a; font-size:11px; font-weight:700; padding:10px;" onclick="removeItem(${i.uid})">УДАЛИТЬ</div>
-                </div>
-            `;
+            total += i.price;
+            list.innerHTML += `<div class="cart-item"><div>${i.name}<br><small>${i.price} ₽</small></div><div onclick="removeItem(${i.uid})" style="color:red; font-size:10px;">УДАЛИТЬ</div></div>`;
         });
+
+        footer.innerHTML = `
+            <div style="margin-top:20px; padding:10px; border-top:1px solid var(--card-border);">
+                <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+                    <span>ИТОГО:</span>
+                    <b style="font-family:var(--font-premium);">${total.toLocaleString()} ₽</b>
+                </div>
+                <button class="action-btn pay-btn" onclick="processPayment()">ОПЛАТИТЬ ЗАКАЗ</button>
+            </div>`;
     }
 
     function removeItem(uid) {
         cart = cart.filter(x => x.uid !== uid);
         renderCart();
-        if(cart.length > 0) tg.MainButton.setText(`ОФОРМИТЬ: ${cart.length}`);
+    }
+
+    function processPayment() {
+        tg.HapticFeedback.notificationOccurred('warning');
+        alert("Оплата будет доступна после настройки платежного шлюза.");
     }
 </script>
 
