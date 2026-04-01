@@ -4,15 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-color: #000000;
             --grid-color: rgba(255, 255, 255, 0.05);
-            --card-bg: rgba(255, 255, 255, 0.03);
-            --card-border: rgba(255, 255, 255, 0.15);
-            --tab-bg: rgba(10, 10, 10, 0.8);
-            --accent: #ffffff;
-            --ios-blue: #007AFF;
+            /* Новые стили для кнопок: тонированные и прозрачные */
+            --card-bg: rgba(255, 255, 255, 0.04); 
+            --card-border: rgba(255, 255, 255, 0.1);
+            /* Стили для хот-бара в стиле фото */
+            --hotbar-bg: rgba(0, 0, 0, 0.95);
+            --hotbar-blur: blur(25px);
+            --hotbar-pill-bg: rgba(255, 255, 255, 0.08); /* Овальная подложка */
+            --text-active: #ffffff;
+            --text-inactive: rgba(255, 255, 255, 0.6);
+            --text-label: rgba(255, 255, 255, 0.4);
+            --font-main: 'Roboto Mono', monospace;
         }
 
         * { 
@@ -23,13 +30,13 @@
 
         body {
             background-color: var(--bg-color);
-            /* Сетка как на скриншоте */
             background-image: 
                 linear-gradient(var(--grid-color) 1px, transparent 1px),
                 linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
             background-size: 35px 35px;
             color: #fff;
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+            /* Применение нового шрифта */
+            font-family: var(--font-main);
             height: 100vh;
             overflow: hidden;
             display: flex;
@@ -41,7 +48,7 @@
             flex: 1;
             position: relative;
             overflow-y: auto;
-            padding-bottom: 100px; /* Отступ под Tab Bar */
+            padding-bottom: 120px; /* Отступ под новый массивный хот-бар */
         }
 
         .screen {
@@ -73,12 +80,12 @@
             background: #fff;
             width: 100px;
             height: 100px;
-            border-radius: 28px; /* iOS Squircle */
+            border-radius: 28px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 25px;
-            box-shadow: 0 0 20px rgba(255,255,255,0.1);
+            box-shadow: 0 0 20px rgba(255,255,255,0.08);
         }
 
         .logo-wrapper img {
@@ -94,11 +101,11 @@
             font-weight: 600;
         }
 
-        /* КНОПКИ-ПЛИТКИ ИЗ СКРИНШОТА */
+        /* КНОПКИ-ПЛИТКИ ИЗ СКРИНШОТА С УЛУЧШЕННЫМ ФОНОМ */
         .main-menu {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 15px;
             width: 100%;
             max-width: 340px;
             margin: 0 auto;
@@ -113,50 +120,80 @@
             font-size: 16px;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
             text-align: center;
             cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
+            transition: all 0.2s;
+            backdrop-filter: blur(5px); /* Легкий блюр фона кнопки */
         }
 
         .menu-btn:active {
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.1);
             transform: scale(0.97);
+            border-color: rgba(255,255,255,0.2);
         }
 
-        /* ТАБ БАР В СТИЛЕ TELEGRAM/IOS */
+        /* ХОТ-БАР В СТИЛЕ ПРИЛОЖЕННОГО ФОТО */
         .tab-bar {
             position: fixed;
             bottom: 0; left: 0; right: 0;
-            height: 85px;
-            background: var(--tab-bg);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border-top: 0.5px solid rgba(255,255,255,0.1);
+            height: 95px; /* Немного выше для массивности */
+            background: var(--hotbar-bg);
+            backdrop-filter: blur(30px) saturate(160%); /* Сильный блюр и сатурация */
+            -webkit-backdrop-filter: blur(30px) saturate(160%);
+            border-top: 0.5px solid rgba(255,255,255,0.08);
             display: flex;
-            justify-content: space-around;
-            padding-top: 8px;
+            justify-content: center; /* Центрирование */
+            padding-top: 10px;
             padding-bottom: env(safe-area-inset-bottom);
             z-index: 1000;
+        }
+
+        .tab-items-wrapper {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            max-width: 400px;
+            position: relative;
         }
 
         .tab-item {
             display: flex;
             flex-direction: column;
             align-items: center;
-            color: #8e8e93;
-            flex: 1;
+            position: relative;
+            z-index: 1;
+            padding: 5px 0;
+            cursor: pointer;
             transition: color 0.3s;
         }
 
-        .tab-item.active {
-            color: var(--ios-blue);
+        /* Цвета текста и иконок */
+        .tab-item { color: var(--text-inactive); }
+        .tab-item.active { color: var(--text-active); }
+        .tab-item.active .tab-label { color: var(--text-label); } /* Лейбл тусклый даже у активного */
+
+        /* Эффект овальной подложки (Pill effect) */
+        .tab-item .tab-pill {
+            position: absolute;
+            top: -2px; left: -10px; right: -10px; bottom: -2px; /* Чуть шире */
+            background: var(--hotbar-pill-bg);
+            border-radius: 40px; /* Сильное скругление */
+            opacity: 0;
+            transform: scale(0.9);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: -1;
+        }
+
+        .tab-item.active .tab-pill {
+            opacity: 1;
+            transform: scale(1);
         }
 
         .tab-icon {
-            width: 26px;
-            height: 26px;
-            margin-bottom: 4px;
+            width: 28px; /* Чуть крупнее */
+            height: 28px;
+            margin-bottom: 5px;
             background: currentColor;
             mask-size: contain;
             -webkit-mask-size: contain;
@@ -165,8 +202,10 @@
         }
 
         .tab-label {
-            font-size: 10px;
+            font-size: 9px; /* Чуть меньше */
             font-weight: 500;
+            color: rgba(255,255,255,0.3); /* Тусклый лейбл */
+            transition: color 0.3s;
         }
 
     </style>
@@ -190,34 +229,38 @@
 
     <div id="cart" class="screen">
         <div class="header">
-            <div class="terminal-text">ВАША КОРЗИНА</div>
+            <div class="terminal-text">STORAGE // CART</div>
         </div>
-        <p style="text-align: center; opacity: 0.5; margin-top: 50px;">Здесь будет список покупок</p>
+        <p style="text-align: center; opacity: 0.5; margin-top: 50px; font-size: 14px;">[ В разработке... ]</p>
     </div>
 
     <div id="profile" class="screen">
         <div class="header">
-            <div class="terminal-text">ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ</div>
+            <div class="terminal-text">ACCESS // PROFILE</div>
         </div>
         <div class="main-menu">
-            <div class="menu-btn" style="padding: 20px;">ИСТОРИЯ ЗАКАЗОВ</div>
-            <div class="menu-btn" style="padding: 20px;">НАСТРОЙКИ</div>
+            <div class="menu-btn" style="padding: 20px;">ЗАКАЗЫ</div>
+            <div class="menu-btn" style="padding: 20px;">ВЫХОД</div>
         </div>
     </div>
 </div>
 
 <div class="tab-bar">
-    <div class="tab-item active" onclick="nav('catalog', this)">
-        <div class="tab-icon" style="-webkit-mask-image: url('https://cdn-icons-png.flaticon.com/512/1170/1170678.png')"></div>
-        <span class="tab-label">Каталог</span>
-    </div>
-    <div class="tab-item" onclick="nav('cart', this)">
-        <div class="tab-icon" style="-webkit-mask-image: url('https://cdn-icons-png.flaticon.com/512/263/263142.png')"></div>
-        <span class="tab-label">Корзина</span>
-    </div>
-    <div class="tab-item" onclick="nav('profile', this)">
-        <div class="tab-icon" style="-webkit-mask-image: url('https://cdn-icons-png.flaticon.com/512/1077/1077063.png')"></div>
-        <span class="tab-label">Профиль</span>
+    <div class="tab-items-wrapper">
+        <div class="tab-item active" onclick="nav('catalog', this)">
+            <div class="tab-pill"></div> <div class="tab-icon" style="-webkit-mask-image: url('https://cdn-icons-png.flaticon.com/512/1170/1170678.png')"></div>
+            <span class="tab-label">Шоп</span>
+        </div>
+        <div class="tab-item" onclick="nav('cart', this)">
+            <div class="tab-pill"></div>
+            <div class="tab-icon" style="-webkit-mask-image: url('https://cdn-icons-png.flaticon.com/512/263/263142.png')"></div>
+            <span class="tab-label">Корзина</span>
+        </div>
+        <div class="tab-item" onclick="nav('profile', this)">
+            <div class="tab-pill"></div>
+            <div class="tab-icon" style="-webkit-mask-image: url('https://cdn-icons-png.flaticon.com/512/1077/1077063.png')"></div>
+            <span class="tab-label">Профиль</span>
+        </div>
     </div>
 </div>
 
@@ -228,19 +271,4 @@
     tg.headerColor = '#000000';
 
     function nav(screenId, el) {
-        // Убираем активный класс у кнопок
-        document.querySelectorAll('.tab-item').forEach(i => i.classList.remove('active'));
-        el.classList.add('active');
-
-        // Переключаем экраны с анимацией
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        const activeScreen = document.getElementById(screenId);
-        activeScreen.classList.add('active');
-
-        // Легкая тактильная отдача iOS
-        tg.HapticFeedback.impactOccurred('light');
-    }
-</script>
-
-</body>
-</html>
+        // Убираем активный класс у кнопок (подложки исчез
