@@ -11,7 +11,8 @@
             --grid: rgba(255, 255, 255, 0.03);
             --card: rgba(255, 255, 255, 0.06);
             --border: rgba(255, 255, 255, 0.1);
-            --accent: #ffffff;
+            --hotbar-bg: rgba(0, 0, 0, 0.96);
+            --pill-color: rgba(255, 255, 255, 0.1);
             --font-main: 'Inter', sans-serif;
             --font-code: 'Roboto Mono', monospace;
         }
@@ -26,165 +27,139 @@
             height: 100vh; width: 100vw; overflow: hidden;
         }
 
-        /* ОСНОВНОЙ СКРОЛЛ-КОНТЕЙНЕР */
-        #app-shell {
+        /* ОСНОВНОЙ КОНТЕЙНЕР СКРОЛЛА */
+        #app-viewport {
             position: absolute; top: 0; left: 0; right: 0; bottom: 0;
             overflow-y: auto; overflow-x: hidden; padding-bottom: 110px;
             -webkit-overflow-scrolling: touch;
         }
 
-        .screen { display: none; padding: 20px; width: 100%; }
-        .screen.active { display: block; animation: slideUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* ПОИСК И ФИЛЬТРЫ */
-        .search-container {
-            margin-bottom: 20px; position: sticky; top: 0; z-index: 100;
-            background: var(--bg); padding: 10px 0;
-        }
-        .search-input {
-            width: 100%; background: var(--card); border: 1px solid var(--border);
-            border-radius: 15px; padding: 15px 20px; color: #fff; font-family: var(--font-code);
-            font-size: 14px; outline: none; transition: 0.3s;
-        }
-        .search-input:focus { border-color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); }
-
-        .filter-bar { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; scrollbar-width: none; }
-        .filter-bar::-webkit-scrollbar { display: none; }
-        .filter-tag {
-            white-space: nowrap; background: var(--card); border: 1px solid var(--border);
-            padding: 8px 16px; border-radius: 12px; font-size: 10px; text-transform: uppercase;
-        }
-        .filter-tag.active { background: #fff; color: #000; }
+        .screen { display: none; padding: 20px; width: 100%; opacity: 0; transform: translateY(10px); transition: opacity 0.4s ease, transform 0.4s ease; }
+        .screen.active { display: block; opacity: 1; transform: translateY(0); }
 
         /* HEADER */
         .header { display: flex; flex-direction: column; align-items: center; margin: 40px 0 30px; }
         .logo-box { 
-            background: #fff; border-radius: 22px; width: 90px; height: 90px;
+            background: #fff; border-radius: 22px; width: 85px; height: 85px;
             display: flex; align-items: center; justify-content: center;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 15px;
         }
-        .logo-box img { width: 55px; }
+        .logo-box img { width: 50px; }
 
-        /* КАРТОЧКИ */
-        .card {
+        /* UI ELEMENTS */
+        .btn-main {
             background: var(--card); border: 1px solid var(--border);
-            border-radius: 25px; margin-bottom: 15px; overflow: hidden;
-            transition: transform 0.2s; position: relative;
+            border-radius: 22px; padding: 28px; font-family: var(--font-main);
+            font-weight: 700; font-size: 17px; text-align: center;
+            text-transform: uppercase; color: #fff; margin-bottom: 15px; cursor: pointer;
         }
-        .card:active { transform: scale(0.98); }
-        .card-img { width: 100%; height: 200px; object-fit: cover; }
-        .card-content { padding: 18px; }
-        .card-price { font-family: var(--font-main); font-size: 18px; margin-top: 8px; }
+        .product-card { background: var(--card); border: 1px solid var(--border); border-radius: 25px; margin-bottom: 20px; overflow: hidden; cursor: pointer; transition: transform 0.2s; }
+        .product-card:active { transform: scale(0.98); }
+        .preview-img { width: 100%; height: 180px; object-fit: cover; }
+        
+        /* ТЕСТЫ FPS С ПОЛОСКОЙ */
+        .test-line { 
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(255,255,255,0.03); padding: 14px;
+            border-radius: 12px; margin-bottom: 8px; font-size: 12px;
+        }
+        .bar-bg { width: 60px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; }
+        .bar-fill { height: 100%; background: #fff; border-radius: 2px; }
 
-        /* СЛАЙДЕР В ТОВАРЕ */
-        .slider-wrap { position: relative; border-radius: 25px; overflow: hidden; margin-bottom: 20px; border: 1px solid var(--border); }
-        .slider-inner { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
-        .slider-inner::-webkit-scrollbar { display: none; }
-        .slide { flex: 0 0 100%; height: 300px; scroll-snap-align: center; }
+        /* SLIDER */
+        .slider-wrap { position: relative; width: 100%; margin-bottom: 20px; border-radius: 25px; overflow: hidden; border: 1px solid var(--border); }
+        .photo-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; background: #1a1a1c; }
+        .photo-slider::-webkit-scrollbar { display: none; }
+        .slide { flex: 0 0 100%; height: 280px; scroll-snap-align: center; }
         .slide img { width: 100%; height: 100%; object-fit: cover; }
-        .dots { display: flex; justify-content: center; gap: 8px; margin-top: -30px; padding-bottom: 20px; position: relative; }
+        .dots { display: flex; justify-content: center; gap: 8px; margin-top: -25px; position: relative; padding-bottom: 15px; }
         .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.3); transition: 0.3s; }
-        .dot.active { background: #fff; transform: scale(1.4); }
+        .dot.active { background: #fff; transform: scale(1.3); }
 
-        /* ANIMATION: FLY EFFECT */
-        .fly-item {
-            position: fixed; z-index: 9999; pointer-events: none;
-            width: 50px; height: 50px; border-radius: 12px;
-            background-size: cover; background-position: center;
-            transition: all 0.8s cubic-bezier(0.1, 0.7, 0.3, 1);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-        }
-
-        /* NAVBAR */
-        .navbar {
+        /* HOT BAR */
+        .tab-bar {
             position: fixed; bottom: 0; left: 0; right: 0; height: 90px;
-            background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(20px);
-            border-top: 1px solid var(--border); display: flex; z-index: 1000;
+            background: var(--hotbar-bg); backdrop-filter: blur(25px);
+            border-top: 1px solid var(--border); display: flex;
+            justify-content: space-around; z-index: 1000;
         }
-        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: rgba(255,255,255,0.4); position: relative; }
-        .nav-item.active { color: #fff; }
-        .nav-pill { position: absolute; width: 60px; height: 35px; background: rgba(255,255,255,0.1); border-radius: 18px; top: 15px; opacity: 0; transition: 0.3s; }
-        .nav-item.active .nav-pill { opacity: 1; }
-        .nav-icon { width: 22px; height: 22px; background: currentColor; mask-size: contain; -webkit-mask-image: var(--i); margin-bottom: 25px; }
-        .nav-label { position: absolute; bottom: 15px; font-size: 9px; font-weight: 700; text-transform: uppercase; }
+        .tab-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; color: rgba(255,255,255,0.4); }
+        .tab-item.active { color: #fff; }
+        .pill { position: absolute; width: 60px; height: 35px; background: var(--pill-color); border-radius: 18px; top: 15px; opacity: 0; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .tab-item.active .pill { opacity: 1; }
+        .tab-icon { width: 22px; height: 22px; background: currentColor; mask-size: contain; -webkit-mask-image: var(--i); margin-bottom: 25px; }
+        .tab-label { position: absolute; bottom: 15px; font-size: 9px; font-weight: 700; text-transform: uppercase; }
 
         /* КНОПКИ */
-        .btn-action {
-            background: #fff; color: #000; border: none; padding: 22px; border-radius: 20px;
-            font-family: var(--font-main); font-weight: 700; font-size: 16px; width: 100%; margin-top: 20px;
-        }
-        .btn-secondary { background: var(--card); color: #fff; border: 1px solid var(--border); margin-top: 10px; }
+        .action-btn { background: #fff; color: #000; border: none; padding: 22px; border-radius: 20px; font-family: var(--font-main); font-weight: 700; width: 100%; font-size: 16px; margin-top: 15px; cursor: pointer; transition: background 0.2s; }
+        .action-btn:active { background: #e0e0e0; }
+        .back-btn { font-size: 11px; opacity: 0.4; padding: 15px 0; cursor: pointer; text-transform: uppercase; display: inline-block; }
 
-        .cart-row { background: var(--card); padding: 18px; border-radius: 20px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .cart-item { background: var(--card); padding: 18px; border-radius: 20px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+
+        /* АНИМАЦИЯ ПОЛЕТА (ПЛАВНАЯ) */
+        .fly-item {
+            position: fixed; z-index: 9999; pointer-events: none;
+            width: 60px; height: 60px; border-radius: 15px;
+            background-size: cover; background-position: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            /* Удлинили время и сделали кривую Безье плавнее */
+            transition: all 1.2s cubic-bezier(0.19, 1, 0.22, 1);
+        }
     </style>
 </head>
 <body>
 
-<div id="app-shell">
+<div id="app-viewport">
     
-    <div id="scr-home" class="screen active">
+    <div id="shop" class="screen active">
         <div class="header">
             <div class="logo-box"><img src="https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/logo.png"></div>
-            <div style="font-size: 10px; letter-spacing: 5px; opacity: 0.4;">NEXTECH // MAIN</div>
+            <div style="font-size: 10px; letter-spacing: 5px; opacity: 0.4;">NEXTECH // TERMINAL</div>
         </div>
-        <div class="btn-action" style="background: var(--card); color: #fff; border: 1px solid var(--border); margin-bottom: 12px; padding: 30px;" onclick="openCatalog('gpu')">ВИДЕОКАРТЫ</div>
-        <div class="btn-action" style="background: var(--card); color: #fff; border: 1px solid var(--border); padding: 30px;" onclick="openCatalog('cpu')">ПРОЦЕССОРЫ</div>
+        <div class="btn-main" onclick="openCat('gpu')">Видеокарты</div>
+        <div class="btn-main" onclick="openCat('cpu')">Процессоры</div>
     </div>
 
-    <div id="scr-catalog" class="screen">
-        <div onclick="navigate('home')" style="opacity:0.4; font-size:11px; margin-bottom:15px;">← ГЛАВНАЯ</div>
-        
-        <div class="search-container">
-            <input type="text" class="search-input" id="search-bar" placeholder="Поиск железа..." oninput="filterProducts()">
-        </div>
-        
-        <div class="filter-bar">
-            <div class="filter-tag active" id="sort-default" onclick="setSort('default')">Все</div>
-            <div class="filter-tag" id="sort-price" onclick="setSort('price')">Сначала дешевле</div>
-        </div>
-
-        <div id="catalog-list"></div>
+    <div id="catalog" class="screen">
+        <div class="back-btn" onclick="showScreen('shop')">← НАЗАД</div>
+        <h1 id="cat-title" style="margin-bottom:20px;">КАТАЛОГ</h1>
+        <div id="cat-list"></div>
     </div>
 
-    <div id="scr-item" class="screen">
-        <div onclick="navigate('catalog')" style="opacity:0.4; font-size:11px; margin-bottom:15px;">← НАЗАД</div>
-        <div id="item-details"></div>
+    <div id="details" class="screen">
+        <div class="back-btn" onclick="showScreen('catalog')">← К СПИСКУ</div>
+        <div id="details-content"></div>
     </div>
 
-    <div id="scr-cart" class="screen">
-        <div class="header"><div style="font-size: 10px; letter-spacing: 5px; opacity: 0.4;">CART // STORAGE</div></div>
-        <div id="cart-items"></div>
-        <div id="cart-empty" style="text-align:center; padding:50px; opacity:0.2;">[ ПУСТО ]</div>
+    <div id="cart" class="screen">
+        <div class="header"><h1>STORAGE // CART</h1></div>
+        <div id="cart-list"></div>
+        <div id="cart-empty" style="text-align:center; opacity:0.2; margin-top:50px;">ПУСТО</div>
     </div>
 
-    <div id="scr-profile" class="screen">
-        <div class="header"><div style="font-size: 10px; letter-spacing: 5px; opacity: 0.4;">USER // TERMINAL</div></div>
-        <div class="btn-action btn-secondary" style="text-align:left; padding: 20px;">Мои заказы <span style="float:right; opacity:0.3;">0</span></div>
-        <div class="btn-action btn-secondary" style="text-align:left; padding: 20px;">Адрес доставки</div>
+    <div id="profile" class="screen">
+        <div class="header"><h1>USER // PROFILE</h1></div>
+        <div class="btn-main" style="padding:20px; font-size:14px; text-align:left;">Мои заказы <span style="float:right; opacity:0.3;">0</span></div>
+        <div class="btn-main" style="padding:20px; font-size:14px; opacity:0.5;">Поддержка</div>
     </div>
-
 </div>
 
-<div class="navbar">
-    <div id="nav-home" class="nav-item active" onclick="handleTab(this, 'home')">
-        <div class="nav-pill"></div>
-        <div class="nav-icon" style="--i: url('https://cdn-icons-png.flaticon.com/512/1170/1170678.png')"></div>
-        <span class="nav-label">Шоп</span>
+<div class="tab-bar">
+    <div id="tab-home" class="tab-item active" onclick="switchTab(this, 'shop')">
+        <div class="pill"></div>
+        <div class="tab-icon" style="--i: url('https://cdn-icons-png.flaticon.com/512/1170/1170678.png')"></div>
+        <span class="tab-label">Шоп</span>
     </div>
-    <div id="nav-cart" class="nav-item" onclick="handleTab(this, 'cart')">
-        <div class="nav-pill"></div>
-        <div class="nav-icon" style="--i: url('https://cdn-icons-png.flaticon.com/512/263/263142.png')"></div>
-        <span class="nav-label">Корзина</span>
+    <div id="tab-cart" class="tab-item" onclick="switchTab(this, 'cart')">
+        <div class="pill"></div>
+        <div class="tab-icon" style="--i: url('https://cdn-icons-png.flaticon.com/512/263/263142.png')"></div>
+        <span class="tab-label">Корзина</span>
     </div>
-    <div id="nav-profile" class="nav-item" onclick="handleTab(this, 'profile')">
-        <div class="nav-pill"></div>
-        <div class="nav-icon" style="--i: url('https://cdn-icons-png.flaticon.com/512/1077/1077063.png')"></div>
-        <span class="nav-label">Профиль</span>
+    <div id="tab-profile" class="tab-item" onclick="switchTab(this, 'profile')">
+        <div class="pill"></div>
+        <div class="tab-icon" style="--i: url('https://cdn-icons-png.flaticon.com/512/1077/1077063.png')"></div>
+        <span class="tab-label">Профиль</span>
     </div>
 </div>
 
@@ -192,146 +167,159 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    const db = {
+    const data = {
         'gpu': [
-            { id: 1, name: 'RX 580 4GB', price: 5800, imgs: ['photo_2026-04-01_13-15-04.jpg', 'https://via.placeholder.com/600x400/161618/ffffff?text=Cooling'], desc: 'Обслужена, новые прокладки.' },
-            { id: 2, name: 'RTX 3060 12GB', price: 23500, imgs: ['https://via.placeholder.com/600x400/161618/ffffff?text=RTX+3060'], desc: 'Идеальное состояние, чек.' },
-            { id: 4, name: 'GTX 1660 Super', price: 12000, imgs: ['https://via.placeholder.com/600x400/161618/ffffff?text=GTX+1660'], desc: 'Топ за свои деньги для 1080p.' }
+            { id: 1, name: 'RX 580 4GB', price: 5800, 
+              imgs: ['photo_2026-04-01_13-15-04.jpg', 'https://via.placeholder.com/600x400/1a1a1c/ffffff?text=COOLING', 'https://via.placeholder.com/600x400/1a1a1c/ffffff?text=PORTS'],
+              full: 'Легендарная карта. Заменена термопаста, тихая.',
+              fps: [{n:'Cyberpunk', v:'35 FPS', p:30}, {n:'CS2 (High)', v:'110 FPS', p:80}]
+            },
+            { id: 2, name: 'RTX 3060 12GB', price: 23500, 
+              imgs: ['https://via.placeholder.com/600x400/1a1a1c/ffffff?text=RTX+3060'], 
+              full: 'RTX & DLSS. Состояние новой.',
+              fps: [{n:'Cyberpunk (RT On)', v:'60 FPS', p:90}, {n:'RDR 2', v:'75 FPS', p:85}]
+            }
         ],
         'cpu': [
-            { id: 3, name: 'Ryzen 5 5600X', price: 13200, imgs: ['photo_2026-04-01_13-21-49.jpg', 'https://via.placeholder.com/600x400/161618/ffffff?text=Socket+AM4'], desc: '6 ядер, 12 потоков, BOX.' }
+            { id: 3, name: 'Ryzen 5 5600X', price: 13200, 
+              imgs: ['photo_2026-04-01_13-21-49.jpg', 'https://via.placeholder.com/600x400/1a1a1c/ffffff?text=AMD+SOCKET'],
+              full: 'BOX версия. Идеален для AM4.',
+              fps: [{n:'Cinebench R23', v:'11500 pts', p:85}, {n:'Игровая нагрузка', v:'Elite', p:95}]
+            }
         ]
     };
 
     let cart = [];
-    let currentCat = '';
-    let sortMode = 'default';
 
-    function navigate(id) {
-        document.getElementById('app-shell').scrollTo(0, 0);
+    function showScreen(id) {
+        // Жесткий сброс скролла контейнера
+        document.getElementById('app-viewport').scrollTo(0, 0); 
+
         document.querySelectorAll('.screen').forEach(s => { s.classList.remove('active'); s.style.display = 'none'; });
-        const target = document.getElementById('scr-' + id);
+        const target = document.getElementById(id);
         target.style.display = 'block';
-        setTimeout(() => target.classList.add('active'), 10);
+        setTimeout(() => target.classList.add('active'), 20);
         if(id === 'cart') renderCart();
         tg.HapticFeedback.impactOccurred('light');
     }
 
-    function handleTab(el, id) {
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    function switchTab(el, id) {
+        document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
         el.classList.add('active');
-        navigate(id);
+        showScreen(id);
     }
 
-    function openCatalog(cat) {
-        currentCat = cat;
-        filterProducts();
-        navigate('catalog');
-    }
-
-    function filterProducts() {
-        const query = document.getElementById('search-bar').value.toLowerCase();
-        const list = document.getElementById('catalog-list');
+    function openCat(cat) {
+        const list = document.getElementById('cat-list');
+        document.getElementById('cat-title').innerText = cat.toUpperCase() + ' // TERMINAL';
         list.innerHTML = '';
-
-        let items = [...db[currentCat]];
-
-        // Поиск
-        if(query) items = items.filter(i => i.name.toLowerCase().includes(query));
-
-        // Сортировка
-        if(sortMode === 'price') items.sort((a, b) => a.price - b.price);
-
-        items.forEach(p => {
+        data[cat].forEach(p => {
             list.innerHTML += `
-                <div class="card" onclick="openItem('${currentCat}', ${p.id})">
-                    <img src="${p.imgs[0]}" class="card-img" id="img-${p.id}">
-                    <div class="card-content">
-                        <div style="font-family:var(--font-main); font-size:18px;">${p.name}</div>
-                        <div style="font-size:12px; opacity:0.4; margin-top:5px;">${p.desc}</div>
-                        <div class="card-price">${p.price.toLocaleString()} ₽</div>
+                <div class="product-card" onclick="openItem('${cat}', ${p.id})">
+                    <img src="${p.imgs[0]}" class="preview-img">
+                    <div style="padding:18px;">
+                        <div style="font-family:var(--font-main); font-size:17px; margin-bottom:5px;">${p.name}</div>
+                        <div style="font-family:var(--font-main); font-size:16px;">${p.price.toLocaleString()} ₽</div>
                     </div>
                 </div>`;
         });
-    }
-
-    function setSort(mode) {
-        sortMode = mode;
-        document.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
-        document.getElementById('sort-' + mode).classList.add('active');
-        filterProducts();
+        showScreen('catalog');
     }
 
     function openItem(cat, id) {
-        const p = db[cat].find(x => x.id === id);
-        const area = document.getElementById('item-details');
-        let slides = p.imgs.map(s => `<div class="slide"><img src="${s}"></div>`).join('');
+        const p = data[cat].find(x => x.id === id);
+        const cont = document.getElementById('details-content');
+        let slides = p.imgs.map(img => `<div class="slide"><img src="${img}"></div>`).join('');
         let dots = p.imgs.map((_, i) => `<div class="dot ${i===0?'active':''}"></div>`).join('');
-
-        area.innerHTML = `
-            <div class="slider-wrap">
-                <div class="slider-inner" onscroll="updateDots(this)">${slides}</div>
+        
+        cont.innerHTML = `
+            <div class="slider-wrapper">
+                <div class="photo-slider" onscroll="updateSliderDots(this)">${slides}</div>
                 <div class="dots">${dots}</div>
             </div>
             <h2 style="font-family:var(--font-main); font-size:26px;">${p.name}</h2>
-            <p style="opacity:0.5; margin:15px 0; line-height:1.6;">${p.desc} Экземпляр прошел полную проверку в стресс-тестах FurMark и OCCT. Гарантия от нашего сервиса.</p>
-            <button class="btn-action" id="buy-btn-${p.id}" onclick="animateFly(${p.id}, '${p.imgs[0]}', '${p.name}', ${p.price})">В КОРЗИНУ — ${p.price.toLocaleString()} ₽</button>
-        `;
-        navigate('item');
+            <p style="opacity:0.5; margin:15px 0 25px; line-height:1.6; font-size:14px;">${p.full}</p>
+            <div style="font-size:10px; opacity:0.3; margin-bottom:12px; letter-spacing:2px;">ИГРОВЫЕ ТЕСТЫ</div>
+            ${p.fps.map(f => `
+                <div class="test-line">
+                    <span>${f.n}</span>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <b>${f.v}</b>
+                        <div class="bar-bg"><div class="bar-fill" style="width:${f.p}%"></div></div>
+                    </div>
+                </div>
+            `).join('')}
+            <button class="action-btn" id="buy-btn" onclick="animateAndAddToCart('${p.imgs[0]}', '${p.name}', ${p.price})">В КОРЗИНУ — ${p.price.toLocaleString()} ₽</button>`;
+        showScreen('details');
     }
 
-    function updateDots(el) {
-        const idx = Math.round(el.scrollLeft / el.offsetWidth);
-        el.parentElement.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+    function updateSliderDots(el) {
+        const i = Math.round(el.scrollLeft / el.offsetWidth);
+        el.parentElement.querySelectorAll('.dot').forEach((d, idx) => d.classList.toggle('active', idx === i));
     }
 
-    // АНИМАЦИЯ ПОЛЕТА
-    function animateFly(id, imgSrc, name, price) {
-        const btn = document.getElementById(`buy-btn-${id}`);
-        const cartIcon = document.getElementById('nav-cart');
+    // АНИМАЦИЯ ПОЛЕТА (ПЛАВНАЯ)
+    function animateAndAddToCart(imgSrc, name, price) {
+        const btn = document.getElementById('buy-btn');
+        const cartTab = document.getElementById('tab-cart');
         const rect = btn.getBoundingClientRect();
-        const cartRect = cartIcon.getBoundingClientRect();
+        const cartRect = cartTab.getBoundingClientRect();
 
+        // Создаем клон для полета
         const flyer = document.createElement('div');
         flyer.className = 'fly-item';
         flyer.style.backgroundImage = `url(${imgSrc})`;
-        flyer.style.left = rect.left + (rect.width/2) - 25 + 'px';
+        // Центрируем клон над кнопкой
+        flyer.style.left = rect.left + (rect.width/2) - 30 + 'px';
         flyer.style.top = rect.top + 'px';
         document.body.appendChild(flyer);
 
+        // Запускаем полет по дуге (setTimeout для CSS)
         setTimeout(() => {
-            flyer.style.left = cartRect.left + (cartRect.width/2) - 25 + 'px';
+            // Центрируем клон в иконке корзины
+            flyer.style.left = cartRect.left + (cartRect.width/2) - 30 + 'px';
             flyer.style.top = cartRect.top + 'px';
-            flyer.style.transform = 'scale(0.2) rotate(360deg)';
+            // Добавляем вращение и уменьшение
+            flyer.style.transform = 'scale(0.3) rotate(720deg)';
             flyer.style.opacity = '0';
-        }, 50);
+        }, 100); // Даем время CSS применить начальную позицию
 
+        // Завершение анимации
         setTimeout(() => {
             flyer.remove();
             cart.push({name, price, uid: Date.now()});
             tg.HapticFeedback.notificationOccurred('success');
-        }, 800);
+            // Если MainButton активна, обновляем ее
+            if(shoppingCart.length > 0) tg.MainButton.setText(`ОФОРМИТЬ (${cart.length})`);
+        }, 1300); // 1.2с анимации + 0.1с задержка
     }
 
     function renderCart() {
-        const area = document.getElementById('cart-items');
-        const empty = document.getElementById('cart-empty');
-        area.innerHTML = '';
-        if(cart.length === 0) { empty.style.display = 'block'; return; }
-        empty.style.display = 'none';
+        const list = document.getElementById('cart-list');
+        list.innerHTML = '';
+        if(cart.length === 0) { document.getElementById('cart-empty').style.display = 'block'; return; }
+        document.getElementById('cart-empty').style.display = 'none';
         
         let total = 0;
         cart.forEach(i => {
             total += i.price;
-            area.innerHTML += `<div class="cart-row"><div>${i.name}<br><small>${i.price} ₽</small></div><div onclick="removeFromCart(${i.uid})" style="color:red; font-size:10px;">УДАЛИТЬ</div></div>`;
+            list.innerHTML += `
+                <div class="cart-item">
+                    <div>
+                        <div style="font-family:var(--font-main); font-size:15px; margin-bottom:4px;">${i.name}</div>
+                        <div style="font-size:13px; opacity:0.5;">${i.price.toLocaleString()} ₽</div>
+                    </div>
+                    <div onclick="removeItem(${i.uid})" style="color:#ff3b30; font-size:11px; font-weight:700; padding:10px;">УДАЛИТЬ</div>
+                </div>`;
         });
-        area.innerHTML += `<div style="padding:20px; text-align:right;">ИТОГО: <b>${total.toLocaleString()} ₽</b></div><button class="btn-action" onclick="alert('Оплата временно недоступна')">ОПЛАТИТЬ</button>`;
+        list.innerHTML += `<div style="text-align:right; margin:20px; font-size:18px;">ИТОГО: <b>${total.toLocaleString()} ₽</b></div><button class="action-btn" style="background:#34c759; color:#fff;" onclick="alert('Оплата временно недоступна')">ОФОРМИТЬ ЗАКАЗ</button>`;
     }
 
-    function removeFromCart(uid) {
+    function removeItem(uid) {
         cart = cart.filter(i => i.uid !== uid);
         renderCart();
     }
 </script>
+
 </body>
 </html>
