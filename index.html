@@ -6,12 +6,11 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root { 
-            --bg: #000000; 
-            --card: #1c1c1e; /* Цвет карточек в iOS Dark Mode */
-            --brd: #38383a; 
-            --accent: #0a84ff; /* iOS Blue */
-            --text-secondary: #8e8e93;
-            --tab-bg: rgba(20, 20, 20, 0.8);
+            --bg: #0a0a0a; 
+            --accent: #0088cc; /* Цвет Telegram Blue */
+            --grid-color: rgba(0, 255, 255, 0.05);
+            --tab-bg: rgba(22, 22, 22, 0.75);
+            --brd: rgba(255, 255, 255, 0.1);
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
@@ -19,99 +18,125 @@
         body { 
             background-color: var(--bg); 
             color: #fff; 
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif; 
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", sans-serif; 
             overflow: hidden;
             height: 100vh;
+            /* Сетка на фоне как в старой версии */
+            background-image: 
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 30px 30px;
         }
 
         /* КОНТЕЙНЕР ДЛЯ ЭКРАНОВ */
         .app-content {
             position: absolute;
             top: 0; left: 0; right: 0;
-            bottom: 84px; /* Место под Tab Bar */
+            bottom: 84px; 
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
+            padding-bottom: 20px;
         }
 
         .screen { 
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            padding: 20px 20px 40px;
             display: none; 
-            background: var(--bg);
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
         }
 
-        .active { display: block; z-index: 10; animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-
-        @keyframes slideIn {
-            from { transform: translateX(100%); }
-            to { transform: translateX(0); }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        /* NAVIGATION BAR */
-        .nav-header {
-            padding-top: env(safe-area-inset-top); /* Отступ под челку */
-            margin-bottom: 20px;
+        .active { display: block; }
+
+        /* ЛОГОТИП (Верхняя часть) */
+        .header-logo {
+            text-align: center;
+            padding: 40px 0 20px;
+        }
+        
+        .logo-text {
+            font-size: 28px;
+            font-weight: 900;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            color: #fff;
+            text-shadow: 0 0 15px rgba(0, 136, 204, 0.8);
         }
 
-        .nav-title { font-size: 34px; font-weight: 700; letter-spacing: -0.5px; }
+        /* КАРТОЧКИ ТОВАРОВ */
+        .card { 
+            background: rgba(255, 255, 255, 0.03); 
+            border: 1px solid var(--brd);
+            border-radius: 16px; 
+            padding: 16px; 
+            margin-bottom: 16px; 
+            backdrop-filter: blur(10px);
+        }
+        .card img { width: 100%; border-radius: 10px; margin-bottom: 12px; }
+        .card h3 { font-size: 18px; margin-bottom: 6px; }
+        .price { font-size: 16px; color: var(--accent); font-weight: bold; margin-bottom: 12px; }
+        
+        .buy-btn { 
+            background: var(--accent); color: #fff; border: none; 
+            padding: 12px; border-radius: 10px; font-weight: 600; width: 100%; 
+            transition: transform 0.1s;
+        }
+        .buy-btn:active { transform: scale(0.97); }
 
-        /* TAB BAR (iOS Style) */
+        /* TAB BAR (iOS Telegram Style) */
         .tab-bar {
             position: fixed;
             bottom: 0; left: 0; right: 0;
             height: 84px;
             background: var(--tab-bg);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border-top: 0.5px solid var(--brd);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-top: 0.3px solid var(--brd);
             display: flex;
             justify-content: space-around;
-            padding-top: 10px;
+            padding-top: 6px;
             padding-bottom: env(safe-area-inset-bottom);
-            z-index: 100;
+            z-index: 1000;
         }
 
         .tab-item {
             display: flex;
             flex-direction: column;
             align-items: center;
-            color: var(--text-secondary);
-            font-size: 10px;
-            font-weight: 500;
-            text-decoration: none;
-            cursor: pointer;
+            color: #8e8e93; /* Цвет неактивных иконок iOS */
+            flex: 1;
+            transition: color 0.2s;
         }
 
-        .tab-item.active-tab { color: var(--accent); }
+        .tab-item.active-tab {
+            color: var(--accent);
+        }
 
         .tab-icon {
-            width: 24px; height: 24px;
-            margin-bottom: 4px;
+            width: 26px; height: 26px;
+            margin-bottom: 3px;
             background: currentColor;
             mask-size: contain;
             -webkit-mask-size: contain;
             mask-repeat: no-repeat;
             -webkit-mask-repeat: no-repeat;
+            mask-position: center;
         }
 
-        /* КАРТОЧКИ ТОВАРОВ */
-        .card { 
-            background: var(--card); 
-            border-radius: 12px; 
-            padding: 16px; 
-            margin-bottom: 16px; 
-        }
-        .card img { width: 100%; border-radius: 8px; margin-bottom: 12px; }
-        .card h3 { font-size: 17px; font-weight: 600; margin-bottom: 4px; }
-        .price { font-size: 17px; color: var(--text-secondary); margin-bottom: 12px; }
-        
-        .buy-btn { 
-            background: var(--accent); color: #fff; border: none; 
-            padding: 10px; border-radius: 8px; font-weight: 600; width: 100%; 
+        .tab-label {
+            font-size: 10px;
+            font-weight: 500;
         }
 
-        .buy-btn:active { opacity: 0.7; }
+        /* Стили для пустых разделов */
+        .placeholder {
+            text-align: center;
+            color: #8e8e93;
+            margin-top: 50px;
+        }
 
     </style>
 </head>
@@ -119,99 +144,32 @@
 
 <div class="app-content">
     <div id="shop" class="screen active">
-        <div class="nav-header">
-            <h1 class="nav-title">Магазин</h1>
+        <div class="header-logo">
+            <div class="logo-text">NEXTECH</div>
         </div>
+        
         <div class="card">
-            <img src="https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/gpu_photo.jpg">
+            <img src="https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/gpu_photo.jpg" alt="GPU">
             <h3>Sapphire RX 580</h3>
             <div class="price">5,800 ₽</div>
-            <button class="buy-btn" onclick="addToCart('RX 580', 5800)">Купить</button>
+            <button class="buy-btn" onclick="addToCart('RX 580', 5800)">В корзину</button>
         </div>
     </div>
 
     <div id="search" class="screen">
-        <div class="nav-header">
-            <h1 class="nav-title">Поиск</h1>
-        </div>
-        <p style="color: var(--text-secondary)">Раздел в разработке...</p>
+        <div class="header-logo"><div class="logo-text">ПОИСК</div></div>
+        <div class="placeholder">Начните вводить название...</div>
     </div>
 
     <div id="cart" class="screen">
-        <div class="nav-header">
-            <h1 class="nav-title">Корзина</h1>
-        </div>
+        <div class="header-logo"><div class="logo-text">КОРЗИНА</div></div>
         <div id="cart-items"></div>
-        <div id="total-price" style="margin-top: 20px; font-weight: 700; font-size: 20px;"></div>
+        <div id="total-price" style="margin-top: 20px; font-weight: 700; font-size: 20px; text-align: center; color: var(--accent);"></div>
     </div>
 </div>
 
 <div class="tab-bar">
     <div class="tab-item active-tab" onclick="switchTab(this, 'shop')">
         <div class="tab-icon" style="-webkit-mask-image: url('https://cdn-icons-png.flaticon.com/512/263/263142.png')"></div>
-        <span>Шоп</span>
+        <span class="tab-label">Магазин</span>
     </div>
-    <div class="tab-item" onclick="switchTab(this, 'search')">
-        <div class="tab-icon" style="-webkit-mask-image: url('https://cdn-icons-png.flaticon.com/512/622/622669.png')"></div>
-        <span>Поиск</span>
-    </div>
-    <div class="tab-item" onclick="switchTab(this, 'cart')">
-        <div class="tab-icon" style="-webkit-mask-image: url('https://cdn-icons-png.flaticon.com/512/1170/1170678.png')"></div>
-        <span>Корзина</span>
-    </div>
-</div>
-
-<script>
-    const tg = window.Telegram.WebApp;
-    tg.expand();
-    tg.backgroundColor = '#000000';
-    tg.headerColor = '#000000';
-
-    let cartData = [];
-
-    function switchTab(el, tabId) {
-        // Управление классами табов
-        document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active-tab'));
-        el.classList.add('active-tab');
-
-        // Переключение экранов
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
-
-        tg.HapticFeedback.impactOccurred('light');
-
-        if(tabId === 'cart') renderCart();
-    }
-
-    function addToCart(name, price) {
-        cartData.push({name, price});
-        tg.HapticFeedback.notificationOccurred('success');
-    }
-
-    function renderCart() {
-        const container = document.getElementById('cart-items');
-        const totalContainer = document.getElementById('total-price');
-        container.innerHTML = '';
-        let total = 0;
-
-        if(cartData.length === 0) {
-            container.innerHTML = '<p style="color: var(--text-secondary)">Тут пока пусто</p>';
-            totalContainer.innerText = '';
-            return;
-        }
-
-        cartData.forEach(item => {
-            total += item.price;
-            container.innerHTML += `
-                <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 0.5px solid var(--brd)">
-                    <span>${item.name}</span>
-                    <span style="font-weight: 600">${item.price} ₽</span>
-                </div>
-            `;
-        });
-        totalContainer.innerText = `Итого: ${total} ₽`;
-    }
-</script>
-
-</body>
-</html>
