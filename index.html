@@ -8,7 +8,6 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <style>
-        /* ТВОЙ СТИЛЬ: ТЕРМИНАЛ */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
         body { 
             background-color: #0d0d0f; 
@@ -96,7 +95,7 @@
     <div id="gpu-list" class="page">
         <div class="back" onclick="openPage('home')">← ТЕРМИНАЛ</div>
         <input type="text" class="search-box" placeholder="ПОИСК...">
-        <div class="card" onclick="openProduct('RX 580 Nitro+', 5800, 'gpu1.jpg', '<b>Технические характеристики:</b><br>• Объем памяти: 8GB GDDR5<br>• Шина: 256-bit (Samsung чипы)<br>• Частота ядра: 1411 MHz<br><br><b>Состояние и тесты:</b><br>• Полностью обслужена, заменена термопаста на Arctic MX-4.<br>• В стресс-тесте FurMark держит стабильные 67°C при умеренных оборотах.<br>• В играх (CS2, Dota 2) показывает отличный FPS и плавную картинку.<br>• Визуально в идеале, кулеры не шумят, без посторонних звуков.')">
+        <div class="card" onclick="openProduct('Sapphire Nitro+ RX 580', 5800, 'gpu1.jpg', '<b>Модель:</b> Sapphire Radeon RX 580 Nitro+<br><b>Память:</b> 8GB GDDR5 (256-bit)<br><b>Интерфейс:</b> PCI-E 3.0<br><br><b>Описание:</b><br>Профессиональное решение для гейминга в Full HD. Видеокарта прошла полный цикл предпродажной подготовки. Высокая энергоэффективность и продвинутая система охлаждения Dual-X. Состояние компонентов соответствует категории Grade A.<br><br><b>Гарантия:</b> 3 дня на проверку работоспособности.')">
             <img src="gpu1.jpg">
             <h3>Sapphire Nitro+ RX 580</h3>
             <div class="price">5 800 ₽</div>
@@ -106,7 +105,7 @@
     <div id="cpu-list" class="page">
         <div class="back" onclick="openPage('home')">← ТЕРМИНАЛ</div>
         <input type="text" class="search-box" placeholder="ПОИСК...">
-        <div class="card" onclick="openProduct('Ryzen 5 5600X', 12500, 'cpu1.jpg', '<b>Технические характеристики:</b><br>• Ядер: 6 | Потоков: 12<br>• Базовая частота: 3.7 GHz<br>• Turbo Boost: до 4.6 GHz<br>• Сокет: AM4 | L3 Кэш: 32MB<br><br><b>Особенности:</b><br>• Топовый процессор для гейминга и рабочих задач.<br>• Разблокированный множитель для легкого разгона.<br>• Холодный и производительный, протестирован в OCCT на стабильность вольтажа.<br>• Ножки все ровные, состояние нового.')">
+        <div class="card" onclick="openProduct('AMD Ryzen 5 5600X', 12500, 'cpu1.jpg', '<b>Линейка:</b> Ryzen 5 (Vermeer)<br><b>Ядра/Потоки:</b> 6 / 12<br><b>Частота:</b> 3.7 GHz (до 4.6 GHz Turbo)<br><b>Сокет:</b> AM4<br><br><b>Описание:</b><br>Высокопроизводительный процессор на архитектуре Zen 3. Идеально подходит для современных игровых систем и работы с контентом. Товар поставляется в формате OEM. Проверен на стабильность под экстремальными нагрузками.<br><br><b>Гарантия:</b> 3 дня на проверку работоспособности.')">
             <img src="cpu1.jpg">
             <h3>AMD Ryzen 5 5600X</h3>
             <div class="price">12 500 ₽</div>
@@ -116,23 +115,23 @@
     <div id="cart" class="page">
         <h2 style="margin-bottom: 20px; font-weight: 800;">КОРЗИНА</h2>
         <div class="profile-section" id="cart-content">
-            <p style="opacity: 0.4;">Тут пока пусто...</p>
+            <p style="opacity: 0.4;">Ваша корзина пуста.</p>
         </div>
         <div id="cart-footer" style="display:none;">
             <div class="price" id="total-price" style="margin-bottom:20px;">0 ₽</div>
-            <button class="buy" onclick="tg.showAlert('Заказ оформлен!')">ОФОРМИТЬ ЗАКАЗ</button>
+            <button class="buy" onclick="tg.showAlert('Заявка на заказ принята! Мы свяжемся с вами.')">ОФОРМИТЬ ЗАКАЗ</button>
         </div>
     </div>
 
     <div id="profile" class="page">
         <h2 style="margin-bottom: 20px; font-weight: 800;">ПРОФИЛЬ</h2>
         <div class="profile-section">
-            <span class="section-label">О нас</span>
-            <p style="font-size: 14px;">Тестируем всё в OCCT и FurMark. Гарантия на проверку — 3 дня.</p>
+            <span class="section-label">О магазине</span>
+            <p style="font-size: 14px;">nexTech — специализированный магазин компьютерных комплектующих. Мы обеспечиваем строгий контроль качества каждого устройства. Гарантия на все товары составляет 3 дня.</p>
         </div>
         <div class="profile-section">
             <span class="section-label">Заказы</span>
-            <p style="font-size: 14px; opacity: 0.4;">История пуста.</p>
+            <p style="font-size: 14px; opacity: 0.4;">История заказов пуста.</p>
         </div>
         <div class="profile-section">
             <span class="section-label">Поддержка</span>
@@ -170,7 +169,7 @@
     function openProduct(name, price, img, desc) {
         document.getElementById('modal-content').innerHTML = `
             <img src="${img}" style="width:100%; border-radius:25px; margin-top:20px;">
-            <h2 style="font-size:28px; margin-top:20px; text-align:center;">${name}</h2>
+            <h2 style="font-size:26px; margin-top:20px; text-align:center;">${name}</h2>
             <div class="profile-section" style="margin:20px 0; font-size: 14px; line-height: 1.6;">${desc}</div>
             <div class="price" style="text-align:center; font-size:32px; margin-bottom:20px;">${price} ₽</div>
             <button class="buy" onclick="addToCart('${name}', ${price})">ДОБАВИТЬ В КОРЗИНУ</button>
@@ -184,7 +183,7 @@
     function addToCart(name, price) {
         cartItems.push({name, price});
         tg.HapticFeedback.notificationOccurred('success');
-        tg.showAlert(name + ' добавлен!');
+        tg.showAlert('Товар добавлен в корзину');
         closeProduct();
     }
 
@@ -192,7 +191,7 @@
         const container = document.getElementById('cart-content');
         const footer = document.getElementById('cart-footer');
         if(cartItems.length === 0) {
-            container.innerHTML = '<p style="opacity: 0.4;">Тут пока пусто...</p>';
+            container.innerHTML = '<p style="opacity: 0.4;">Ваша корзина пуста.</p>';
             footer.style.display = 'none';
         } else {
             let total = 0;
