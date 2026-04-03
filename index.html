@@ -75,7 +75,7 @@
         .fps-bar { width: 50px; height: 3px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; }
         .fps-fill { height: 100%; background: #fff; }
 
-        /* КНОПКИ (УМЕНЬШЕННЫЕ) */
+        /* КНОПКИ */
         .btn-buy { background: #fff; color: #000; border: none; padding: 16px; border-radius: 16px; font-weight: 700; font-size: 14px; width: 100%; margin-top: 15px; cursor: pointer; }
         .btn-back { font-size: 10px; opacity: 0.4; padding: 10px 0; cursor: pointer; text-transform: uppercase; font-weight: 600; }
 
@@ -162,11 +162,32 @@
 
     const db = {
         'gpu': [
-            { id: 1, name: 'RX 580 4GB NITRO+', price: 5800, imgs: ['photo_2026-04-01_13-15-04.jpg'], desc: 'Если и существует «золотой стандарт» надежности, то перед тобой его прямое воплощение. Sapphire Nitro+ — это не просто видеокарта, это легендарная инженерная доработка чипа Polaris, которая выжала из архитектуры максимум возможного.ПОЧЕМУ ЭТО ТОП:Охлаждение Dual-X: Забудь о перегреве. Два массивных вентилятора на двойных шарикоподшипниках и развитая система теплотрубок держат градус в узде даже в затяжных катках.Quick Connect: Вентиляторы снимаются одним винтом. Чистка или замена теперь занимают секунды, а не часы.Nitro Glow: Фирменная RGB-подсветка логотипа, которую можно настроить под твой сетап через ПО Sapphire TriXX.Black Diamond Chokes 4: Дроссели четвертого поколения работают холоднее и тише, минимизируя свист катушек под нагрузкой.ТЕХНИЧЕСКИЙ СТЕК:ХарактеристикаЗначениеВидеопамять4GB GDDR5Шина памяти256-bitЧастота ядрадо 1411 MHz (Boost)Интерфейсы2x HDMI, 2x DisplayPort, 1x DVI-DДоп. питание8-pin + 6-pinВЕРДИКТ nexTech:Идеальный выбор для киберспортивных дисциплин (CS2, Dota 2, Valorant) и комфортного гейминга в 1080p на средних настройках. Она тихая, она холодная, и она выглядит чертовски стильно благодаря стильному бэкплейту.Примечание эксперта: Версия Nitro+ славится своим разгонным потенциалом и качеством компонентной базы. Это "неубиваемая" рабочая лошадка для твоего конфига..', tests: [{n:'Dota 2', v:'95 FPS', p:75}, {n:'CS2', v:'120 FPS', p:85}] },
-            { id: 2, name: 'RTX 3060 12GB', price: 23500, imgs: ['https://via.placeholder.com/800x600/161618/fff?text=RTX+3060'], desc: 'Состояние новой вещи, пломбы на месте. 12GB видеопамяти для любых современных игр.', tests: [{n:'Cyberpunk', v:'65 FPS', p:90}, {n:'Warzone', v:'95 FPS', p:80}] }
+            { 
+                id: 1, 
+                name: 'RX 580 4GB NITRO+', 
+                price: 5800, 
+                imgs: ['photo_2026-04-01_13-15-04.jpg'], 
+                desc: 'Исполнение: Sapphire Nitro+ Dual-X OC\nРевизия: Замена термоинтерфейса MX-4\nТермопрокладки: 12.8 W/mK\nПорты: 2x HDMI, 2x DP, 1x DVI\n\nКлассика, доведенная до идеала. Работает тише большинства современных карт, обеспечивая стабильную картинку без лишнего шума в комнате.', 
+                tests: [{n:'Dota 2', v:'95 FPS', p:75}, {n:'CS2', v:'120 FPS', p:85}] 
+            },
+            { 
+                id: 2, 
+                name: 'RTX 3060 12GB', 
+                price: 23500, 
+                imgs: ['https://via.placeholder.com/800x600/161618/fff?text=RTX+3060'], 
+                desc: 'Модель: RTX 3060 LHR\nПамять: 12GB GDDR6\nСостояние: Original (Пломбы на месте)\nТехнологии: Ray Tracing, DLSS\n\nЗолотой стандарт современного гейминга. Тот случай, когда 12ГБ памяти позволяют не смотреть на системные требования еще несколько лет.', 
+                tests: [{n:'Cyberpunk', v:'65 FPS', p:90}, {n:'Warzone', v:'95 FPS', p:80}] 
+            }
         ],
         'cpu': [
-            { id: 3, name: 'RYZEN 5 5600X', price: 13200, imgs: ['photo_2026-04-01_13-21-49.jpg'], desc: '6 ядер, 12 потоков. Идеальный игровой процессор. BOX версия с кулером.', tests: [{n:'Игры', v:'Топ', p:95}] }
+            { 
+                id: 3, 
+                name: 'RYZEN 5 5600X', 
+                price: 13200, 
+                imgs: ['photo_2026-04-01_13-21-49.jpg'], 
+                desc: 'Архитектура: Zen 3 (Vermeer)\nЯдер/Потоков: 6/12\nЧастота: 4.6 GHz Turbo\nКомплектация: BOX\n\nНародный любимец, который не греется. Чистый кристалл, стабильные частоты и безупречная работа в любых задачах.', 
+                tests: [{n:'Игры', v:'Топ', p:95}] 
+            }
         ]
     };
 
@@ -205,7 +226,7 @@
         document.getElementById('item-details').innerHTML = `
             <div style="border-radius:25px; overflow:hidden; margin-bottom:20px; border:1px solid var(--border);"><img src="${p.imgs[0]}" style="width:100%;"></div>
             <h2 style="font-size:24px; font-weight:800; margin-bottom:10px;">${p.name}</h2>
-            <p style="opacity:0.6; font-size:14px; line-height:1.5; margin-bottom:20px;">${p.desc}</p>
+            <p style="opacity:0.6; font-size:14px; line-height:1.5; margin-bottom:20px; white-space: pre-wrap;">${p.desc}</p>
             <div style="font-size:10px; font-weight:700; opacity:0.3; margin-bottom:10px; letter-spacing:1px;">ТЕСТЫ В ИГРАХ</div>
             ${p.tests.map(t => `
                 <div class="fps-box"><span>${t.n}</span><div style="display:flex; align-items:center; gap:10px;"><b>${t.v}</b><div class="fps-bar"><div class="fps-fill" style="width:${t.p}%"></div></div></div></div>
