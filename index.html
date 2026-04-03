@@ -2,305 +2,244 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>nexTech Store</title>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
     <style>
         :root {
-            --bg: #0b0b0c;
-            --card: rgba(255, 255, 255, 0.05);
-            --border: rgba(255, 255, 255, 0.08);
-            --accent: #ffffff;
-            --danger: #ff453a;
-            --success: #32d74b;
-            --warning: #ffd60a;
-            --text-main: #f5f5f7;
-            --glass: rgba(255, 255, 255, 0.02);
+            --bg-color: #0f0f0f;
+            --card-bg: rgba(255, 255, 255, 0.07); /* Прозрачный фон кнопок */
+            --accent: #0088cc;
+            --text: #ffffff;
+            --border: rgba(255, 255, 255, 0.1);
+            --danger: #ff4757;
+            --success: #4cd137;
         }
-
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
 
         body {
-            background-color: var(--bg);
-            background-image: 
-                radial-gradient(circle at 50% 50%, rgba(255,255,255,0.03) 0%, transparent 80%),
-                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-            background-size: 100% 100%, 30px 30px, 30px 30px;
-            color: var(--text-main); 
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
-            height: 100vh; overflow: hidden;
-            letter-spacing: -0.2px;
+            background-color: var(--bg-color);
+            color: var(--text);
+            font-family: -apple-system, system-ui, sans-serif;
+            margin: 0;
+            padding-bottom: 90px;
+            overflow-x: hidden;
         }
 
-        #viewport {
-            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            overflow-y: auto; padding-bottom: 110px;
-            -webkit-overflow-scrolling: touch;
+        /* Страницы */
+        .page { display: none; padding: 15px; animation: fadeIn 0.3s; }
+        .page.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Карточка товара с эффектом стекла */
+        .product-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 20px;
         }
 
-        .screen { display: none; padding: 20px; animation: screenIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
-        .screen.active { display: block; }
-        @keyframes screenIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        /* Слайдер фото */
+        .swiper { width: 100%; height: 260px; background: #1a1a1a; }
+        .swiper-slide img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* HEADER */
-        .header { display: flex; flex-direction: column; align-items: center; margin: 40px 0 35px; }
-        .logo-box { 
-            background: #fff; border-radius: 22px; width: 80px; height: 80px;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.6); margin-bottom: 18px;
-            border: 0.5px solid rgba(255,255,255,0.1);
+        .product-info { padding: 16px; }
+        .product-title { font-size: 1.3rem; margin: 0; }
+        .price { font-size: 1.5rem; color: var(--success); font-weight: bold; margin: 10px 0; }
+
+        /* Описание для покупателей */
+        .buyer-info {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            color: #ccc;
         }
-        .logo-box img { width: 42px; }
-        .brand-text { font-size: 10px; letter-spacing: 5px; opacity: 0.4; font-weight: 700; text-transform: uppercase; }
+        .buyer-info ul { padding-left: 18px; margin: 8px 0; }
 
-        /* КАРТОЧКИ (GLASSMORPHISM) */
-        .p-card { 
-            background: var(--glass); border: 0.5px solid var(--border); 
-            border-radius: 28px; margin-bottom: 20px; overflow: hidden;
-            backdrop-filter: blur(10px); transition: 0.2s;
+        /* Кнопки */
+        .main-btn {
+            width: 100%;
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 1rem;
+            margin-top: 15px;
+            transition: transform 0.1s;
         }
-        .p-card:active { transform: scale(0.985); background: rgba(255,255,255,0.06); }
-        .p-img { width: 100%; height: 210px; object-fit: cover; }
-        .p-info { padding: 20px; }
-        .p-title { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
-        .p-price { font-size: 16px; font-weight: 500; opacity: 0.6; }
+        .main-btn:active { transform: scale(0.97); }
 
-        /* FPS БАРЫ */
-        .fps-box { background: rgba(255,255,255,0.04); padding: 14px 18px; border-radius: 18px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; border: 0.5px solid var(--border); }
-        .fps-bar { width: 60px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; }
-        .fps-fill { height: 100%; background: #fff; box-shadow: 0 0 8px #fff; }
-
-        /* КАТЕГОРИИ И КНОПКИ */
-        .btn-cat {
-            background: var(--glass); border: 0.5px solid var(--border);
-            border-radius: 22px; padding: 28px 24px; font-weight: 700; font-size: 17px; 
-            text-transform: uppercase; margin-bottom: 14px; cursor: pointer; text-align: center;
-            backdrop-filter: blur(5px);
+        /* Нижнее меню с прозрачными кнопками */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            height: 75px;
+            display: flex;
+            background: rgba(15, 15, 15, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border);
+            z-index: 1000;
         }
-        .btn-buy { background: #fff; color: #000; border: none; padding: 18px; border-radius: 18px; font-weight: 700; font-size: 15px; width: 100%; margin-top: 15px; cursor: pointer; transition: transform 0.1s; }
-        .btn-buy:active { transform: scale(0.96); }
 
-        /* НАВИГАЦИЯ */
-        .nav {
-            position: fixed; bottom: 0; left: 0; right: 0; height: 90px;
-            background: rgba(11, 11, 12, 0.9); backdrop-filter: blur(25px);
-            border-top: 0.5px solid var(--border); display: flex; z-index: 2000;
-            padding-bottom: env(safe-area-inset-bottom);
+        .nav-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #888;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
         }
-        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: rgba(255,255,255,0.3); transition: 0.3s; }
-        .nav-item.active { color: #fff; }
-        .nav-icon { width: 22px; height: 22px; background: currentColor; mask-size: contain; mask-repeat: no-repeat; -webkit-mask-image: var(--i); margin-bottom: 28px; }
-        .nav-label { position: absolute; bottom: 20px; font-size: 10px; font-weight: 600; }
-        
-        /* БЭЙДЖ КОРЗИНЫ С АНИМАЦИЕЙ */
-        .badge { 
-            position: absolute; top: 12px; right: 25%; background: var(--danger); 
-            color: #fff; font-size: 9px; min-width: 17px; height: 17px; 
-            border-radius: 50%; display: none; align-items: center; justify-content: center; 
-            border: 2.5px solid #0b0b0c; font-weight: 800;
+
+        .nav-btn i { font-size: 26px; margin-bottom: 4px; } /* Увеличенные иконки */
+        .nav-btn span { font-size: 11px; }
+        .nav-btn.active { color: var(--accent); }
+
+        /* Профиль и отмена заказа */
+        .order-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 15px;
+            border-radius: 15px;
+            margin-top: 10px;
         }
-        .badge.pop { animation: badgePop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        @keyframes badgePop { 0% { transform: scale(0); } 80% { transform: scale(1.3); } 100% { transform: scale(1); } }
-
-        /* ИСТОРИЯ ЗАКАЗОВ (СТАТУСЫ) */
-        .order-item { background: var(--glass); border: 0.5px solid var(--border); padding: 18px; border-radius: 22px; margin-bottom: 12px; backdrop-filter: blur(10px); }
-        .status-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; margin-right: 6px; }
-        .status-prep { background: var(--warning); box-shadow: 0 0 6px var(--warning); }
-        .status-done { background: var(--success); box-shadow: 0 0 6px var(--success); }
-
-        /* ГАРАНТИЯ */
-        .policy-item { margin-bottom: 20px; opacity: 0.8; font-size: 14px; line-height: 1.6; }
-        .policy-item b { color: #fff; display: block; margin-bottom: 4px; font-size: 15px; }
-
-        .search-input {
-            width: 100%; background: var(--glass); border: 0.5px solid var(--border);
-            border-radius: 16px; padding: 16px 20px; color: #fff; font-family: inherit;
-            font-size: 15px; outline: none; margin-bottom: 20px;
+        .cancel-btn {
+            background: rgba(255, 71, 87, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(255, 71, 87, 0.2);
+            padding: 8px;
+            width: 100%;
+            border-radius: 10px;
+            margin-top: 10px;
+            font-weight: 600;
         }
     </style>
 </head>
 <body>
 
-<div id="viewport">
-    <div id="scr-home" class="screen active">
-        <div class="header">
-            <div class="logo-box"><img src="https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/logo.png"></div>
-            <div class="brand-text">NEXTECH // PREMIUM</div>
-        </div>
-        <div class="btn-cat" onclick="openCat('gpu')">ВИДЕОКАРТЫ</div>
-        <div class="btn-cat" onclick="openCat('cpu')">ПРОЦЕССОРЫ</div>
-    </div>
-
-    <div id="scr-catalog" class="screen">
-        <div style="font-size:10px; opacity:0.4; margin-bottom:15px; font-weight:700;" onclick="navigate('home')">← К КАТЕГОРИЯМ</div>
-        <input type="text" class="search-input" id="search-input" placeholder="Найти комплектующие..." oninput="renderCatalog()">
-        <div id="catalog-list"></div>
-    </div>
-
-    <div id="scr-item" class="screen">
-        <div style="font-size:10px; opacity:0.4; margin-bottom:20px; font-weight:700;" onclick="navigate('catalog')">← НАЗАД В СПИСОК</div>
-        <div id="item-details"></div>
-    </div>
-
-    <div id="scr-cart" class="screen">
-        <div class="header"><div class="brand-text">МОЯ КОРЗИНА</div></div>
-        <div id="cart-list"></div>
-        <div id="cart-empty" style="text-align:center; padding:120px 0; opacity:0.2; font-size:14px; letter-spacing:1px;">[ СПИСОК ПУСТ ]</div>
-    </div>
-
-    <div id="scr-profile" class="screen">
-        <div class="header"><div class="brand-text">ЛИЧНЫЙ КАБИНЕТ</div></div>
-        <div class="btn-cat" style="font-size: 13px; text-align: left; padding: 22px;" onclick="navigate('history')">📦 МОИ ЗАКАЗЫ</div>
-        <div class="btn-cat" style="font-size: 13px; text-align: left; padding: 22px;" onclick="navigate('policy')">🛡 ГАРАНТИЯ И УСЛОВИЯ</div>
-        <div class="btn-cat" style="font-size: 13px; text-align: left; padding: 22px;" onclick="openSupport()">💬 ПОДДЕРЖКА</div>
-    </div>
-
-    <div id="scr-history" class="screen">
-        <div style="font-size:10px; opacity:0.4; margin-bottom:20px; font-weight:700;" onclick="navigate('profile')">← В ПРОФИЛЬ</div>
-        <div id="history-list"></div>
-    </div>
-
-    <div id="scr-policy" class="screen">
-        <div style="font-size:10px; opacity:0.4; margin-bottom:20px; font-weight:700;" onclick="navigate('profile')">← В ПРОФИЛЬ</div>
-        <h2 style="margin-bottom:25px;">Условия сервиса</h2>
-        <div class="policy-item"><b>🛡 Гарантия качества</b>Все комплектующие проходят 2-х часовой стресс-тест в FurMark и OCCT. Мы гарантируем исправность каждой детали.</div>
-        <div class="policy-item"><b>🗓 Срок проверки</b>На б/у комплектующие предоставляется 7 дней на самостоятельную проверку с момента получения.</div>
-        <div class="policy-item"><b>📦 Доставка</b>Отправка осуществляется в день заказа через СДЭК или Авито Доставку. Надежная упаковка за наш счет.</div>
-    </div>
-</div>
-
-<div class="nav">
-    <div class="nav-item active" onclick="tab(this, 'home')">
-        <div class="nav-icon" style="--i: url('https://cdn-icons-png.flaticon.com/512/1170/1170678.png')"></div>
-        <span class="nav-label">Шоп</span>
-    </div>
-    <div class="nav-item" id="nav-cart" onclick="tab(this, 'cart')">
-        <div id="cart-badge" class="badge">0</div>
-        <div class="nav-icon" style="--i: url('https://cdn-icons-png.flaticon.com/512/263/263142.png')"></div>
-        <span class="nav-label">Заказы</span>
-    </div>
-    <div class="nav-item" onclick="tab(this, 'profile')">
-        <div class="nav-icon" style="--i: url('https://cdn-icons-png.flaticon.com/512/1077/1077063.png')"></div>
-        <span class="nav-label">Профиль</span>
-    </div>
-</div>
-
-<script>
-    const tg = window.Telegram.WebApp;
-    tg.expand();
-    tg.setHeaderColor('#0b0b0c');
-
-    const db = {
-        'gpu': [
-            { id: 1, name: 'RX 580 4GB NITRO+', price: 5800, imgs: ['photo_2026-04-01_13-15-04.jpg'], desc: 'Исполнение: Sapphire Nitro+ Dual-X OC\nРевизия: Замена термоинтерфейса MX-4\nТермопрокладки: 12.8 W/mK\n\nКлассика, доведенная до идеала. Работает тише большинства современных карт, обеспечивая стабильную картинку без лишнего шума.', tests: [{n:'Dota 2', v:'95 FPS', p:75}, {n:'CS2', v:'120 FPS', p:85}] },
-            { id: 2, name: 'RTX 3060 12GB', price: 23500, imgs: ['https://via.placeholder.com/800x600/161618/fff?text=RTX+3060'], desc: 'Модель: RTX 3060 LHR\nПамять: 12GB GDDR6\nСостояние: Original (Пломбы на месте)\n\nЗолотой стандарт современного гейминга. Тот случай, когда 12ГБ памяти позволяют не смотреть на системные требования еще несколько лет.', tests: [{n:'Cyberpunk', v:'65 FPS', p:90}, {n:'Warzone', v:'95 FPS', p:80}] }
-        ],
-        'cpu': [
-            { id: 3, name: 'RYZEN 5 5600X', price: 13200, imgs: ['photo_2026-04-01_13-21-49.jpg'], desc: 'Архитектура: Zen 3 (Vermeer)\nЯдер/Потоков: 6/12\nЧастота: 4.6 GHz Turbo\n\nНародный любимец, который не греется. Чистый кристалл, стабильные частоты и безупречная работа в любых задачах.', tests: [{n:'Игры', v:'Топ', p:95}] }
-        ]
-    };
-
-    let cart = [];
-    let curCat = '';
-    let orderHistory = JSON.parse(localStorage.getItem('nextech_orders_v2')) || [];
-
-    function navigate(id) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById('scr-' + id).classList.add('active');
-        document.getElementById('viewport').scrollTo(0,0);
-        if (id === 'history') renderHistory();
-        if (id === 'cart') renderCart();
-        tg.HapticFeedback.impactOccurred('light');
-    }
-
-    function tab(el, id) {
-        document.querySelectorAll('.nav-item').forEach(t => t.classList.remove('active'));
-        el.classList.add('active');
-        navigate(id);
-    }
-
-    function openCat(cat) { curCat = cat; renderCatalog(); navigate('catalog'); }
-
-    function renderCatalog() {
-        const q = document.getElementById('search-input').value.toLowerCase();
-        const list = document.getElementById('catalog-list');
-        list.innerHTML = db[curCat].filter(p => p.name.toLowerCase().includes(q)).map(p => `
-            <div class="p-card" onclick="openItem('${curCat}', ${p.id})">
-                <img src="${p.imgs[0]}" class="p-img">
-                <div class="p-info">
-                    <div class="p-title">${p.name}</div>
-                    <div class="p-price">${p.price.toLocaleString()} ₽</div>
+    <div id="app">
+        <section id="shop-page" class="page active">
+            <div class="product-card">
+                <div class="swiper mySwiper">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide"><img src="https://via.placeholder.com/600x400/1a1a1a/ffffff?text=GPU+Front" alt="Front"></div>
+                        <div class="swiper-slide"><img src="https://via.placeholder.com/600x400/1a1a1a/ffffff?text=GPU+Back" alt="Back"></div>
+                        <div class="swiper-slide"><img src="https://via.placeholder.com/600x400/1a1a1a/ffffff?text=Stress+Test" alt="Tests"></div>
+                    </div>
+                    <div class="swiper-pagination"></div>
                 </div>
-            </div>`).join('');
-    }
 
-    function openItem(cat, id) {
-        const p = db[cat].find(x => x.id === id);
-        document.getElementById('item-details').innerHTML = `
-            <div style="border-radius:28px; overflow:hidden; margin-bottom:25px; border:0.5px solid var(--border);"><img src="${p.imgs[0]}" style="width:100%;"></div>
-            <h2 style="font-size:26px; font-weight:800; margin-bottom:12px; letter-spacing:-0.5px;">${p.name}</h2>
-            <p style="opacity:0.6; font-size:14px; line-height:1.6; margin-bottom:25px; white-space: pre-wrap;">${p.desc}</p>
-            <div style="font-size:10px; font-weight:700; opacity:0.3; margin-bottom:12px; letter-spacing:1px;">СТРЕСС-ТЕСТЫ И ГЕЙМПЛЕЙ</div>
-            ${p.tests.map(t => `
-                <div class="fps-box"><span>${t.n}</span><div style="display:flex; align-items:center; gap:12px;"><b>${t.v}</b><div class="fps-bar"><div class="fps-fill" style="width:${t.p}%"></div></div></div></div>
-            `).join('')}
-            <button class="btn-buy" onclick="addToCart('${p.name}', ${p.price})">ДОБАВИТЬ В КОРЗИНУ — ${p.price.toLocaleString()} ₽</button>`;
-        navigate('item');
-    }
+                <div class="product-info">
+                    <h3 class="product-title">Sapphire Nitro+ RX 580 8GB</h3>
+                    <p class="price">5 800 ₽</p>
+                    
+                    <div class="buyer-info">
+                        <strong>Информация для покупателя:</strong>
+                        <ul>
+                            <li>Состояние: Идеальное (Б/У)</li>
+                            <li>Тесты: FurMark 15 мин (макс 67°C)</li>
+                            <li>Обслуживание: Свежая паста MX-4</li>
+                            <li>Комплект: Только карта</li>
+                        </ul>
+                        <p>Топовое охлаждение, работает бесшумно. Гарантия на проверку — 3 дня.</p>
+                    </div>
 
-    function addToCart(name, price) { 
-        cart.push({name, price, id: Date.now()}); 
-        updateBadge(true); 
-        tg.HapticFeedback.notificationOccurred('success'); 
-    }
+                    <button class="main-btn" onclick="addToCart()">В корзину</button>
+                </div>
+            </div>
+        </section>
 
-    function updateBadge(animate) { 
-        const b = document.getElementById('cart-badge'); 
-        b.innerText = cart.length; 
-        b.style.display = cart.length > 0 ? 'flex' : 'none';
-        if (animate) {
-            b.classList.remove('pop');
-            void b.offsetWidth;
-            b.classList.add('pop');
+        <section id="cart-page" class="page">
+            <h2>Корзина</h2>
+            <p style="text-align: center; color: #888;">Здесь будут ваши товары</p>
+        </section>
+
+        <section id="profile-page" class="page">
+            <h2>Мои заказы</h2>
+            <div id="orders-list">
+                <div class="order-card" id="order-1">
+                    <div style="display:flex; justify-content: space-between;">
+                        <span>Заказ #1042</span>
+                        <span style="color: orange;">В обработке</span>
+                    </div>
+                    <p style="margin: 10px 0; font-size: 0.9rem;">RX 580 8GB — 5 800 ₽</p>
+                    <button class="cancel-btn" onclick="handleCancel(1)">Отменить заказ</button>
+                </div>
+            </div>
+        </section>
+
+        <nav class="bottom-nav">
+            <button class="nav-btn active" onclick="navigate('shop-page', this)">
+                <i class="fa-solid fa-house-laptop"></i>
+                <span>Шоп</span>
+            </button>
+            <button class="nav-btn" onclick="navigate('cart-page', this)">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <span>Корзина</span>
+            </button>
+            <button class="nav-btn" onclick="navigate('profile-page', this)">
+                <i class="fa-solid fa-user-gear"></i>
+                <span>Профиль</span>
+            </button>
+        </nav>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // Разворачиваем приложение
+
+        // Инициализация слайдера фото
+        const swiper = new Swiper(".mySwiper", {
+            pagination: { el: ".swiper-pagination", dynamicBullets: true },
+        });
+
+        // Навигация
+        function navigate(pageId, btn) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            tg.HapticFeedback.selectionChanged(); // Вибрация при смене вкладки
         }
-    }
 
-    function renderCart() {
-        const list = document.getElementById('cart-list');
-        if (cart.length === 0) { list.innerHTML = ''; document.getElementById('cart-empty').style.display = 'block'; return; }
-        document.getElementById('cart-empty').style.display = 'none';
-        let total = cart.reduce((sum, i) => sum + i.price, 0);
-        list.innerHTML = cart.map(i => `
-            <div style="background:var(--glass); padding:18px; border-radius:18px; margin-bottom:10px; display:flex; justify-content:space-between; border: 0.5px solid var(--border);">
-                <span style="font-size:14px; font-weight:500;">${i.name}</span><b>${i.price.toLocaleString()} ₽</b>
-            </div>`).join('') + `<div style="text-align:right; padding:20px; font-size:24px; font-weight:800; letter-spacing:-1px;">${total.toLocaleString()} ₽</div>
-            <button class="btn-buy" onclick="checkout()">ПОДТВЕРДИТЬ ЗАКАЗ</button>`;
-    }
+        // Отмена заказа
+        function handleCancel(orderId) {
+            tg.showConfirm("Вы уверены, что хотите отменить этот заказ?", (confirm) => {
+                if (confirm) {
+                    const card = document.getElementById(`order-${orderId}`);
+                    card.style.opacity = "0.5";
+                    card.querySelector('.cancel-btn').remove();
+                    card.querySelector('span:last-child').innerText = "Отменен";
+                    card.querySelector('span:last-child').style.color = "#ff4757";
+                    tg.HapticFeedback.notificationOccurred('success');
+                }
+            });
+        }
 
-    function checkout() {
-        const order = { id: Math.floor(Math.random()*90000) + 10000, date: new Date().toLocaleDateString(), items: [...cart], total: cart.reduce((s,i)=>s+i.price,0), status: 'Обработка' };
-        orderHistory.unshift(order);
-        localStorage.setItem('nextech_orders_v2', JSON.stringify(orderHistory));
-        cart = []; updateBadge(); 
-        tg.showAlert('Заказ №'+order.id+' принят в обработку!'); 
-        navigate('home');
-    }
-
-    function renderHistory() {
-        const list = document.getElementById('history-list');
-        if (orderHistory.length === 0) { list.innerHTML = '<p style="text-align:center; opacity:0.2; margin-top:60px; font-size:13px;">История заказов пуста</p>'; return; }
-        list.innerHTML = orderHistory.map(o => `
-            <div class="order-item">
-                <div style="display:flex; justify-content:space-between; opacity:0.4; font-size:11px; margin-bottom:8px;"><span>#${o.id}</span><span>${o.date}</span></div>
-                <b style="font-size:14px; display:block; margin-bottom:10px;">${o.items.map(i=>i.name).join(', ')}</b>
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <span style="font-size:11px; font-weight:700;"><span class="status-dot status-prep"></span>${o.status.toUpperCase()}</span>
-                    <b style="font-size:15px;">${o.total.toLocaleString()} ₽</b>
-                </div>
-            </div>`).join('');
-    }
-
-    function openSupport() { tg.openTelegramLink('https://t.me/твой_ник'); }
-</script>
+        function addToCart() {
+            tg.HapticFeedback.impactOccurred('medium');
+            tg.MainButton.setText("ПЕРЕЙТИ К ОПЛАТЕ");
+            tg.MainButton.show();
+            alert("Товар добавлен в корзину!");
+        }
+    </script>
 </body>
 </html>
