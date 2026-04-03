@@ -11,6 +11,7 @@
             --border: rgba(255, 255, 255, 0.08);
             --accent: #ffffff;
             --danger: #ff3b30;
+            --success: #34c759;
             --text-main: #f5f5f7;
         }
 
@@ -18,13 +19,11 @@
 
         body {
             background-color: var(--bg);
-            /* СЕТКА НА ФОНЕ */
             background-image: 
-                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+                linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
             background-size: 35px 35px;
             color: var(--text-main); 
-            /* ШРИФТ APPLE (SF PRO) */
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             height: 100vh; overflow: hidden;
             letter-spacing: -0.3px;
@@ -40,97 +39,63 @@
         .screen.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.99); } to { opacity: 1; transform: scale(1); } }
 
-        /* HEADER */
-        .header { display: flex; flex-direction: column; align-items: center; margin: 50px 0 35px; }
-        .logo-box { 
-            background: #fff; border-radius: 24px; width: 85px; height: 85px;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5); margin-bottom: 20px;
-        }
-        .logo-box img { width: 45px; }
+        /* Элементы интерфейса */
+        .header { display: flex; flex-direction: column; align-items: center; margin: 40px 0 30px; }
         .brand-text { font-size: 10px; letter-spacing: 5px; opacity: 0.4; font-weight: 700; text-transform: uppercase; }
 
-        /* ПОИСК */
-        .search-wrap { position: sticky; top: 0; z-index: 100; background: var(--bg); padding: 5px 0 15px; }
-        .search-input {
-            width: 100%; background: var(--card); border: 1px solid var(--border);
-            border-radius: 18px; padding: 18px 22px; color: #fff; font-family: inherit;
-            font-size: 15px; outline: none; backdrop-filter: blur(15px);
-        }
-
-        /* КАТЕГОРИИ */
         .btn-cat {
             background: var(--card); border: 1px solid var(--border);
-            border-radius: 24px; padding: 35px 25px; font-weight: 700; font-size: 19px; 
-            text-transform: uppercase; margin-bottom: 16px; cursor: pointer; text-align: center;
+            border-radius: 20px; padding: 25px; font-weight: 700; font-size: 16px; 
+            margin-bottom: 12px; cursor: pointer; text-align: left;
+            display: flex; justify-content: space-between; align-items: center;
         }
 
-        /* ТОВАРЫ */
-        .p-card { background: var(--card); border: 1px solid var(--border); border-radius: 30px; margin-bottom: 25px; overflow: hidden; }
-        .p-img { width: 100%; height: 220px; object-fit: cover; }
-        .p-info { padding: 22px; }
-        .p-title { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
-        .p-price { font-size: 17px; font-weight: 500; opacity: 0.6; }
+        .p-card { background: var(--card); border: 1px solid var(--border); border-radius: 28px; margin-bottom: 20px; overflow: hidden; }
+        .p-img { width: 100%; height: 200px; object-fit: cover; }
+        .p-info { padding: 20px; }
 
-        /* СЛАЙДЕР */
-        .slider { position: relative; border-radius: 30px; overflow: hidden; margin-bottom: 30px; border: 1px solid var(--border); }
+        .slider { position: relative; border-radius: 28px; overflow: hidden; margin-bottom: 25px; border: 1px solid var(--border); }
         .slider-inner { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
-        .slide { flex: 0 0 100%; height: 320px; scroll-snap-align: center; }
+        .slide { flex: 0 0 100%; height: 280px; scroll-snap-align: center; }
         .slide img { width: 100%; height: 100%; object-fit: cover; }
-        .dots { display: flex; justify-content: center; gap: 8px; margin-top: -30px; position: relative; padding-bottom: 25px; }
-        .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.2); transition: 0.3s; }
-        .dot.active { background: #fff; transform: scale(1.4); }
 
-        /* FPS МЕТРЫ */
-        .fps-box { background: rgba(255,255,255,0.03); padding: 16px; border-radius: 20px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
-        .fps-bar { width: 50px; height: 3px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; }
-        .fps-fill { height: 100%; background: #fff; }
-
-        /* НАВИГАЦИЯ */
+        /* Навигация */
         .nav {
-            position: fixed; bottom: 0; left: 0; right: 0; height: 95px;
-            background: rgba(13, 13, 15, 0.95); backdrop-filter: blur(25px);
+            position: fixed; bottom: 0; left: 0; right: 0; height: 90px;
+            background: rgba(13, 13, 15, 0.96); backdrop-filter: blur(20px);
             border-top: 1px solid var(--border); display: flex; z-index: 1000;
-            padding-bottom: 20px;
         }
         .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: rgba(255,255,255,0.3); position: relative; }
         .nav-item.active { color: #fff; }
-        .nav-pill { position: absolute; width: 55px; height: 34px; background: rgba(255,255,255,0.1); border-radius: 14px; top: 16px; opacity: 0; transition: 0.3s; }
-        .nav-item.active .nav-pill { opacity: 1; }
-        .nav-icon { width: 22px; height: 22px; background: currentColor; mask-size: contain; -webkit-mask-image: var(--i); margin-bottom: 28px; z-index: 2; }
-        .nav-label { position: absolute; bottom: 20px; font-size: 10px; font-weight: 600; }
+        .nav-icon { width: 22px; height: 22px; background: currentColor; mask-size: contain; -webkit-mask-image: var(--i); margin-bottom: 25px; }
+        .nav-label { position: absolute; bottom: 18px; font-size: 10px; font-weight: 600; }
         
         .badge { 
-            position: absolute; top: 12px; right: 24%; background: var(--danger); 
-            color: #fff; font-size: 9px; font-weight: 800; min-width: 17px; height: 17px; 
-            border-radius: 50%; display: none; align-items: center; justify-content: center; 
-            border: 2px solid var(--bg); z-index: 5;
+            position: absolute; top: 10px; right: 25%; background: var(--danger); 
+            color: #fff; font-size: 9px; min-width: 17px; height: 17px; 
+            border-radius: 50%; display: none; align-items: center; justify-content: center; border: 2px solid var(--bg);
         }
 
-        /* КНОПКИ */
-        .btn-buy { background: #fff; color: #000; border: none; padding: 24px; border-radius: 22px; font-family: inherit; font-weight: 700; font-size: 16px; width: 100%; margin-top: 20px; }
-        .btn-back { font-size: 11px; opacity: 0.4; padding: 15px 0; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+        .btn-buy { background: #fff; color: #000; border: none; padding: 22px; border-radius: 20px; font-weight: 700; width: 100%; margin-top: 15px; }
+        .btn-back { font-size: 11px; opacity: 0.4; padding: 15px 0; cursor: pointer; text-transform: uppercase; }
 
-        .cart-card { background: var(--card); padding: 20px; border-radius: 24px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); }
+        /* Стили для истории заказов */
+        .order-item { background: var(--card); border: 1px solid var(--border); padding: 20px; border-radius: 20px; margin-bottom: 10px; }
+        .order-header { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 10px; opacity: 0.5; }
+        .order-status { color: var(--success); font-weight: 700; }
     </style>
 </head>
 <body>
 
 <div id="viewport">
     <div id="scr-home" class="screen active">
-        <div class="header">
-            <div class="logo-box"><img src="https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/logo.png"></div>
-            <div class="brand-text">NEXTECH // ТЕРМИНАЛ</div>
-        </div>
-        <div class="btn-cat" onclick="openCat('gpu')">ВИДЕОКАРТЫ</div>
-        <div class="btn-cat" onclick="openCat('cpu')">ПРОЦЕССОРЫ</div>
+        <div class="header"><div class="brand-text">NEXTECH // КАТЕГОРИИ</div></div>
+        <div class="btn-cat" onclick="openCat('gpu')">ВИДЕОКАРТЫ <span>→</span></div>
+        <div class="btn-cat" onclick="openCat('cpu')">ПРОЦЕССОРЫ <span>→</span></div>
     </div>
 
     <div id="scr-catalog" class="screen">
         <div class="btn-back" onclick="navigate('home')">← НАЗАД</div>
-        <div class="search-wrap">
-            <input type="text" class="search-input" id="search-input" placeholder="Поиск в базе..." oninput="renderCatalog()">
-        </div>
         <div id="catalog-list"></div>
     </div>
 
@@ -140,33 +105,34 @@
     </div>
 
     <div id="scr-cart" class="screen">
-        <div class="header"><div class="brand-text">ХРАНИЛИЩЕ // КОРЗИНА</div></div>
+        <div class="header"><div class="brand-text">ВАША КОРЗИНА</div></div>
         <div id="cart-list"></div>
-        <div id="cart-empty" style="text-align:center; padding:100px; opacity:0.2; font-size:14px;">[ КОРЗИНА ПУСТА ]</div>
+        <div id="cart-empty" style="text-align:center; padding:80px; opacity:0.2;">ПУСТО</div>
     </div>
 
     <div id="scr-profile" class="screen">
-        <div class="header"><div class="brand-text">АККАУНТ // ПОЛЬЗОВАТЕЛЬ</div></div>
-        <div class="btn-cat" style="padding: 22px; text-align: left; font-size: 14px;">ИСТОРИЯ ЗАКАЗОВ</div>
-        <div class="btn-cat" style="padding: 22px; text-align: left; font-size: 14px;">МОИ БОНУСЫ</div>
-        <div class="btn-cat" style="padding: 22px; text-align: left; font-size: 14px;">ПОДДЕРЖКА</div>
+        <div class="header"><div class="brand-text">МОЙ ПРОФИЛЬ</div></div>
+        <div class="btn-cat" onclick="navigate('history')">📦 История заказов <span>→</span></div>
+        <div class="btn-cat" onclick="openSupport()">💬 Поддержка <span>→</span></div>
+    </div>
+
+    <div id="scr-history" class="screen">
+        <div class="btn-back" onclick="navigate('profile')">← В ПРОФИЛЬ</div>
+        <div id="history-list"></div>
     </div>
 </div>
 
 <div class="nav">
     <div class="nav-item active" onclick="tab(this, 'home')">
-        <div class="nav-pill"></div>
         <div class="nav-icon" style="--i: url('https://cdn-icons-png.flaticon.com/512/1170/1170678.png')"></div>
-        <span class="nav-label">Магазин</span>
+        <span class="nav-label">Шоп</span>
     </div>
     <div class="nav-item" onclick="tab(this, 'cart')">
-        <div class="nav-pill"></div>
         <div id="cart-badge" class="badge">0</div>
         <div class="nav-icon" style="--i: url('https://cdn-icons-png.flaticon.com/512/263/263142.png')"></div>
         <span class="nav-label">Корзина</span>
     </div>
     <div class="nav-item" onclick="tab(this, 'profile')">
-        <div class="nav-pill"></div>
         <div class="nav-icon" style="--i: url('https://cdn-icons-png.flaticon.com/512/1077/1077063.png')"></div>
         <span class="nav-label">Профиль</span>
     </div>
@@ -175,26 +141,19 @@
 <script>
     const tg = window.Telegram.WebApp;
     tg.expand();
-    tg.setHeaderColor('#0d0d0f');
 
     const db = {
-        'gpu': [
-            { id: 1, name: 'RX 580 4GB NITRO+', price: 5800, imgs: ['photo_2026-04-01_13-15-04.jpg', 'https://via.placeholder.com/800x600/161618/fff?text=Backplate'], desc: 'Видеокарта проверенная врменем,Идеально для бюджетного ПК.', tests: [{n:'Dota 2', v:'95 FPS', p:75}, {n:'CS2', v:'120 FPS', p:85}] },
-            { id: 2, name: 'RTX 3060 12GB', price: 23500, imgs: ['https://via.placeholder.com/800x600/161618/fff?text=RTX+3060'], desc: 'Незабываемая классика', tests: [{n:'Cyberpunk', v:'65 FPS', p:90}, {n:'Warzone', v:'95 FPS', p:80}] }
-        ],
-        'cpu': [
-            { id: 3, name: 'RYZEN 5 5600X', price: 13200, imgs: ['photo_2026-04-01_13-21-49.jpg'], desc: 'BOX версия, с кулером. Отличный процессор для игр и работы.', tests: [{n:'Многозадачность', v:'Топ', p:95}] }
-        ]
+        'gpu': [{ id: 1, name: 'RX 580 4GB', price: 5800, imgs: ['photo_2026-04-01_13-15-04.jpg'], desc: 'Обслужена, новые прокладки.' }],
+        'cpu': [{ id: 3, name: 'RYZEN 5 5600X', price: 13200, imgs: ['photo_2026-04-01_13-21-49.jpg'], desc: 'BOX версия, ножки целые.' }]
     };
 
     let cart = [];
-    let curCat = '';
+    let orderHistory = JSON.parse(localStorage.getItem('nextech_orders')) || [];
 
     function navigate(id) {
-        document.getElementById('viewport').scrollTo(0,0);
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById('scr-'+id).classList.add('active');
-        if(id === 'cart') renderCart();
+        document.getElementById('scr-' + id).classList.add('active');
+        if (id === 'history') renderHistory();
         tg.HapticFeedback.impactOccurred('light');
     }
 
@@ -205,52 +164,27 @@
     }
 
     function openCat(cat) {
-        curCat = cat;
-        renderCatalog();
-        navigate('catalog');
-    }
-
-    function renderCatalog() {
-        const q = document.getElementById('search-input').value.toLowerCase();
         const list = document.getElementById('catalog-list');
-        list.innerHTML = '';
-        db[curCat].filter(p => p.name.toLowerCase().includes(q)).forEach(p => {
-            list.innerHTML += `
-                <div class="p-card" onclick="openItem('${curCat}', ${p.id})">
-                    <img src="${p.imgs[0]}" class="p-img">
-                    <div class="p-info">
-                        <div class="p-title">${p.name}</div>
-                        <div class="p-price">${p.price.toLocaleString()} ₽</div>
-                    </div>
-                </div>`;
-        });
+        list.innerHTML = db[cat].map(p => `
+            <div class="p-card" onclick="openItem('${cat}', ${p.id})">
+                <img src="${p.imgs[0]}" class="p-img">
+                <div class="p-info"><b>${p.name}</b><br><small>${p.price} ₽</small></div>
+            </div>`).join('');
+        navigate('catalog');
     }
 
     function openItem(cat, id) {
         const p = db[cat].find(x => x.id === id);
-        const area = document.getElementById('item-details');
-        let slides = p.imgs.map(s => `<div class="slide"><img src="${s}"></div>`).join('');
-        let dots = p.imgs.map((_, i) => `<div class="dot ${i===0?'active':''}"></div>`).join('');
-        
-        area.innerHTML = `
-            <div class="slider"><div class="slider-inner" onscroll="updateDots(this)">${slides}</div><div class="dots">${dots}</div></div>
-            <h2 style="font-size:28px; font-weight:800; margin-bottom:12px; letter-spacing:-1px;">${p.name}</h2>
-            <p style="opacity:0.5; font-size:15px; line-height:1.6; margin-bottom:30px;">${p.desc}</p>
-            <div style="font-size:11px; font-weight:700; opacity:0.3; margin-bottom:15px; letter-spacing:1px;">ТЕСТЫ В ИГРАХ</div>
-            ${p.tests.map(t => `
-                <div class="fps-box"><span>${t.n}</span><div style="display:flex; align-items:center; gap:12px;"><b>${t.v}</b><div class="fps-bar"><div class="fps-fill" style="width:${t.p}%"></div></div></div></div>
-            `).join('')}
-            <button class="btn-buy" onclick="addToCart('${p.name}', ${p.price})">В КОРЗИНУ — ${p.price.toLocaleString()} ₽</button>`;
+        document.getElementById('item-details').innerHTML = `
+            <div class="slider"><div class="slide"><img src="${p.imgs[0]}"></div></div>
+            <h2>${p.name}</h2>
+            <p style="margin: 15px 0; opacity: 0.6;">${p.desc}</p>
+            <button class="btn-buy" onclick="addToCart('${p.name}', ${p.price})">В КОРЗИНУ — ${p.price} ₽</button>`;
         navigate('item');
     }
 
-    function updateDots(el) {
-        const idx = Math.round(el.scrollLeft / el.offsetWidth);
-        el.parentElement.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === idx));
-    }
-
     function addToCart(name, price) {
-        cart.push({name, price, uid: Date.now()});
+        cart.push({name, price, id: Date.now()});
         updateBadge();
         tg.HapticFeedback.notificationOccurred('success');
     }
@@ -262,30 +196,52 @@
 
     function renderCart() {
         const list = document.getElementById('cart-list');
-        const empty = document.getElementById('cart-empty');
-        list.innerHTML = '';
-        if(cart.length === 0) { empty.style.display = 'block'; return; }
-        empty.style.display = 'none';
-        let total = 0;
-        cart.forEach(i => {
-            total += i.price;
-            list.innerHTML += `<div class="cart-card">
-                <div><b style="font-size:15px;">${i.name}</b><br><small style="opacity:0.5;">${i.price.toLocaleString()} ₽</small></div>
-                <div onclick="removeCart(${i.uid})" style="color:var(--danger); font-weight:700; font-size:11px; padding:10px;">УДАЛИТЬ</div>
-            </div>`;
-        });
-        list.innerHTML += `<div style="padding:25px 10px; text-align:right;">
-            <div style="opacity:0.4; font-size:11px; margin-bottom:5px;">ИТОГО К ОПЛАТЕ</div>
-            <div style="font-size:30px; font-weight:800;">${total.toLocaleString()} ₽</div>
-        </div>
-        <button class="btn-buy" style="background:#fff; color:#000;" onclick="alert('Заказ в обработке')">ОФОРМИТЬ ЗАКАЗ</button>`;
+        if (cart.length === 0) { list.innerHTML = ''; document.getElementById('cart-empty').style.display = 'block'; return; }
+        document.getElementById('cart-empty').style.display = 'none';
+        
+        let total = cart.reduce((sum, i) => sum + i.price, 0);
+        list.innerHTML = cart.map(i => `
+            <div style="background:var(--card); padding:15px; border-radius:15px; margin-bottom:10px; display:flex; justify-content:space-between;">
+                <span>${i.name}</span><b>${i.price} ₽</b>
+            </div>`).join('') + `
+            <div style="text-align:right; padding:20px;">ИТОГО: <b>${total} ₽</b></div>
+            <button class="btn-buy" onclick="checkout()">ОФОРМИТЬ ЗАКАЗ</button>`;
     }
 
-    function removeCart(uid) {
-        cart = cart.filter(x => x.uid !== uid);
-        renderCart(); updateBadge();
-        tg.HapticFeedback.impactOccurred('medium');
+    function checkout() {
+        if (cart.length === 0) return;
+        const newOrder = {
+            id: Math.floor(Math.random() * 10000),
+            date: new Date().toLocaleDateString(),
+            items: [...cart],
+            total: cart.reduce((sum, i) => sum + i.price, 0)
+        };
+        orderHistory.unshift(newOrder);
+        localStorage.setItem('nextech_orders', JSON.stringify(orderHistory));
+        cart = [];
+        updateBadge();
+        tg.showAlert('Заказ принят! Информация сохранена в истории.');
+        navigate('home');
     }
+
+    function renderHistory() {
+        const list = document.getElementById('history-list');
+        if (orderHistory.length === 0) { list.innerHTML = '<p style="opacity:0.3; text-align:center; margin-top:50px;">История пуста</p>'; return; }
+        
+        list.innerHTML = orderHistory.map(o => `
+            <div class="order-item">
+                <div class="order-header"><span>ЗАКАЗ #${o.id}</span><span>${o.date}</span></div>
+                <div style="font-weight:700; margin-bottom:5px;">${o.items.map(i => i.name).join(', ')}</div>
+                <div class="order-header"><span class="order-status">ОЖИДАЕТ ОПЛАТЫ</span><b>${o.total} ₽</b></div>
+            </div>`).join('');
+    }
+
+    function openSupport() {
+        // Замени на ссылку на свой аккаунт или бота поддержки
+        tg.openTelegramLink('https://t.me/твой_ник'); 
+    }
+
+    renderCart();
 </script>
 </body>
 </html>
