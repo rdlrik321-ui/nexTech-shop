@@ -3,39 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>nexTech Grid</title>
+    <title>nexTech Official</title>
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <style>
+        /* ФОН - ТА САМАЯ СЕТКА */
         body {
             background-color: #000;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 20px 20px; /* Размер клетки */
             color: #fff;
             font-family: sans-serif;
             margin: 0;
             padding: 0;
         }
 
-        .container {
-            padding: 10px;
-            padding-bottom: 100px;
+        /* ЛОГОТИП */
+        .logo {
+            text-align: center;
+            padding: 20px 0;
+            font-size: 2rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255,255,255,0.3);
+        }
+        .logo span { color: #0088cc; }
+
+        /* ВКЛАДКИ КАТЕГОРИЙ (ПРОЦЕССОРЫ / ВИДЕОКАРТЫ) */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #888;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+        .tab-btn.active {
+            color: #fff;
+            background: rgba(0, 136, 204, 0.2);
+            border-color: #0088cc;
         }
 
+        .container { padding: 0 15px 100px 15px; }
         .page { display: none; }
         .page.active { display: block; }
 
-        /* СЕТКА КАТАЛОГА */
+        /* СЕТКА ТОВАРОВ */
         .catalog-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr; /* В две колонки */
-            gap: 10px;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
         }
 
-        /* ТВОЯ КАРТОЧКА В СЕТКЕ */
+        /* КАРТОЧКА (ТВОЙ ДИЗАЙН) */
         .card {
             background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(5px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
             overflow: hidden;
@@ -43,34 +79,29 @@
             flex-direction: column;
         }
 
-        /* СЛАЙДЕР ВНУТРИ СЕТКИ */
-        .swiper { width: 100%; height: 150px; }
+        /* СЛАЙДЕР ВНУТРИ КАРТОЧКИ */
+        .swiper { width: 100%; height: 140px; }
         .swiper-slide img { width: 100%; height: 100%; object-fit: cover; }
 
         .card-content { padding: 10px; flex-grow: 1; display: flex; flex-direction: column; }
-        .item-title { font-size: 0.95rem; margin: 0; font-weight: bold; min-height: 2.4em; }
+        .item-title { font-size: 0.9rem; margin: 0; font-weight: bold; min-height: 2.4em; }
         .item-price { font-size: 1.1rem; color: #4cd137; margin: 5px 0; font-weight: 800; }
         
-        .item-details {
-            font-size: 0.75rem;
-            color: #888;
-            margin-bottom: 10px;
-            line-height: 1.2;
-        }
+        .item-details { font-size: 0.7rem; color: #777; margin-bottom: 10px; line-height: 1.2; }
 
-        .action-btn {
+        .buy-btn {
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.15);
             color: #fff;
             width: 100%;
-            padding: 10px;
+            padding: 8px;
             border-radius: 8px;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: bold;
             margin-top: auto;
         }
 
-        /* МЕНЮ С БОЛЬШИМИ ИКОНКАМИ */
+        /* НИЖНЕЕ МЕНЮ (БОЛЬШИЕ ИКОНКИ 28px) */
         .navbar {
             position: fixed;
             bottom: 0;
@@ -78,11 +109,9 @@
             height: 80px;
             display: flex;
             background: rgba(0, 0, 0, 0.9);
-            backdrop-filter: blur(10px);
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             z-index: 1000;
         }
-
         .nav-item {
             flex: 1;
             background: none;
@@ -93,12 +122,11 @@
             align-items: center;
             justify-content: center;
         }
-
         .nav-item i { font-size: 28px; margin-bottom: 4px; }
         .nav-item span { font-size: 10px; }
         .nav-item.active { color: #0088cc; }
 
-        /* ПРОФИЛЬ */
+        /* ОТМЕНА ЗАКАЗА */
         .order-card {
             background: rgba(255, 255, 255, 0.05);
             padding: 15px;
@@ -114,117 +142,140 @@
             width: 100%;
             border-radius: 8px;
             margin-top: 10px;
+            font-weight: 600;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div id="shop-page" class="page active">
-        <div class="catalog-grid">
+    <div class="logo">nex<span>Tech</span></div>
+
+    <div class="container">
+        <div id="shop-page" class="page active">
             
-            <div class="card">
-                <div class="swiper mySwiper">
-                    <div class="swiper-wrapper">
-                        <div class="swiper-slide"><img src="gpu1.jpg"></div>
-                        <div class="swiper-slide"><img src="gpu2.jpg"></div>
-                    </div>
-                    <div class="swiper-pagination"></div>
-                </div>
-                <div class="card-content">
-                    <p class="item-title">RX 580 8GB Nitro+</p>
-                    <p class="item-price">5 800 ₽</p>
-                    <div class="item-details">Samsung, 67°C, гарантия 3 дня.</div>
-                    <button class="action-btn" onclick="add()">В корзину</button>
-                </div>
+            <div class="tabs">
+                <button class="tab-btn active" onclick="filterCategory('all')">Все</button>
+                <button class="tab-btn" onclick="filterCategory('gpu')">Видеокарты</button>
+                <button class="tab-btn" onclick="filterCategory('cpu')">Процессоры</button>
             </div>
 
-            <div class="card">
-                <div class="swiper mySwiper">
-                    <div class="swiper-wrapper">
-                        <div class="swiper-slide"><img src="cpu.jpg"></div>
+            <div class="catalog-grid">
+                <div class="card item-gpu">
+                    <div class="swiper mySwiper">
+                        <div class="swiper-wrapper">
+                            <div class="swiper-slide"><img src="gpu1.jpg"></div>
+                            <div class="swiper-slide"><img src="gpu2.jpg"></div>
+                        </div>
+                        <div class="swiper-pagination"></div>
                     </div>
-                    <div class="swiper-pagination"></div>
+                    <div class="card-content">
+                        <p class="item-title">Sapphire Nitro+ RX 580</p>
+                        <p class="item-price">5 800 ₽</p>
+                        <div class="item-details">Samsung, 67°C, 8GB. 3 дня гарантия.</div>
+                        <button class="buy-btn" onclick="add()">В корзину</button>
+                    </div>
                 </div>
-                <div class="card-content">
-                    <p class="item-title">Ryzen 5 3600</p>
-                    <p class="item-price">7 200 ₽</p>
-                    <div class="item-details">BOX версия, ножки идеал.</div>
-                    <button class="action-btn" onclick="add()">В корзину</button>
+
+                <div class="card item-cpu">
+                    <div class="swiper mySwiper">
+                        <div class="swiper-wrapper">
+                            <div class="swiper-slide"><img src="cpu.jpg"></div>
+                        </div>
+                        <div class="swiper-pagination"></div>
+                    </div>
+                    <div class="card-content">
+                        <p class="item-title">Ryzen 5 3600 BOX</p>
+                        <p class="item-price">7 200 ₽</p>
+                        <div class="item-details">Полный комплект, ножки идеал.</div>
+                        <button class="buy-btn" onclick="add()">В корзину</button>
+                    </div>
                 </div>
             </div>
+        </div>
 
+        <div id="profile-page" class="page">
+            <h3>Мои заказы</h3>
+            <div class="order-card" id="ord-101">
+                <div style="display:flex; justify-content:space-between">
+                    <span>№ 101</span>
+                    <span style="color:#0088cc">В пути</span>
+                </div>
+                <p style="margin: 10px 0;">RX 580 8GB — 5 800 ₽</p>
+                <button class="btn-cancel" onclick="cancel(101)">Отменить заказ</button>
+            </div>
+        </div>
+
+        <div id="cart-page" class="page">
+            <h3 style="text-align:center; color:#333; margin-top:50px;">Корзина пуста</h3>
         </div>
     </div>
 
-    <div id="profile-page" class="page">
-        <h3>Мои заказы</h3>
-        <div class="order-card" id="ord-101">
-            <div style="display:flex; justify-content:space-between">
-                <span>№ 101</span>
-                <span style="color:#0088cc">В пути</span>
-            </div>
-            <p>RX 580 8GB — 5 800 ₽</p>
-            <button class="btn-cancel" onclick="cancel(101)">Отменить заказ</button>
-        </div>
-    </div>
+    <nav class="navbar">
+        <button class="nav-item active" onclick="nav('shop-page', this)">
+            <i class="fa-solid fa-layer-group"></i>
+            <span>Каталог</span>
+        </button>
+        <button class="nav-item" onclick="nav('cart-page', this)">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <span>Корзина</span>
+        </button>
+        <button class="nav-item" onclick="nav('profile-page', this)">
+            <i class="fa-solid fa-user-gear"></i>
+            <span>Профиль</span>
+        </button>
+    </nav>
 
-    <div id="cart-page" class="page">
-        <h3 style="text-align:center; color:#444; margin-top:50px;">Корзина пуста</h3>
-    </div>
-</div>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
 
-<nav class="navbar">
-    <button class="nav-item active" onclick="show('shop-page', this)">
-        <i class="fa-solid fa-layer-group"></i>
-        <span>Шоп</span>
-    </button>
-    <button class="nav-item" onclick="show('cart-page', this)">
-        <i class="fa-solid fa-cart-shopping"></i>
-        <span>Корзина</span>
-    </button>
-    <button class="nav-item" onclick="show('profile-page', this)">
-        <i class="fa-solid fa-user-gear"></i>
-        <span>Профиль</span>
-    </button>
-</nav>
-
-<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-<script>
-    const tg = window.Telegram.WebApp;
-    tg.expand();
-
-    // Слайдер (листалка)
-    new Swiper(".mySwiper", {
-        pagination: { el: ".swiper-pagination", dynamicBullets: true },
-    });
-
-    // Навигация
-    function show(id, btn) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        tg.HapticFeedback.selectionChanged();
-    }
-
-    // Отмена заказа
-    function cancel(id) {
-        tg.showConfirm("Отменить этот заказ?", (yes) => {
-            if(yes) {
-                const el = document.getElementById(`ord-${id}`);
-                el.style.opacity = "0.3";
-                el.innerHTML = "<p style='text-align:center'>Заказ отменен</p>";
-                tg.HapticFeedback.notificationOccurred('success');
-            }
+        // Инициализация слайдеров
+        new Swiper(".mySwiper", {
+            pagination: { el: ".swiper-pagination", dynamicBullets: true },
         });
-    }
 
-    function add() {
-        tg.HapticFeedback.impactOccurred('medium');
-        alert("Добавлено!");
-    }
-</script>
+        // Навигация по страницам
+        function nav(id, btn) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            tg.HapticFeedback.selectionChanged();
+        }
 
+        // Фильтр категорий
+        function filterCategory(cat) {
+            tg.HapticFeedback.impactOccurred('light');
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const items = document.querySelectorAll('.card');
+            items.forEach(i => {
+                if(cat === 'all' || i.classList.contains('item-' + cat)) {
+                    i.style.display = "flex";
+                } else {
+                    i.style.display = "none";
+                }
+            });
+        }
+
+        // Отмена заказа
+        function cancel(id) {
+            tg.showConfirm("Уверен, что хочешь отменить?", (confirm) => {
+                if(confirm) {
+                    const el = document.getElementById(`ord-${id}`);
+                    el.style.opacity = "0.3";
+                    el.innerHTML = "<p style='text-align:center'>Заказ отменен</p>";
+                    tg.HapticFeedback.notificationOccurred('success');
+                }
+            });
+        }
+
+        function add() {
+            tg.HapticFeedback.impactOccurred('medium');
+            alert("Добавлено!");
+        }
+    </script>
 </body>
 </html>
