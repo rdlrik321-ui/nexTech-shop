@@ -8,7 +8,7 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <style>
-        /* ТВОЙ СТИЛЬ: СЕТКА И ФОН */
+        /* СТИЛЬ ТЕРМИНАЛА НИКИТЫ */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
 
         body { 
@@ -22,15 +22,9 @@
             overflow-x: hidden;
         }
 
-        .container { 
-            width: 100%; 
-            max-width: 380px; 
-            margin: 0 auto; 
-            padding: 20px; 
-            padding-bottom: 120px; 
-        }
+        .container { width: 100%; max-width: 380px; margin: 0 auto; padding: 20px; padding-bottom: 110px; }
 
-        /* ХЕДЕР: ТВОЙ БЕЛЫЙ ЛОГО-БОКС */
+        /* ХЕДЕР */
         .header { display: flex; flex-direction: column; align-items: center; margin: 50px 0 40px 0; }
         .logo-box { 
             background: #fff; border-radius: 25px; width: 100px; height: 100px;
@@ -39,62 +33,53 @@
         }
         h1 { font-size: 12px; letter-spacing: 5px; opacity: 0.4; text-transform: uppercase; }
 
-        /* ПОИСК */
-        .search-input {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 18px; padding: 15px;
-            width: 100%; color: #fff; margin-bottom: 20px; outline: none;
-        }
-
-        /* ТВОИ КНОПКИ МЕНЮ */
-        .menu { display: flex; flex-direction: column; gap: 15px; }
-        .btn {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 22px; padding: 25px;
-            font-weight: 800; font-size: 17px;
-            text-align: center; cursor: pointer;
-        }
-
-        /* СТРАНИЦЫ */
         .page { display: none; }
         .page.active { display: block; }
 
-        /* ТВОЙ СТИЛЬ КАРТОЧКИ */
+        /* КАРТОЧКИ */
         .card {
             background: rgba(255,255,255,0.03);
             border: 1px solid rgba(255,255,255,0.1);
             border-radius: 25px; padding: 20px;
             text-align: center; margin-bottom: 20px;
         }
-        .swiper { width: 100%; height: 180px; border-radius: 15px; margin-bottom: 15px; }
+        .swiper { width: 100%; height: 200px; border-radius: 15px; margin-bottom: 15px; }
         .swiper-slide img { width: 100%; height: 100%; object-fit: cover; }
 
         .price { font-size: 28px; font-weight: 900; margin: 15px 0; }
-        .buy-btn {
+        .buy {
             background: #fff; color: #000; border: none;
             padding: 20px; border-radius: 18px;
             font-weight: 900; width: 100%; cursor: pointer;
         }
 
-        /* FPS БАР И ОПИСАНИЕ */
-        .fps-grid { display: flex; justify-content: space-around; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 12px; margin: 10px 0; }
-        .fps-val { color: #4cd137; font-weight: 900; display: block; }
-        .fps-label { font-size: 8px; opacity: 0.5; }
-        .specs-text { font-size: 12px; opacity: 0.6; text-align: left; line-height: 1.5; margin-bottom: 10px; }
+        .search-box {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 18px; padding: 15px;
+            width: 100%; color: #fff; margin-bottom: 25px; outline: none;
+        }
+        .back { color: rgba(255,255,255,0.5); padding: 15px 0; display: block; text-align: center; cursor: pointer; font-weight: 800; font-size: 13px; }
 
-        /* ХОТБАР (НИЖНЕЕ МЕНЮ) */
+        /* ПРОФИЛЬ: РАЗДЕЛЫ */
+        .profile-section {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 22px; padding: 20px;
+            margin-bottom: 15px; text-align: left;
+        }
+        .section-label { font-weight: 900; font-size: 12px; letter-spacing: 1px; margin-bottom: 8px; display: block; color: rgba(255,255,255,0.4); text-transform: uppercase; }
+        .section-content { font-size: 14px; line-height: 1.5; opacity: 0.8; }
+
+        /* ХОТБАР */
         .hotbar {
             position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
             width: 90%; background: rgba(15, 15, 17, 0.95); backdrop-filter: blur(10px);
             border: 1px solid rgba(255,255,255,0.1); border-radius: 35px;
-            display: flex; justify-content: space-around; padding: 12px; z-index: 1000;
+            display: flex; justify-content: space-around; padding: 12px; z-index: 2000;
         }
-        .nav-item { color: rgba(255,255,255,0.3); font-size: 24px; transition: 0.2s; }
+        .nav-item { color: rgba(255,255,255,0.3); font-size: 22px; transition: 0.2s; }
         .nav-item.active { color: #fff; }
-
-        .back-btn { color: rgba(255,255,255,0.5); padding: 10px; display: block; text-align: center; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -108,84 +93,86 @@
             </div>
             <h1>NEXTECH // TERMINAL</h1>
         </div>
-        <div class="menu">
-            <div class="btn" onclick="show('gpu')">ВИДЕОКАРТЫ</div>
-            <div class="btn" onclick="show('cpu')">ПРОЦЕССОРЫ</div>
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+            <div class="card" style="padding: 25px; cursor: pointer; font-weight: 800;" onclick="openPage('gpu-list')">ВИДЕОКАРТЫ</div>
+            <div class="card" style="padding: 25px; cursor: pointer; font-weight: 800;" onclick="openPage('cpu-list')">ПРОЦЕССОРЫ</div>
         </div>
     </div>
 
-    <div id="gpu" class="page">
-        <div class="back-btn" onclick="show('home')">← ТЕРМИНАЛ</div>
-        <input type="text" class="search-input" placeholder="ПОИСК ПО МОДЕЛИ...">
-        
+    <div id="gpu-list" class="page">
+        <div class="back" onclick="openPage('home')">← ТЕРМИНАЛ</div>
+        <input type="text" class="search-box" placeholder="ПОИСК ВИДЕОКАРТ...">
         <div class="card">
             <div class="swiper mySwiper">
                 <div class="swiper-wrapper">
                     <div class="swiper-slide"><img src="gpu1.jpg"></div>
-                    <div class="swiper-slide"><img src="gpu2.jpg"></div>
                 </div>
             </div>
-            <h2>RX 580 8GB NITRO+</h2>
-            <div class="fps-grid">
-                <div class="fps-item"><span class="fps-val">320</span><span class="fps-label">CS2</span></div>
-                <div class="fps-item"><span class="fps-val">110</span><span class="fps-label">PUBG</span></div>
-                <div class="fps-item"><span class="fps-val">55</span><span class="fps-label">CYBERPUNK</span></div>
-            </div>
-            <div class="specs-text">
-                • Чипы: Samsung GDDR5<br>
-                • Охлад: Обслужена MX-4<br>
-                • Состояние: Идеал, любые тесты
-            </div>
+            <h2 style="font-weight: 800;">Sapphire Nitro+ RX 580</h2>
+            <p style="font-size: 12px; opacity: 0.5; margin-top: 10px; text-align: left;">
+                Обслужена, термопаста MX-4. Проходит любые тесты, 67 градусов в FurMark.
+            </p>
             <div class="price">5 800 ₽</div>
-            <button class="buy-btn" onclick="add()">КУПИТЬ</button>
+            <button class="buy" onclick="add('RX 580')">В КОРЗИНУ</button>
         </div>
     </div>
 
-    <div id="cpu" class="page">
-        <div class="back-btn" onclick="show('home')">← ТЕРМИНАЛ</div>
+    <div id="cpu-list" class="page">
+        <div class="back" onclick="openPage('home')">← ТЕРМИНАЛ</div>
+        <input type="text" class="search-box" placeholder="ПОИСК ПРОЦЕССОРОВ...">
         <div class="card">
             <div class="swiper mySwiper">
                 <div class="swiper-wrapper">
                     <div class="swiper-slide"><img src="cpu1.jpg"></div>
                 </div>
             </div>
-            <h2>RYZEN 5 5600X</h2>
-            <div class="fps-grid">
-                <div class="fps-item"><span class="fps-val">580</span><span class="fps-label">CS2</span></div>
-                <div class="fps-item"><span class="fps-val">240</span><span class="fps-label">VALORANT</span></div>
-            </div>
-            <div class="specs-text">
-                • 6 ядер / 12 потоков<br>
-                • Boost: 4.6 GHz<br>
-                • Сокет: AM4
-            </div>
+            <h2 style="font-weight: 800;">Ryzen 5 5600X</h2>
+            <p style="font-size: 12px; opacity: 0.5; margin-top: 10px; text-align: left;">
+                6 ядер, 12 потоков. Частота до 4.6 GHz. Отличное состояние, любые проверки.
+            </p>
             <div class="price">12 500 ₽</div>
-            <button class="buy-btn" onclick="add()">КУПИТЬ</button>
-        </div>
-    </div>
-
-    <div id="profile" class="page">
-        <h1 style="text-align: center; margin-top: 40px;">ПРОФИЛЬ</h1>
-        <div class="card" style="margin-top: 20px;">
-            <p style="opacity: 0.5;">О НАС</p>
-            <p style="font-size: 14px; margin-top: 10px;">Лучшее железо в Томске. Гарантия и тесты.</p>
-            <button class="buy-btn" style="margin-top: 20px;" onclick="tg.openTelegramLink('https://t.me/support')">ПОДДЕРЖКА</button>
+            <button class="buy" onclick="add('R5 5600X')">В КОРЗИНУ</button>
         </div>
     </div>
 
     <div id="cart" class="page">
-        <h1 style="text-align: center; margin-top: 40px;">КОРЗИНА</h1>
-        <div class="card" style="margin-top: 20px;">
-            <p id="cart-status">Корзина пуста</p>
+        <h2 style="margin-bottom: 20px; font-weight: 800;">КОРЗИНА</h2>
+        <div class="profile-section" id="cart-items">
+            <p style="opacity: 0.4;">Тут пока пусто...</p>
+        </div>
+    </div>
+
+    <div id="profile" class="page">
+        <h2 style="margin-bottom: 20px; font-weight: 800;">ПРОФИЛЬ</h2>
+        
+        <div class="profile-section">
+            <span class="section-label">О нас</span>
+            <div class="section-content">
+                Все товары проходят тщательное тестирование (OCCT, FurMark, MemTest86). 
+                <br><br>
+                Гарантия на проверку товара — **3 дня** с момента покупки.
+            </div>
+        </div>
+
+        <div class="profile-section">
+            <span class="section-label">Заказы</span>
+            <div class="section-content" style="opacity: 0.4;">
+                История заказов пуста.
+            </div>
+        </div>
+
+        <div class="profile-section">
+            <span class="section-label">Поддержка</span>
+            <button class="buy" style="margin-top: 10px; padding: 15px; font-size: 14px;" onclick="tg.openTelegramLink('https://t.me/support')">Связаться с нами</button>
         </div>
     </div>
 
 </div>
 
 <div class="hotbar">
-    <div class="nav-item active" id="nav-home" onclick="show('home')"><i class="fa-solid fa-terminal"></i></div>
-    <div class="nav-item" id="nav-cart" onclick="show('cart')"><i class="fa-solid fa-cart-shopping"></i></div>
-    <div class="nav-item" id="nav-profile" onclick="show('profile')"><i class="fa-solid fa-user"></i></div>
+    <div class="nav-item active" id="nav-home" onclick="openPage('home')"><i class="fa-solid fa-terminal"></i></div>
+    <div class="nav-item" id="nav-cart" onclick="openPage('cart')"><i class="fa-solid fa-cart-shopping"></i></div>
+    <div class="nav-item" id="nav-profile" onclick="openPage('profile')"><i class="fa-solid fa-user"></i></div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
@@ -195,23 +182,24 @@
 
     new Swiper(".mySwiper", { pagination: { el: ".swiper-pagination", dynamicBullets: true } });
 
-    function show(id) {
+    function openPage(id) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        if (id === 'home' || id === 'gpu' || id === 'cpu') document.getElementById('nav-home').classList.add('active');
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        if (id === 'home' || id === 'gpu-list' || id === 'cpu-list') document.getElementById('nav-home').classList.add('active');
         if (id === 'cart') document.getElementById('nav-cart').classList.add('active');
         if (id === 'profile') document.getElementById('nav-profile').classList.add('active');
 
         tg.HapticFeedback.selectionChanged();
     }
 
-    function add() {
+    function add(name) {
         tg.HapticFeedback.notificationOccurred('success');
-        tg.showAlert('ТОВАР ДОБАВЛЕН В КОРЗИНУ!');
-        document.getElementById('cart-status').innerText = 'У вас 1 товар в корзине';
+        tg.showAlert(name + ' в корзине!');
+        document.getElementById('cart-items').innerHTML = '<p>Товар: ' + name + '</p>';
     }
 </script>
+
 </body>
 </html>
