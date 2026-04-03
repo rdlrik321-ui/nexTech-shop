@@ -39,68 +39,64 @@
         .screen.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.99); } to { opacity: 1; transform: scale(1); } }
 
-        /* HEADER С ЛОГОТИПОМ */
-        .header { display: flex; flex-direction: column; align-items: center; margin: 50px 0 35px; }
+        /* HEADER */
+        .header { display: flex; flex-direction: column; align-items: center; margin: 40px 0 30px; }
         .logo-box { 
-            background: #fff; border-radius: 24px; width: 85px; height: 85px;
+            background: #fff; border-radius: 20px; width: 75px; height: 75px;
             display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5); margin-bottom: 20px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5); margin-bottom: 15px;
         }
-        .logo-box img { width: 45px; }
-        .brand-text { font-size: 10px; letter-spacing: 5px; opacity: 0.4; font-weight: 700; text-transform: uppercase; }
-
-        /* ПОИСК */
-        .search-wrap { position: sticky; top: 0; z-index: 100; background: var(--bg); padding: 5px 0 15px; }
-        .search-input {
-            width: 100%; background: var(--card); border: 1px solid var(--border);
-            border-radius: 18px; padding: 18px 22px; color: #fff; font-family: inherit;
-            font-size: 15px; outline: none; backdrop-filter: blur(15px);
-        }
+        .logo-box img { width: 40px; }
+        .brand-text { font-size: 9px; letter-spacing: 4px; opacity: 0.4; font-weight: 700; text-transform: uppercase; }
 
         /* КАТЕГОРИИ */
         .btn-cat {
             background: var(--card); border: 1px solid var(--border);
-            border-radius: 24px; padding: 35px 25px; font-weight: 700; font-size: 19px; 
-            text-transform: uppercase; margin-bottom: 16px; cursor: pointer; text-align: center;
+            border-radius: 20px; padding: 25px 20px; font-weight: 700; font-size: 16px; 
+            text-transform: uppercase; margin-bottom: 12px; cursor: pointer; text-align: center;
+        }
+
+        /* ПОИСК */
+        .search-input {
+            width: 100%; background: var(--card); border: 1px solid var(--border);
+            border-radius: 15px; padding: 14px 18px; color: #fff; font-family: inherit;
+            font-size: 14px; outline: none; margin-bottom: 20px;
         }
 
         /* КАРТОЧКИ */
-        .p-card { background: var(--card); border: 1px solid var(--border); border-radius: 30px; margin-bottom: 25px; overflow: hidden; }
-        .p-img { width: 100%; height: 220px; object-fit: cover; }
-        .p-info { padding: 22px; }
-        .p-title { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
-        .p-price { font-size: 17px; font-weight: 500; opacity: 0.6; }
+        .p-card { background: var(--card); border: 1px solid var(--border); border-radius: 25px; margin-bottom: 20px; overflow: hidden; }
+        .p-img { width: 100%; height: 200px; object-fit: cover; }
+        .p-info { padding: 18px; }
+        .p-title { font-size: 19px; font-weight: 700; margin-bottom: 6px; }
+        .p-price { font-size: 15px; font-weight: 500; opacity: 0.6; }
 
-        /* СЛАЙДЕР */
-        .slider { position: relative; border-radius: 30px; overflow: hidden; margin-bottom: 30px; border: 1px solid var(--border); }
-        .slider-inner { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
-        .slide { flex: 0 0 100%; height: 320px; scroll-snap-align: center; }
-        .slide img { width: 100%; height: 100%; object-fit: cover; }
-        .dots { display: flex; justify-content: center; gap: 8px; margin-top: -30px; position: relative; padding-bottom: 25px; }
-        .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.2); transition: 0.3s; }
-        .dot.active { background: #fff; transform: scale(1.4); }
+        /* FPS БАР */
+        .fps-box { background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 15px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; }
+        .fps-bar { width: 50px; height: 3px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; }
+        .fps-fill { height: 100%; background: #fff; }
+
+        /* КНОПКИ (УМЕНЬШЕННЫЕ) */
+        .btn-buy { background: #fff; color: #000; border: none; padding: 16px; border-radius: 16px; font-weight: 700; font-size: 14px; width: 100%; margin-top: 15px; cursor: pointer; }
+        .btn-back { font-size: 10px; opacity: 0.4; padding: 10px 0; cursor: pointer; text-transform: uppercase; font-weight: 600; }
 
         /* НАВИГАЦИЯ */
         .nav {
-            position: fixed; bottom: 0; left: 0; right: 0; height: 95px;
-            background: rgba(13, 13, 15, 0.95); backdrop-filter: blur(25px);
+            position: fixed; bottom: 0; left: 0; right: 0; height: 85px;
+            background: rgba(13, 13, 15, 0.95); backdrop-filter: blur(20px);
             border-top: 1px solid var(--border); display: flex; z-index: 1000;
         }
         .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: rgba(255,255,255,0.3); position: relative; }
         .nav-item.active { color: #fff; }
-        .nav-icon { width: 22px; height: 22px; background: currentColor; mask-size: contain; -webkit-mask-image: var(--i); margin-bottom: 28px; }
-        .nav-label { position: absolute; bottom: 20px; font-size: 10px; font-weight: 600; }
+        .nav-icon { width: 20px; height: 20px; background: currentColor; mask-size: contain; -webkit-mask-image: var(--i); margin-bottom: 24px; }
+        .nav-label { position: absolute; bottom: 18px; font-size: 9px; font-weight: 600; }
         
         .badge { 
-            position: absolute; top: 12px; right: 24%; background: var(--danger); 
-            color: #fff; font-size: 9px; min-width: 17px; height: 17px; 
+            position: absolute; top: 10px; right: 26%; background: var(--danger); 
+            color: #fff; font-size: 9px; min-width: 16px; height: 16px; 
             border-radius: 50%; display: none; align-items: center; justify-content: center; border: 2px solid var(--bg);
         }
 
-        .btn-buy { background: #fff; color: #000; border: none; padding: 24px; border-radius: 22px; font-weight: 700; font-size: 16px; width: 100%; margin-top: 20px; }
-        .btn-back { font-size: 11px; opacity: 0.4; padding: 15px 0; cursor: pointer; text-transform: uppercase; font-weight: 600; }
-
-        .order-item { background: var(--card); border: 1px solid var(--border); padding: 20px; border-radius: 20px; margin-bottom: 10px; }
+        .order-item { background: var(--card); border: 1px solid var(--border); padding: 15px; border-radius: 18px; margin-bottom: 10px; }
     </style>
 </head>
 <body>
@@ -117,9 +113,7 @@
 
     <div id="scr-catalog" class="screen">
         <div class="btn-back" onclick="navigate('home')">← НАЗАД</div>
-        <div class="search-wrap">
-            <input type="text" class="search-input" id="search-input" placeholder="Поиск в базе..." oninput="renderCatalog()">
-        </div>
+        <input type="text" class="search-input" id="search-input" placeholder="Поиск..." oninput="renderCatalog()">
         <div id="catalog-list"></div>
     </div>
 
@@ -136,8 +130,8 @@
 
     <div id="scr-profile" class="screen">
         <div class="header"><div class="brand-text">ПРОФИЛЬ</div></div>
-        <div class="btn-cat" style="font-size: 14px; text-align: left;" onclick="navigate('history')">ИСТОРИЯ ЗАКАЗОВ</div>
-        <div class="btn-cat" style="font-size: 14px; text-align: left;" onclick="openSupport()">ПОДДЕРЖКА</div>
+        <div class="btn-cat" style="font-size: 13px; text-align: left; padding: 20px;" onclick="navigate('history')">ИСТОРИЯ ЗАКАЗОВ</div>
+        <div class="btn-cat" style="font-size: 13px; text-align: left; padding: 20px;" onclick="openSupport()">ПОДДЕРЖКА</div>
     </div>
 
     <div id="scr-history" class="screen">
@@ -168,11 +162,11 @@
 
     const db = {
         'gpu': [
-            { id: 1, name: 'RX 580 4GB NITRO+', price: 5800, imgs: ['photo_2026-04-01_13-15-04.jpg'], desc: 'Легендарная серия NITRO+ от Sapphire. Прошла полное ТО: заменены термопрокладки и паста MX-4. Идеальна для онлайн-проектов.' },
-            { id: 2, name: 'RTX 3060 12GB', price: 23500, imgs: ['https://via.placeholder.com/800x600/161618/fff?text=RTX+3060'], desc: 'Современная видеокарта с 12GB видеопамяти. Поддержка Ray Tracing и DLSS. Состояние новой вещи, пломбы на месте.' }
+            { id: 1, name: 'RX 580 4GB NITRO+', price: 5800, imgs: ['photo_2026-04-01_13-15-04.jpg'], desc: 'Легендарная серия NITRO+ от Sapphire. Прошла полное ТО: заменены термопрокладки и паста MX-4.', tests: [{n:'Dota 2', v:'95 FPS', p:75}, {n:'CS2', v:'120 FPS', p:85}] },
+            { id: 2, name: 'RTX 3060 12GB', price: 23500, imgs: ['https://via.placeholder.com/800x600/161618/fff?text=RTX+3060'], desc: 'Состояние новой вещи, пломбы на месте. 12GB видеопамяти для любых современных игр.', tests: [{n:'Cyberpunk', v:'65 FPS', p:90}, {n:'Warzone', v:'95 FPS', p:80}] }
         ],
         'cpu': [
-            { id: 3, name: 'RYZEN 5 5600X', price: 13200, imgs: ['photo_2026-04-01_13-21-49.jpg'], desc: '6 ядер, 12 потоков, архитектура Zen 3. Идеальный игровой процессор. BOX версия с кулером в комплекте.' }
+            { id: 3, name: 'RYZEN 5 5600X', price: 13200, imgs: ['photo_2026-04-01_13-21-49.jpg'], desc: '6 ядер, 12 потоков. Идеальный игровой процессор. BOX версия с кулером.', tests: [{n:'Игры', v:'Топ', p:95}] }
         ]
     };
 
@@ -194,11 +188,7 @@
         navigate(id);
     }
 
-    function openCat(cat) {
-        curCat = cat;
-        renderCatalog();
-        navigate('catalog');
-    }
+    function openCat(cat) { curCat = cat; renderCatalog(); navigate('catalog'); }
 
     function renderCatalog() {
         const q = document.getElementById('search-input').value.toLowerCase();
@@ -213,23 +203,19 @@
     function openItem(cat, id) {
         const p = db[cat].find(x => x.id === id);
         document.getElementById('item-details').innerHTML = `
-            <div class="slider"><div class="slide"><img src="${p.imgs[0]}"></div></div>
-            <h2 style="font-size:28px; font-weight:800; margin-bottom:12px;">${p.name}</h2>
-            <p style="opacity:0.6; font-size:15px; line-height:1.6; margin-bottom:30px;">${p.desc}</p>
+            <div style="border-radius:25px; overflow:hidden; margin-bottom:20px; border:1px solid var(--border);"><img src="${p.imgs[0]}" style="width:100%;"></div>
+            <h2 style="font-size:24px; font-weight:800; margin-bottom:10px;">${p.name}</h2>
+            <p style="opacity:0.6; font-size:14px; line-height:1.5; margin-bottom:20px;">${p.desc}</p>
+            <div style="font-size:10px; font-weight:700; opacity:0.3; margin-bottom:10px; letter-spacing:1px;">ТЕСТЫ В ИГРАХ</div>
+            ${p.tests.map(t => `
+                <div class="fps-box"><span>${t.n}</span><div style="display:flex; align-items:center; gap:10px;"><b>${t.v}</b><div class="fps-bar"><div class="fps-fill" style="width:${t.p}%"></div></div></div></div>
+            `).join('')}
             <button class="btn-buy" onclick="addToCart('${p.name}', ${p.price})">В КОРЗИНУ — ${p.price.toLocaleString()} ₽</button>`;
         navigate('item');
     }
 
-    function addToCart(name, price) {
-        cart.push({name, price, id: Date.now()});
-        updateBadge();
-        tg.HapticFeedback.notificationOccurred('success');
-    }
-
-    function updateBadge() {
-        const b = document.getElementById('cart-badge');
-        b.innerText = cart.length; b.style.display = cart.length > 0 ? 'flex' : 'none';
-    }
+    function addToCart(name, price) { cart.push({name, price, id: Date.now()}); updateBadge(); tg.HapticFeedback.notificationOccurred('success'); }
+    function updateBadge() { const b = document.getElementById('cart-badge'); b.innerText = cart.length; b.style.display = cart.length > 0 ? 'flex' : 'none'; }
 
     function renderCart() {
         const list = document.getElementById('cart-list');
@@ -237,9 +223,9 @@
         document.getElementById('cart-empty').style.display = 'none';
         let total = cart.reduce((sum, i) => sum + i.price, 0);
         list.innerHTML = cart.map(i => `
-            <div style="background:var(--card); padding:20px; border-radius:20px; margin-bottom:10px; display:flex; justify-content:space-between; border: 1px solid var(--border);">
-                <span>${i.name}</span><b>${i.price.toLocaleString()} ₽</b>
-            </div>`).join('') + `<div style="text-align:right; padding:20px; font-size:24px; font-weight:800;">${total.toLocaleString()} ₽</div>
+            <div style="background:var(--card); padding:15px; border-radius:15px; margin-bottom:10px; display:flex; justify-content:space-between; border: 1px solid var(--border);">
+                <span style="font-size:14px;">${i.name}</span><b>${i.price.toLocaleString()} ₽</b>
+            </div>`).join('') + `<div style="text-align:right; padding:15px; font-size:20px; font-weight:800;">${total.toLocaleString()} ₽</div>
             <button class="btn-buy" onclick="checkout()">ОФОРМИТЬ ЗАКАЗ</button>`;
     }
 
@@ -247,8 +233,7 @@
         const order = { id: Math.floor(Math.random()*10000), date: new Date().toLocaleDateString(), items: [...cart], total: cart.reduce((s,i)=>s+i.price,0) };
         orderHistory.unshift(order);
         localStorage.setItem('nextech_orders', JSON.stringify(orderHistory));
-        cart = []; updateBadge();
-        tg.showAlert('Заказ оформлен!'); navigate('home');
+        cart = []; updateBadge(); tg.showAlert('Заказ оформлен!'); navigate('home');
     }
 
     function renderHistory() {
@@ -256,9 +241,9 @@
         if (orderHistory.length === 0) { list.innerHTML = '<p style="text-align:center; opacity:0.2; margin-top:50px;">История пуста</p>'; return; }
         list.innerHTML = orderHistory.map(o => `
             <div class="order-item">
-                <div style="display:flex; justify-content:space-between; opacity:0.4; font-size:12px; margin-bottom:8px;"><span>#${o.id}</span><span>${o.date}</span></div>
-                <b>${o.items.map(i=>i.name).join(', ')}</b>
-                <div style="text-align:right; margin-top:10px; font-weight:700; color:var(--success);">${o.total.toLocaleString()} ₽</div>
+                <div style="display:flex; justify-content:space-between; opacity:0.4; font-size:11px; margin-bottom:6px;"><span>#${o.id}</span><span>${o.date}</span></div>
+                <b style="font-size:13px;">${o.items.map(i=>i.name).join(', ')}</b>
+                <div style="text-align:right; margin-top:8px; font-weight:700; color:var(--success); font-size:14px;">${o.total.toLocaleString()} ₽</div>
             </div>`).join('');
     }
 
