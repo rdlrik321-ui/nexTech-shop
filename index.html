@@ -3,170 +3,188 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>nexTech Store</title>
+    <title>nexTech Grid</title>
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <style>
-        /* ВОЗВРАЩАЕМ ТВОЙ ДИЗАЙН */
         body {
-            background-color: #000; /* Глубокий черный */
+            background-color: #000;
             color: #fff;
             font-family: sans-serif;
             margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            padding: 10px;
             padding-bottom: 100px;
         }
 
-        .page { display: none; padding: 20px; }
+        .page { display: none; }
         .page.active { display: block; }
 
-        /* ТЕ САМЫЕ ПРОЗРАЧНЫЕ КНОПКИ И КАРТОЧКИ */
-        .product-card {
-            background: rgba(255, 255, 255, 0.05); /* Минимум фона */
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            margin-bottom: 25px;
-            overflow: hidden;
+        /* СЕТКА КАТАЛОГА */
+        .catalog-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* В две колонки */
+            gap: 10px;
         }
 
-        /* СЛАЙДЕР ФОТО (ДОБАВИЛИ) */
-        .swiper { width: 100%; height: 280px; }
+        /* ТВОЯ КАРТОЧКА В СЕТКЕ */
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* СЛАЙДЕР ВНУТРИ СЕТКИ */
+        .swiper { width: 100%; height: 150px; }
         .swiper-slide img { width: 100%; height: 100%; object-fit: cover; }
 
-        .product-info { padding: 15px; }
-        .price { font-size: 1.6rem; color: #4cd137; font-weight: bold; margin: 5px 0; }
+        .card-content { padding: 10px; flex-grow: 1; display: flex; flex-direction: column; }
+        .item-title { font-size: 0.95rem; margin: 0; font-weight: bold; min-height: 2.4em; }
+        .item-price { font-size: 1.1rem; color: #4cd137; margin: 5px 0; font-weight: 800; }
         
-        /* БОЛЬШЕ ИНФЫ ДЛЯ ПОКУПАТЕЛЯ */
-        .description-block {
-            margin-top: 15px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            padding-top: 10px;
+        .item-details {
+            font-size: 0.75rem;
+            color: #888;
+            margin-bottom: 10px;
+            line-height: 1.2;
         }
-        .description-block h4 { margin-bottom: 5px; color: #888; font-size: 0.9rem; }
-        .description-block p { font-size: 0.95rem; line-height: 1.5; color: #ddd; }
 
-        /* КНОПКА КОРЗИНЫ */
-        .buy-btn {
-            background: rgba(255, 255, 255, 0.1);
+        .action-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             color: #fff;
-            border: 1px solid rgba(255, 255, 255, 0.2);
             width: 100%;
-            padding: 15px;
-            border-radius: 12px;
-            margin-top: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.85rem;
             font-weight: bold;
+            margin-top: auto;
         }
 
-        /* НИЖНЕЕ МЕНЮ С БОЛЬШИМИ ИКОНКАМИ */
-        .nav {
+        /* МЕНЮ С БОЛЬШИМИ ИКОНКАМИ */
+        .navbar {
             position: fixed;
             bottom: 0;
             width: 100%;
             height: 80px;
             display: flex;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.9);
             backdrop-filter: blur(10px);
-            border-top: 1px solid rgba(255,255,255,0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
         }
 
         .nav-item {
             flex: 1;
-            background: transparent;
+            background: none;
             border: none;
-            color: #666;
+            color: #555;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
         }
 
-        .nav-item i { 
-            font-size: 28px; /* ЕЩЕ БОЛЬШЕ, как ты хотел */
-            margin-bottom: 5px; 
-        }
-        
+        .nav-item i { font-size: 28px; margin-bottom: 4px; }
+        .nav-item span { font-size: 10px; }
         .nav-item.active { color: #0088cc; }
 
-        /* ЛОГИКА ОТМЕНЫ В ПРОФИЛЕ */
-        .order-box {
+        /* ПРОФИЛЬ */
+        .order-card {
             background: rgba(255, 255, 255, 0.05);
             padding: 15px;
-            border-radius: 12px;
+            border-radius: 10px;
             margin-bottom: 10px;
-            border-left: 4px solid #0088cc;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        .cancel-btn {
+        .btn-cancel {
             background: rgba(255, 50, 50, 0.1);
             color: #ff5555;
             border: 1px solid rgba(255, 50, 50, 0.2);
+            padding: 8px;
             width: 100%;
-            padding: 10px;
             border-radius: 8px;
             margin-top: 10px;
-            cursor: pointer;
         }
     </style>
 </head>
 <body>
 
-<div id="shop" class="page active">
-    <div class="product-card">
-        <div class="swiper mySwiper">
-            <div class="swiper-wrapper">
-                <div class="swiper-slide"><img src="photo1.jpg" alt="Вид снаружи"></div>
-                <div class="swiper-slide"><img src="photo2.jpg" alt="Вид внутри"></div>
-                <div class="swiper-slide"><img src="photo3.jpg" alt="Тесты"></div>
+<div class="container">
+    <div id="shop-page" class="page active">
+        <div class="catalog-grid">
+            
+            <div class="card">
+                <div class="swiper mySwiper">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide"><img src="gpu1.jpg"></div>
+                        <div class="swiper-slide"><img src="gpu2.jpg"></div>
+                    </div>
+                    <div class="swiper-pagination"></div>
+                </div>
+                <div class="card-content">
+                    <p class="item-title">RX 580 8GB Nitro+</p>
+                    <p class="item-price">5 800 ₽</p>
+                    <div class="item-details">Samsung, 67°C, гарантия 3 дня.</div>
+                    <button class="action-btn" onclick="add()">В корзину</button>
+                </div>
             </div>
-            <div class="swiper-pagination"></div>
-        </div>
 
-        <div class="product-info">
-            <h2>Sapphire Nitro+ RX 580</h2>
-            <div class="price">5 800 ₽</div>
-            
-            <div class="description-block">
-                <h4>О ТОВАРЕ</h4>
-                <p>
-                    Карта в идеале. Тихая, холодная. В FurMark греется всего до 67 градусов. 
-                    Полностью заменена термопаста на MX-4. Потянет любые игры в Full HD.
-                </p>
-                <p><strong>Гарантия:</strong> 3 дня на любые проверки с твоей стороны.</p>
+            <div class="card">
+                <div class="swiper mySwiper">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide"><img src="cpu.jpg"></div>
+                    </div>
+                    <div class="swiper-pagination"></div>
+                </div>
+                <div class="card-content">
+                    <p class="item-title">Ryzen 5 3600</p>
+                    <p class="item-price">7 200 ₽</p>
+                    <div class="item-details">BOX версия, ножки идеал.</div>
+                    <button class="action-btn" onclick="add()">В корзину</button>
+                </div>
             </div>
-            
-            <button class="buy-btn" onclick="addToCart()">В корзину</button>
+
         </div>
+    </div>
+
+    <div id="profile-page" class="page">
+        <h3>Мои заказы</h3>
+        <div class="order-card" id="ord-101">
+            <div style="display:flex; justify-content:space-between">
+                <span>№ 101</span>
+                <span style="color:#0088cc">В пути</span>
+            </div>
+            <p>RX 580 8GB — 5 800 ₽</p>
+            <button class="btn-cancel" onclick="cancel(101)">Отменить заказ</button>
+        </div>
+    </div>
+
+    <div id="cart-page" class="page">
+        <h3 style="text-align:center; color:#444; margin-top:50px;">Корзина пуста</h3>
     </div>
 </div>
 
-<div id="profile" class="page">
-    <h3>Мои заказы</h3>
-    <div class="order-box" id="ord-1">
-        <div style="display:flex; justify-content: space-between;">
-            <strong>Заказ #774</strong>
-            <span style="color: #0088cc">Активен</span>
-        </div>
-        <p>RX 580 — 5 800 ₽</p>
-        <button class="cancel-btn" onclick="cancelOrder(1)">Отменить заказ</button>
-    </div>
-</div>
-
-<div id="cart" class="page">
-    <h3>Корзина пуста</h3>
-</div>
-
-<nav class="nav">
-    <button class="nav-item active" onclick="tab('shop', this)">
-        <i class="fa-solid fa-store"></i>
+<nav class="navbar">
+    <button class="nav-item active" onclick="show('shop-page', this)">
+        <i class="fa-solid fa-layer-group"></i>
         <span>Шоп</span>
     </button>
-    <button class="nav-item" onclick="tab('cart', this)">
-        <i class="fa-solid fa-basket-shopping"></i>
+    <button class="nav-item" onclick="show('cart-page', this)">
+        <i class="fa-solid fa-cart-shopping"></i>
         <span>Корзина</span>
     </button>
-    <button class="nav-item" onclick="tab('profile', this)">
-        <i class="fa-solid fa-circle-user"></i>
+    <button class="nav-item" onclick="show('profile-page', this)">
+        <i class="fa-solid fa-user-gear"></i>
         <span>Профиль</span>
     </button>
 </nav>
@@ -176,34 +194,34 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    // Слайдер
+    // Слайдер (листалка)
     new Swiper(".mySwiper", {
         pagination: { el: ".swiper-pagination", dynamicBullets: true },
     });
 
     // Навигация
-    function tab(id, el) {
+    function show(id, btn) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-        el.classList.add('active');
+        btn.classList.add('active');
         tg.HapticFeedback.selectionChanged();
     }
 
     // Отмена заказа
-    function cancelOrder(id) {
-        tg.showConfirm("Реально отменяем?", (ok) => {
-            if(ok) {
-                const box = document.getElementById(`ord-${id}`);
-                box.innerHTML = "Заказ успешно отменён";
-                box.style.opacity = "0.4";
+    function cancel(id) {
+        tg.showConfirm("Отменить этот заказ?", (yes) => {
+            if(yes) {
+                const el = document.getElementById(`ord-${id}`);
+                el.style.opacity = "0.3";
+                el.innerHTML = "<p style='text-align:center'>Заказ отменен</p>";
                 tg.HapticFeedback.notificationOccurred('success');
             }
         });
     }
 
-    function addToCart() {
-        tg.HapticFeedback.impactOccurred('light');
+    function add() {
+        tg.HapticFeedback.impactOccurred('medium');
         alert("Добавлено!");
     }
 </script>
