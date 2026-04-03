@@ -8,7 +8,7 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <style>
-        /* СТИЛЬ ТЕРМИНАЛА НИКИТЫ */
+        /* БАЗОВЫЙ СТИЛЬ ТЕРМИНАЛА */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
 
         body { 
@@ -19,10 +19,27 @@
             color: #fff;
             font-family: -apple-system, system-ui, sans-serif;
             min-height: 100vh;
-            overflow-x: hidden;
+            overflow: hidden; /* Чтобы не дергалось при анимации */
         }
 
-        .container { width: 100%; max-width: 380px; margin: 0 auto; padding: 20px; padding-bottom: 110px; }
+        .container { width: 100%; max-width: 380px; margin: 0 auto; height: 100vh; position: relative; }
+
+        /* ПЛАВНЫЕ АНИМАЦИИ iOS */
+        .page { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            padding: 20px; padding-bottom: 110px;
+            opacity: 0;
+            transform: translateY(15px) scale(0.98);
+            pointer-events: none;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto;
+        }
+
+        .page.active { 
+            opacity: 1; 
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
 
         /* ХЕДЕР */
         .header { display: flex; flex-direction: column; align-items: center; margin: 50px 0 40px 0; }
@@ -31,55 +48,38 @@
             display: flex; align-items: center; justify-content: center;
             box-shadow: 0 10px 30px rgba(0,0,0,0.8); margin-bottom: 15px;
         }
-        h1 { font-size: 12px; letter-spacing: 5px; opacity: 0.4; text-transform: uppercase; }
+        h1 { font-size: 11px; letter-spacing: 5px; opacity: 0.4; text-transform: uppercase; }
 
-        .page { display: none; }
-        .page.active { display: block; }
-
-        /* КАРТОЧКИ */
+        /* КАРТОЧКИ И КНОПКИ */
         .card {
             background: rgba(255,255,255,0.03);
             border: 1px solid rgba(255,255,255,0.1);
             border-radius: 25px; padding: 20px;
             text-align: center; margin-bottom: 20px;
         }
+        .btn-menu { padding: 25px; font-weight: 800; cursor: pointer; }
         .swiper { width: 100%; height: 200px; border-radius: 15px; margin-bottom: 15px; }
         .swiper-slide img { width: 100%; height: 100%; object-fit: cover; }
 
         .price { font-size: 28px; font-weight: 900; margin: 15px 0; }
-        .buy {
-            background: #fff; color: #000; border: none;
-            padding: 20px; border-radius: 18px;
-            font-weight: 900; width: 100%; cursor: pointer;
-        }
+        .buy { background: #fff; color: #000; border: none; padding: 20px; border-radius: 18px; font-weight: 900; width: 100%; cursor: pointer; }
 
-        .search-box {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 18px; padding: 15px;
-            width: 100%; color: #fff; margin-bottom: 25px; outline: none;
-        }
+        .search-box { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 18px; padding: 15px; width: 100%; color: #fff; margin-bottom: 25px; outline: none; }
         .back { color: rgba(255,255,255,0.5); padding: 15px 0; display: block; text-align: center; cursor: pointer; font-weight: 800; font-size: 13px; }
 
-        /* ПРОФИЛЬ: РАЗДЕЛЫ */
-        .profile-section {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 22px; padding: 20px;
-            margin-bottom: 15px; text-align: left;
-        }
-        .section-label { font-weight: 900; font-size: 12px; letter-spacing: 1px; margin-bottom: 8px; display: block; color: rgba(255,255,255,0.4); text-transform: uppercase; }
-        .section-content { font-size: 14px; line-height: 1.5; opacity: 0.8; }
+        /* ПРОФИЛЬ */
+        .profile-section { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 22px; padding: 20px; margin-bottom: 15px; text-align: left; }
+        .section-label { font-weight: 900; font-size: 12px; opacity: 0.4; text-transform: uppercase; margin-bottom: 8px; display: block; }
 
         /* ХОТБАР */
         .hotbar {
             position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
-            width: 90%; background: rgba(15, 15, 17, 0.95); backdrop-filter: blur(10px);
+            width: 90%; background: rgba(15, 15, 17, 0.95); backdrop-filter: blur(15px);
             border: 1px solid rgba(255,255,255,0.1); border-radius: 35px;
             display: flex; justify-content: space-around; padding: 12px; z-index: 2000;
         }
-        .nav-item { color: rgba(255,255,255,0.3); font-size: 22px; transition: 0.2s; }
-        .nav-item.active { color: #fff; }
+        .nav-item { color: rgba(255,255,255,0.2); font-size: 22px; transition: 0.3s; }
+        .nav-item.active { color: #fff; transform: scale(1.1); }
     </style>
 </head>
 <body>
@@ -93,15 +93,13 @@
             </div>
             <h1>NEXTECH // TERMINAL</h1>
         </div>
-        <div style="display: flex; flex-direction: column; gap: 15px;">
-            <div class="card" style="padding: 25px; cursor: pointer; font-weight: 800;" onclick="openPage('gpu-list')">ВИДЕОКАРТЫ</div>
-            <div class="card" style="padding: 25px; cursor: pointer; font-weight: 800;" onclick="openPage('cpu-list')">ПРОЦЕССОРЫ</div>
-        </div>
+        <div class="card btn-menu" onclick="openPage('gpu-list')">ВИДЕОКАРТЫ</div>
+        <div class="card btn-menu" onclick="openPage('cpu-list')">ПРОЦЕССОРЫ</div>
     </div>
 
     <div id="gpu-list" class="page">
         <div class="back" onclick="openPage('home')">← ТЕРМИНАЛ</div>
-        <input type="text" class="search-box" placeholder="ПОИСК ВИДЕОКАРТ...">
+        <input type="text" class="search-box" placeholder="ПОИСК...">
         <div class="card">
             <div class="swiper mySwiper">
                 <div class="swiper-wrapper">
@@ -109,9 +107,6 @@
                 </div>
             </div>
             <h2 style="font-weight: 800;">Sapphire Nitro+ RX 580</h2>
-            <p style="font-size: 12px; opacity: 0.5; margin-top: 10px; text-align: left;">
-                Обслужена, термопаста MX-4. Проходит любые тесты, 67 градусов в FurMark.
-            </p>
             <div class="price">5 800 ₽</div>
             <button class="buy" onclick="add('RX 580')">В КОРЗИНУ</button>
         </div>
@@ -119,7 +114,6 @@
 
     <div id="cpu-list" class="page">
         <div class="back" onclick="openPage('home')">← ТЕРМИНАЛ</div>
-        <input type="text" class="search-box" placeholder="ПОИСК ПРОЦЕССОРОВ...">
         <div class="card">
             <div class="swiper mySwiper">
                 <div class="swiper-wrapper">
@@ -127,9 +121,6 @@
                 </div>
             </div>
             <h2 style="font-weight: 800;">Ryzen 5 5600X</h2>
-            <p style="font-size: 12px; opacity: 0.5; margin-top: 10px; text-align: left;">
-                6 ядер, 12 потоков. Частота до 4.6 GHz. Отличное состояние, любые проверки.
-            </p>
             <div class="price">12 500 ₽</div>
             <button class="buy" onclick="add('R5 5600X')">В КОРЗИНУ</button>
         </div>
@@ -138,32 +129,23 @@
     <div id="cart" class="page">
         <h2 style="margin-bottom: 20px; font-weight: 800;">КОРЗИНА</h2>
         <div class="profile-section" id="cart-items">
-            <p style="opacity: 0.4;">Тут пока пусто...</p>
+            <p style="opacity: 0.4;">Пусто...</p>
         </div>
     </div>
 
     <div id="profile" class="page">
         <h2 style="margin-bottom: 20px; font-weight: 800;">ПРОФИЛЬ</h2>
-        
         <div class="profile-section">
             <span class="section-label">О нас</span>
-            <div class="section-content">
-                Все товары проходят тщательное тестирование (OCCT, FurMark, MemTest86). 
-                <br><br>
-                Гарантия на проверку товара — **3 дня** с момента покупки.
-            </div>
+            <p style="font-size: 14px;">Тестим в OCCT/FurMark. Гарантия — 3 дня.</p>
         </div>
-
         <div class="profile-section">
             <span class="section-label">Заказы</span>
-            <div class="section-content" style="opacity: 0.4;">
-                История заказов пуста.
-            </div>
+            <p style="font-size: 14px; opacity: 0.4;">Нет активных заказов.</p>
         </div>
-
         <div class="profile-section">
             <span class="section-label">Поддержка</span>
-            <button class="buy" style="margin-top: 10px; padding: 15px; font-size: 14px;" onclick="tg.openTelegramLink('https://t.me/support')">Связаться с нами</button>
+            <button class="buy" style="margin-top: 10px; padding: 15px;" onclick="tg.openTelegramLink('https://t.me/support')">Написать</button>
         </div>
     </div>
 
@@ -183,23 +165,25 @@
     new Swiper(".mySwiper", { pagination: { el: ".swiper-pagination", dynamicBullets: true } });
 
     function openPage(id) {
+        // Убираем активный класс со всех страниц
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        // Включаем новую страницу (сработает CSS transition)
         document.getElementById(id).classList.add('active');
         
+        // Хотбар
         document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-        if (id === 'home' || id === 'gpu-list' || id === 'cpu-list') document.getElementById('nav-home').classList.add('active');
-        if (id === 'cart') document.getElementById('nav-cart').classList.add('active');
-        if (id === 'profile') document.getElementById('nav-profile').classList.add('active');
+        if (['home', 'gpu-list', 'cpu-list'].includes(id)) document.getElementById('nav-home').classList.add('active');
+        else if (id === 'cart') document.getElementById('nav-cart').classList.add('active');
+        else if (id === 'profile') document.getElementById('nav-profile').classList.add('active');
 
         tg.HapticFeedback.selectionChanged();
     }
 
     function add(name) {
         tg.HapticFeedback.notificationOccurred('success');
-        tg.showAlert(name + ' в корзине!');
+        tg.showAlert(name + ' добавлен!');
         document.getElementById('cart-items').innerHTML = '<p>Товар: ' + name + '</p>';
     }
 </script>
-
 </body>
 </html>
