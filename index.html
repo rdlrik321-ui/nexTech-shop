@@ -10,236 +10,203 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <style>
-        :root {
-            --bg-color: #0f0f0f;
-            --card-bg: rgba(255, 255, 255, 0.07); /* Прозрачный фон кнопок */
-            --accent: #0088cc;
-            --text: #ffffff;
-            --border: rgba(255, 255, 255, 0.1);
-            --danger: #ff4757;
-            --success: #4cd137;
-        }
-
+        /* ВОЗВРАЩАЕМ ТВОЙ ДИЗАЙН */
         body {
-            background-color: var(--bg-color);
-            color: var(--text);
-            font-family: -apple-system, system-ui, sans-serif;
+            background-color: #000; /* Глубокий черный */
+            color: #fff;
+            font-family: sans-serif;
             margin: 0;
-            padding-bottom: 90px;
-            overflow-x: hidden;
+            padding-bottom: 100px;
         }
 
-        /* Страницы */
-        .page { display: none; padding: 15px; animation: fadeIn 0.3s; }
+        .page { display: none; padding: 20px; }
         .page.active { display: block; }
 
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* Карточка товара с эффектом стекла */
+        /* ТЕ САМЫЕ ПРОЗРАЧНЫЕ КНОПКИ И КАРТОЧКИ */
         .product-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid var(--border);
-            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.05); /* Минимум фона */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            margin-bottom: 25px;
             overflow: hidden;
-            margin-bottom: 20px;
         }
 
-        /* Слайдер фото */
-        .swiper { width: 100%; height: 260px; background: #1a1a1a; }
+        /* СЛАЙДЕР ФОТО (ДОБАВИЛИ) */
+        .swiper { width: 100%; height: 280px; }
         .swiper-slide img { width: 100%; height: 100%; object-fit: cover; }
 
-        .product-info { padding: 16px; }
-        .product-title { font-size: 1.3rem; margin: 0; }
-        .price { font-size: 1.5rem; color: var(--success); font-weight: bold; margin: 10px 0; }
-
-        /* Описание для покупателей */
-        .buyer-info {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 12px;
-            border-radius: 12px;
-            font-size: 0.9rem;
-            line-height: 1.4;
-            color: #ccc;
-        }
-        .buyer-info ul { padding-left: 18px; margin: 8px 0; }
-
-        /* Кнопки */
-        .main-btn {
-            width: 100%;
-            background: var(--accent);
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: 12px;
-            font-weight: bold;
-            font-size: 1rem;
+        .product-info { padding: 15px; }
+        .price { font-size: 1.6rem; color: #4cd137; font-weight: bold; margin: 5px 0; }
+        
+        /* БОЛЬШЕ ИНФЫ ДЛЯ ПОКУПАТЕЛЯ */
+        .description-block {
             margin-top: 15px;
-            transition: transform 0.1s;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 10px;
         }
-        .main-btn:active { transform: scale(0.97); }
+        .description-block h4 { margin-bottom: 5px; color: #888; font-size: 0.9rem; }
+        .description-block p { font-size: 0.95rem; line-height: 1.5; color: #ddd; }
 
-        /* Нижнее меню с прозрачными кнопками */
-        .bottom-nav {
+        /* КНОПКА КОРЗИНЫ */
+        .buy-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            width: 100%;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        /* НИЖНЕЕ МЕНЮ С БОЛЬШИМИ ИКОНКАМИ */
+        .nav {
             position: fixed;
             bottom: 0;
             width: 100%;
-            height: 75px;
+            height: 80px;
             display: flex;
-            background: rgba(15, 15, 15, 0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-top: 1px solid var(--border);
-            z-index: 1000;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255,255,255,0.1);
         }
 
-        .nav-btn {
+        .nav-item {
             flex: 1;
             background: transparent;
             border: none;
-            color: #888;
+            color: #666;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            transition: 0.2s;
         }
 
-        .nav-btn i { font-size: 26px; margin-bottom: 4px; } /* Увеличенные иконки */
-        .nav-btn span { font-size: 11px; }
-        .nav-btn.active { color: var(--accent); }
+        .nav-item i { 
+            font-size: 28px; /* ЕЩЕ БОЛЬШЕ, как ты хотел */
+            margin-bottom: 5px; 
+        }
+        
+        .nav-item.active { color: #0088cc; }
 
-        /* Профиль и отмена заказа */
-        .order-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
+        /* ЛОГИКА ОТМЕНЫ В ПРОФИЛЕ */
+        .order-box {
+            background: rgba(255, 255, 255, 0.05);
             padding: 15px;
-            border-radius: 15px;
-            margin-top: 10px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            border-left: 4px solid #0088cc;
         }
         .cancel-btn {
-            background: rgba(255, 71, 87, 0.1);
-            color: var(--danger);
-            border: 1px solid rgba(255, 71, 87, 0.2);
-            padding: 8px;
+            background: rgba(255, 50, 50, 0.1);
+            color: #ff5555;
+            border: 1px solid rgba(255, 50, 50, 0.2);
             width: 100%;
-            border-radius: 10px;
+            padding: 10px;
+            border-radius: 8px;
             margin-top: 10px;
-            font-weight: 600;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
 
-    <div id="app">
-        <section id="shop-page" class="page active">
-            <div class="product-card">
-                <div class="swiper mySwiper">
-                    <div class="swiper-wrapper">
-                        <div class="swiper-slide"><img src="https://via.placeholder.com/600x400/1a1a1a/ffffff?text=GPU+Front" alt="Front"></div>
-                        <div class="swiper-slide"><img src="https://via.placeholder.com/600x400/1a1a1a/ffffff?text=GPU+Back" alt="Back"></div>
-                        <div class="swiper-slide"><img src="https://via.placeholder.com/600x400/1a1a1a/ffffff?text=Stress+Test" alt="Tests"></div>
-                    </div>
-                    <div class="swiper-pagination"></div>
-                </div>
-
-                <div class="product-info">
-                    <h3 class="product-title">Sapphire Nitro+ RX 580 8GB</h3>
-                    <p class="price">5 800 ₽</p>
-                    
-                    <div class="buyer-info">
-                        <strong>Информация для покупателя:</strong>
-                        <ul>
-                            <li>Состояние: Идеальное (Б/У)</li>
-                            <li>Тесты: FurMark 15 мин (макс 67°C)</li>
-                            <li>Обслуживание: Свежая паста MX-4</li>
-                            <li>Комплект: Только карта</li>
-                        </ul>
-                        <p>Топовое охлаждение, работает бесшумно. Гарантия на проверку — 3 дня.</p>
-                    </div>
-
-                    <button class="main-btn" onclick="addToCart()">В корзину</button>
-                </div>
+<div id="shop" class="page active">
+    <div class="product-card">
+        <div class="swiper mySwiper">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide"><img src="photo1.jpg" alt="Вид снаружи"></div>
+                <div class="swiper-slide"><img src="photo2.jpg" alt="Вид внутри"></div>
+                <div class="swiper-slide"><img src="photo3.jpg" alt="Тесты"></div>
             </div>
-        </section>
+            <div class="swiper-pagination"></div>
+        </div>
 
-        <section id="cart-page" class="page">
-            <h2>Корзина</h2>
-            <p style="text-align: center; color: #888;">Здесь будут ваши товары</p>
-        </section>
-
-        <section id="profile-page" class="page">
-            <h2>Мои заказы</h2>
-            <div id="orders-list">
-                <div class="order-card" id="order-1">
-                    <div style="display:flex; justify-content: space-between;">
-                        <span>Заказ #1042</span>
-                        <span style="color: orange;">В обработке</span>
-                    </div>
-                    <p style="margin: 10px 0; font-size: 0.9rem;">RX 580 8GB — 5 800 ₽</p>
-                    <button class="cancel-btn" onclick="handleCancel(1)">Отменить заказ</button>
-                </div>
-            </div>
-        </section>
-
-        <nav class="bottom-nav">
-            <button class="nav-btn active" onclick="navigate('shop-page', this)">
-                <i class="fa-solid fa-house-laptop"></i>
-                <span>Шоп</span>
-            </button>
-            <button class="nav-btn" onclick="navigate('cart-page', this)">
-                <i class="fa-solid fa-cart-shopping"></i>
-                <span>Корзина</span>
-            </button>
-            <button class="nav-btn" onclick="navigate('profile-page', this)">
-                <i class="fa-solid fa-user-gear"></i>
-                <span>Профиль</span>
-            </button>
-        </nav>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand(); // Разворачиваем приложение
-
-        // Инициализация слайдера фото
-        const swiper = new Swiper(".mySwiper", {
-            pagination: { el: ".swiper-pagination", dynamicBullets: true },
-        });
-
-        // Навигация
-        function navigate(pageId, btn) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+        <div class="product-info">
+            <h2>Sapphire Nitro+ RX 580</h2>
+            <div class="price">5 800 ₽</div>
             
-            tg.HapticFeedback.selectionChanged(); // Вибрация при смене вкладки
-        }
+            <div class="description-block">
+                <h4>О ТОВАРЕ</h4>
+                <p>
+                    Карта в идеале. Тихая, холодная. В FurMark греется всего до 67 градусов. 
+                    Полностью заменена термопаста на MX-4. Потянет любые игры в Full HD.
+                </p>
+                <p><strong>Гарантия:</strong> 3 дня на любые проверки с твоей стороны.</p>
+            </div>
+            
+            <button class="buy-btn" onclick="addToCart()">В корзину</button>
+        </div>
+    </div>
+</div>
 
-        // Отмена заказа
-        function handleCancel(orderId) {
-            tg.showConfirm("Вы уверены, что хотите отменить этот заказ?", (confirm) => {
-                if (confirm) {
-                    const card = document.getElementById(`order-${orderId}`);
-                    card.style.opacity = "0.5";
-                    card.querySelector('.cancel-btn').remove();
-                    card.querySelector('span:last-child').innerText = "Отменен";
-                    card.querySelector('span:last-child').style.color = "#ff4757";
-                    tg.HapticFeedback.notificationOccurred('success');
-                }
-            });
-        }
+<div id="profile" class="page">
+    <h3>Мои заказы</h3>
+    <div class="order-box" id="ord-1">
+        <div style="display:flex; justify-content: space-between;">
+            <strong>Заказ #774</strong>
+            <span style="color: #0088cc">Активен</span>
+        </div>
+        <p>RX 580 — 5 800 ₽</p>
+        <button class="cancel-btn" onclick="cancelOrder(1)">Отменить заказ</button>
+    </div>
+</div>
 
-        function addToCart() {
-            tg.HapticFeedback.impactOccurred('medium');
-            tg.MainButton.setText("ПЕРЕЙТИ К ОПЛАТЕ");
-            tg.MainButton.show();
-            alert("Товар добавлен в корзину!");
-        }
-    </script>
+<div id="cart" class="page">
+    <h3>Корзина пуста</h3>
+</div>
+
+<nav class="nav">
+    <button class="nav-item active" onclick="tab('shop', this)">
+        <i class="fa-solid fa-store"></i>
+        <span>Шоп</span>
+    </button>
+    <button class="nav-item" onclick="tab('cart', this)">
+        <i class="fa-solid fa-basket-shopping"></i>
+        <span>Корзина</span>
+    </button>
+    <button class="nav-item" onclick="tab('profile', this)">
+        <i class="fa-solid fa-circle-user"></i>
+        <span>Профиль</span>
+    </button>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    // Слайдер
+    new Swiper(".mySwiper", {
+        pagination: { el: ".swiper-pagination", dynamicBullets: true },
+    });
+
+    // Навигация
+    function tab(id, el) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+        tg.HapticFeedback.selectionChanged();
+    }
+
+    // Отмена заказа
+    function cancelOrder(id) {
+        tg.showConfirm("Реально отменяем?", (ok) => {
+            if(ok) {
+                const box = document.getElementById(`ord-${id}`);
+                box.innerHTML = "Заказ успешно отменён";
+                box.style.opacity = "0.4";
+                tg.HapticFeedback.notificationOccurred('success');
+            }
+        });
+    }
+
+    function addToCart() {
+        tg.HapticFeedback.impactOccurred('light');
+        alert("Добавлено!");
+    }
+</script>
+
 </body>
 </html>
