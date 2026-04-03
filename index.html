@@ -5,11 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <style>
-        /* ТВОЙ ОРИГИНАЛЬНЫЙ ДИЗАЙН */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
 
         body { 
@@ -20,18 +18,14 @@
             color: #fff;
             font-family: -apple-system, system-ui, sans-serif;
             min-height: 100vh;
+            display: flex;
+            justify-content: center;
             overflow-x: hidden;
         }
 
-        .container {
-            width: 100%;
-            max-width: 380px;
-            margin: 0 auto;
-            padding: 20px;
-            padding-bottom: 120px; /* Чтобы меню не закрывало кнопки */
-        }
+        .container { width: 100%; max-width: 380px; padding: 20px; }
 
-        /* ТВОЙ ХЕДЕР */
+        /* ХЕДЕР */
         .header {
             display: flex;
             flex-direction: column;
@@ -51,172 +45,137 @@
             margin-bottom: 15px;
         }
 
-        h1 {
-            font-size: 12px;
-            letter-spacing: 5px;
-            opacity: 0.4;
-            text-align: center;
+        h1 { font-size: 12px; letter-spacing: 5px; opacity: 0.4; }
+
+        /* ПОИСК (ВНУТРИ КАТЕГОРИЙ) */
+        .search-box {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 18px;
+            padding: 15px 20px;
+            margin: 10px 0 20px 0;
+            width: 100%;
+            color: #fff;
+            font-size: 15px;
+            outline: none;
         }
 
-        /* КАТАЛОГ (ТВОИ КНОПКИ) */
-        .page { display: none; }
-        .page.active { display: block; }
+        /* ГЛАВНОЕ МЕНЮ */
+        .menu { display: flex; flex-direction: column; gap: 15px; }
 
-        .menu-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        /* КАРТОЧКА ТОВАРА В ТВОЕМ СТИЛЕ */
-        .card {
+        .btn {
             background: rgba(255,255,255,0.05);
             border: 1px solid rgba(255,255,255,0.1);
             border-radius: 22px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
+            padding: 25px;
+            font-weight: 800;
+            font-size: 17px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
         }
 
-        /* ИНТЕГРИРОВАННАЯ ЛИСТАЛКА */
-        .swiper { width: 100%; height: 140px; background: #000; }
+        .btn:active { background: rgba(255,255,255,0.15); transform: scale(0.96); }
+
+        .page { display: none; }
+        .page.active { display: block; }
+
+        /* КАРТОЧКА */
+        .card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 25px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .swiper { width: 100%; height: 200px; border-radius: 15px; margin-bottom: 15px; }
         .swiper-slide img { width: 100%; height: 100%; object-fit: cover; }
 
-        .card-info { padding: 12px; flex-grow: 1; }
-        .card-info h3 { font-size: 14px; margin-bottom: 5px; }
-        .price { font-size: 18px; font-weight: 900; color: #fff; margin-bottom: 8px; }
-        
-        /* ИНФО ДЛЯ ПОКУПАТЕЛЯ (ТЕСТЫ И Т.Д.) */
-        .item-spec { font-size: 10px; color: rgba(255,255,255,0.4); line-height: 1.3; margin-bottom: 10px; }
+        .price { font-size: 28px; font-weight: 900; margin: 15px 0; }
 
-        .buy-btn {
+        .buy {
             background: #fff;
             color: #000;
             border: none;
-            padding: 10px;
-            border-radius: 12px;
+            padding: 20px;
+            border-radius: 18px;
             font-weight: 900;
-            font-size: 12px;
             width: 100%;
+            cursor: pointer;
         }
 
-        /* ТВОЕ НИЖНЕЕ МЕНЮ С БОЛЬШИМИ ИКОНКАМИ */
-        .nav-bar {
+        .back { color: rgba(255,255,255,0.5); padding: 15px 0; display: block; cursor: pointer; text-align: center; font-size: 14px; font-weight: bold;}
+
+        /* КОРЗИНА */
+        #cart-bar {
             position: fixed;
-            bottom: 20px;
+            bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
-            width: 90%;
-            background: rgba(255,255,255,0.05);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 30px;
-            display: flex;
-            padding: 10px;
+            background: #fff;
+            color: #000;
+            padding: 20px;
+            border-radius: 40px;
+            font-weight: 900;
+            display: none;
+            width: 85%;
+            text-align: center;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.8);
             z-index: 1000;
-        }
-
-        .nav-item {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: rgba(255,255,255,0.3);
-            text-decoration: none;
-        }
-        .nav-item i { font-size: 26px; } /* КРУПНЫЕ ИКОНКИ */
-        .nav-item.active { color: #fff; }
-
-        /* ПРОФИЛЬ И ОТМЕНА ЗАКАЗА */
-        .order-card {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 15px;
-            border-radius: 20px;
-            margin-top: 10px;
-        }
-        .cancel-btn {
-            background: rgba(255, 0, 0, 0.1);
-            color: #ff4444;
-            border: 1px solid rgba(255, 0, 0, 0.2);
-            padding: 10px;
-            border-radius: 12px;
-            width: 100%;
-            margin-top: 10px;
-            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    
-    <div class="header">
-        <div class="logo-box">
-            <img src="https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/logo.png" width="60">
-        </div>
-        <h1>NEXTECH // TERMINAL</h1>
-    </div>
-
-    <div id="shop" class="page active">
-        <div class="menu-grid">
-            
-            <div class="card">
-                <div class="swiper mySwiper">
-                    <div class="swiper-wrapper">
-                        <div class="swiper-slide"><img src="gpu1.jpg"></div>
-                        <div class="swiper-slide"><img src="gpu2.jpg"></div>
-                    </div>
-                    <div class="swiper-pagination"></div>
-                </div>
-                <div class="card-info">
-                    <h3>RX 580 8GB</h3>
-                    <div class="price">5.800₽</div>
-                    <div class="item-spec">
-                        Samsung / 67°C / MX-4<br>
-                        Гарантия 3 дня
-                    </div>
-                    <button class="buy-btn" onclick="add()">КУПИТЬ</button>
-                </div>
+    <div id="home" class="page active">
+        <div class="header">
+            <div class="logo-box">
+                <img src="https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/logo.png" width="60">
             </div>
+            <h1>NEXTECH // TERMINAL</h1>
+        </div>
 
-            <div class="card">
-                <div class="swiper mySwiper">
-                    <div class="swiper-wrapper">
-                        <div class="swiper-slide"><img src="cpu1.jpg"></div>
-                    </div>
+        <div class="menu">
+            <div class="btn" onclick="openPage('gpu-list')">ВИДЕОКАРТЫ</div>
+            <div class="btn" onclick="openPage('cpu-list')">ПРОЦЕССОРЫ</div>
+        </div>
+    </div>
+
+    <div id="gpu-list" class="page">
+        <div class="back" onclick="openPage('home')">← НАЗАД В ТЕРМИНАЛ</div>
+        
+        <input type="text" class="search-box" placeholder="ПОИСК ВИДЕОКАРТЫ...">
+        
+        <div class="card">
+            <div class="swiper mySwiper">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide"><img src="gpu1.jpg"></div>
+                    <div class="swiper-slide"><img src="gpu2.jpg"></div>
                 </div>
-                <div class="card-info">
-                    <h3>RYZEN 5 3600</h3>
-                    <div class="price">7.200₽</div>
-                    <div class="item-spec">
-                        BOX / Ножки идеал<br>
-                        Любые тесты
-                    </div>
-                    <button class="buy-btn" onclick="add()">КУПИТЬ</button>
-                </div>
+                <div class="swiper-pagination"></div>
             </div>
-
+            <h2>Sapphire Nitro+ RX 580</h2>
+            <div class="price">5 800 ₽</div>
+            <button class="buy" onclick="addToCart()">В КОРЗИНУ</button>
         </div>
     </div>
 
-    <div id="profile" class="page">
-        <h1>АКТИВНЫЕ ЗАКАЗЫ</h1>
-        <div class="order-card" id="order-1">
-            <p>ЗАКАЗ #101 — RX 580</p>
-            <button class="cancel-btn" onclick="cancelOrder(1)">ОТМЕНИТЬ</button>
+    <div id="cpu-list" class="page">
+        <div class="back" onclick="openPage('home')">← НАЗАД В ТЕРМИНАЛ</div>
+        
+        <input type="text" class="search-box" placeholder="ПОИСК ПРОЦЕССОРА...">
+        
+        <div class="card">
+            <p style="opacity: 0.5;">ПРОЦЕССОРЫ В ПУТИ...</p>
         </div>
     </div>
-
 </div>
 
-<div class="nav-bar">
-    <div class="nav-item active" onclick="nav('shop', this)">
-        <i class="fa-solid fa-terminal"></i>
-    </div>
-    <div class="nav-item" onclick="nav('profile', this)">
-        <i class="fa-solid fa-circle-user"></i>
-    </div>
+<div id="cart-bar" onclick="tg.showAlert('Оформление заказа скоро будет доступно!')">
+    КОРЗИНА: <span id="cart-count">0</span> ТОВАРОВ
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
@@ -224,35 +183,23 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    // Листалка
+    let count = 0;
+
     new Swiper(".mySwiper", {
         pagination: { el: ".swiper-pagination", dynamicBullets: true },
     });
 
-    // Навигация
-    function nav(id, el) {
+    function openPage(id) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-        el.classList.add('active');
         tg.HapticFeedback.selectionChanged();
     }
 
-    // Отмена заказа
-    function cancelOrder(id) {
-        tg.showConfirm("ОТМЕНИТЬ ЗАКАЗ?", (confirm) => {
-            if(confirm) {
-                const card = document.getElementById(`order-${id}`);
-                card.style.opacity = "0.2";
-                card.innerHTML = "ОТМЕНЕНО";
-                tg.HapticFeedback.notificationOccurred('success');
-            }
-        });
-    }
-
-    function add() {
+    function addToCart() {
+        count++;
+        document.getElementById('cart-count').innerText = count;
+        document.getElementById('cart-bar').style.display = 'block';
         tg.HapticFeedback.impactOccurred('medium');
-        alert("ДОБАВЛЕНО В КОРЗИНУ");
     }
 </script>
 
