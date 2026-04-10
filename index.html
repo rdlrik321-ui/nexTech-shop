@@ -7,7 +7,6 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <style>
-        /* ТВОЙ СТИЛЬ: ТЕРМИНАЛ */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
         body { 
             background-color: #0d0d0f; 
@@ -30,6 +29,7 @@
         }
         .page.active { opacity: 1; transform: translateY(0); pointer-events: auto; }
 
+        /* HEADER */
         .header { display: flex; flex-direction: column; align-items: center; margin: 50px 0 40px 0; }
         .logo-box { 
             background: #fff; border-radius: 25px; width: 100px; height: 100px;
@@ -38,22 +38,38 @@
         }
         h1 { font-size: 11px; letter-spacing: 5px; opacity: 0.4; text-transform: uppercase; }
 
+        /* CARDS */
         .card {
             background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);
             border-radius: 25px; padding: 20px; text-align: center; margin-bottom: 20px;
-            cursor: pointer; display: block; transition: 0.2s;
+            cursor: pointer; display: block;
         }
-        .card:active { transform: scale(0.98); background: rgba(255,255,255,0.05); }
         .card img { width: 100%; border-radius: 15px; margin-bottom: 15px; }
 
         .price { font-size: 24px; font-weight: 900; margin-top: 10px; }
         .buy { background: #fff; color: #000; border: none; padding: 20px; border-radius: 18px; font-weight: 900; width: 100%; cursor: pointer; }
 
+        /* UI ELEMENTS */
         .search-box { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 18px; padding: 15px; width: 100%; color: #fff; margin-bottom: 25px; outline: none; }
         .back { color: rgba(255,255,255,0.5); padding: 15px 0; display: block; text-align: center; font-weight: 800; font-size: 13px; cursor: pointer; }
-
         .no-results { text-align: center; opacity: 0.4; margin-top: 50px; font-weight: 800; display: none; }
 
+        /* AI CHAT SPECIFIC */
+        #chat-box { height: 350px; overflow-y: auto; padding-right: 10px; }
+        .ai-msg { color: #fff; margin-bottom: 15px; font-size: 14px; line-height: 1.4; }
+        .user-msg { color: rgba(255,255,255,0.5); margin-bottom: 15px; font-size: 14px; text-align: right; }
+
+        /* NAVIGATION */
+        .hotbar {
+            position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
+            width: 94%; background: rgba(15, 15, 17, 0.95); backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 35px;
+            display: flex; justify-content: space-around; padding: 12px; z-index: 2000;
+        }
+        .nav-item { color: rgba(255,255,255,0.2); font-size: 20px; transition: 0.3s; }
+        .nav-item.active { color: #fff; }
+
+        /* MODAL */
         .modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #0d0d0f; z-index: 3000; display: none; padding: 20px; overflow-y: auto;
@@ -66,17 +82,6 @@
             border-radius: 22px; padding: 20px; margin-bottom: 15px; text-align: left;
         }
         .section-label { font-weight: 900; font-size: 12px; opacity: 0.4; text-transform: uppercase; margin-bottom: 8px; display: block; }
-
-        .hotbar {
-            position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
-            width: 90%; background: rgba(15, 15, 17, 0.95); backdrop-filter: blur(15px);
-            border: 1px solid rgba(255,255,255,0.1); border-radius: 35px;
-            display: flex; justify-content: space-around; padding: 12px; z-index: 2000;
-        }
-        .nav-item { color: rgba(255,255,255,0.2); font-size: 22px; transition: 0.3s; }
-        .nav-item.active { color: #fff; }
-
-        .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
     </style>
 </head>
 <body>
@@ -121,30 +126,36 @@
 
     <div id="peripheral-list" class="page">
         <div class="back" onclick="openPage('home')">← ТЕРМИНАЛ</div>
-        <input type="text" class="search-box" placeholder="ПОИСК (МЫШЬ, КЛАВА...)" oninput="filterItems(this, 'peripheral-items', 'peripheral-empty')">
+        <input type="text" class="search-box" placeholder="ПОИСК..." oninput="filterItems(this, 'peripheral-items', 'peripheral-empty')">
         <div id="peripheral-items">
-            <div class="card item" onclick="openProduct('VXE R1 SE Black', 2000, 'mouse1.jpg', '<b>Тип:</b> Игровая мышь<br><b>Сенсор:</b> PAW3395 SE<br><b>Вес:</b> 51г<br><b>Связь:</b> 2.4G / BT / Type-C<br><br><b>Описание:</b><br>Ультралегкая беспроводная мышь. Топовый сенсор и минимальный вес для киберспорта. Состояние: Grade A.<br><br><b>Гарантия:</b> 3 дня.')">
+            <div class="card item" onclick="openProduct('Мышь VXE R1 SE', 2000, 'mouse1.jpg', '<b>Вес:</b> 51г<br><b>Сенсор:</b> PAW3395 SE<br><b>Связь:</b> 2.4G/BT/Type-C<br><br><b>Описание:</b><br>Ультралегкая беспроводная мышь для соревновательных игр. Состояние: Grade A.<br><br><b>Гарантия:</b> 3 дня.')">
                 <img src="mouse1.jpg">
                 <h3 class="name">Мышь VXE R1 SE</h3>
                 <div class="price">2 000 ₽</div>
-            </div>
-            <div class="card item" onclick="openProduct('Akko 3068B Plus', 5500, 'kb1.jpg', '<b>Тип:</b> Механическая<br><b>Переключатели:</b> Akko Jelly Pink<br><b>Формат:</b> 65%<br><b>Подсветка:</b> RGB<br><br><b>Описание:</b><br>Компактная механика с Hot-swap. Три режима подключения и отличный тайпинг. Состояние: Grade A.<br><br><b>Гарантия:</b> 3 дня.')">
-                <img src="kb1.jpg">
-                <h3 class="name">Клавиатура Akko 3068B</h3>
-                <div class="price">5 500 ₽</div>
             </div>
         </div>
         <div id="peripheral-empty" class="no-results">НИЧЕГО НЕ НАЙДЕНО</div>
     </div>
 
+    <div id="ai-chat" class="page">
+        <h2 style="margin-bottom: 20px; font-weight: 800;">AI ПОМОЩНИК</h2>
+        <div class="profile-section" id="chat-box">
+            <div class="ai-msg"><b>[SYSTEM]:</b> Модуль активен. Готов помочь с подбором железа или периферии nexTech.</div>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <input type="text" id="ai-input" class="search-box" placeholder="Задать вопрос..." style="margin-bottom: 0;">
+            <button class="buy" style="width: 60px; padding: 0;" onclick="sendToAI()"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+    </div>
+
     <div id="cart" class="page">
         <h2 style="margin-bottom: 20px; font-weight: 800;">КОРЗИНА</h2>
         <div class="profile-section" id="cart-content">
-            <p style="opacity: 0.4;">Ваша корзина пуста.</p>
+            <p style="opacity: 0.4;">Тут пока пусто...</p>
         </div>
         <div id="cart-footer" style="display:none;">
             <div class="price" id="total-price" style="margin-bottom:20px;">0 ₽</div>
-            <button class="buy" onclick="tg.showAlert('Заказ оформлен! Мы свяжемся с вами.')">ОФОРМИТЬ ЗАКАЗ</button>
+            <button class="buy" onclick="tg.showAlert('Заказ оформлен!')">ОФОРМИТЬ ЗАКАЗ</button>
         </div>
     </div>
 
@@ -152,16 +163,9 @@
         <h2 style="margin-bottom: 20px; font-weight: 800;">ПРОФИЛЬ</h2>
         <div class="profile-section">
             <span class="section-label">О магазине</span>
-            <p style="font-size: 14px;">nexTech — специализированный магазин комплектующих. Контроль качества каждого устройства. Гарантия — 3 дня.</p>
+            <p style="font-size: 14px;">nexTech — качество Grade A. Томск / Доставка по РФ.</p>
         </div>
-        <div class="profile-section">
-            <span class="section-label">Заказы</span>
-            <p style="font-size: 14px; opacity: 0.4;">История заказов пуста.</p>
-        </div>
-        <div class="profile-section">
-            <span class="section-label">Поддержка</span>
-            <button class="buy" style="margin-top: 10px; padding: 15px;" onclick="tg.openTelegramLink('https://t.me/support')">СВЯЗАТЬСЯ</button>
-        </div>
+        <button class="buy" style="padding: 15px;" onclick="tg.openTelegramLink('https://t.me/your_link')">СВЯЗАТЬСЯ</button>
     </div>
 </div>
 
@@ -172,6 +176,7 @@
 
 <div class="hotbar">
     <div class="nav-item active" id="nav-home" onclick="openPage('home')"><i class="fa-solid fa-terminal"></i></div>
+    <div class="nav-item" id="nav-ai-chat" onclick="openPage('ai-chat')"><i class="fa-solid fa-microchip"></i></div>
     <div class="nav-item" id="nav-cart" onclick="openPage('cart')"><i class="fa-solid fa-cart-shopping"></i></div>
     <div class="nav-item" id="nav-profile" onclick="openPage('profile')"><i class="fa-solid fa-user"></i></div>
 </div>
@@ -191,7 +196,6 @@
         } else {
             document.getElementById('nav-' + id).classList.add('active');
         }
-        
         if(id === 'cart') renderCart();
         tg.HapticFeedback.selectionChanged();
     }
@@ -200,15 +204,10 @@
         const val = input.value.toLowerCase();
         const items = document.getElementById(listId).getElementsByClassName('item');
         let found = false;
-
         for (let item of items) {
             const name = item.querySelector('.name').innerText.toLowerCase();
-            if (name.includes(val)) {
-                item.style.display = "block";
-                found = true;
-            } else {
-                item.style.display = "none";
-            }
+            if (name.includes(val)) { item.style.display = "block"; found = true; } 
+            else { item.style.display = "none"; }
         }
         document.getElementById(emptyId).style.display = found ? "none" : "block";
     }
@@ -230,17 +229,15 @@
     function addToCart(name, price) {
         cartItems.push({name, price});
         tg.HapticFeedback.notificationOccurred('success');
-        tg.showAlert('Товар добавлен');
+        tg.showAlert('Добавлено!');
         closeProduct();
     }
 
     function renderCart() {
         const container = document.getElementById('cart-content');
         const footer = document.getElementById('cart-footer');
-        if(cartItems.length === 0) {
-            container.innerHTML = '<p style="opacity: 0.4;">Ваша корзина пуста.</p>';
-            footer.style.display = 'none';
-        } else {
+        if(cartItems.length === 0) { container.innerHTML = '<p style="opacity: 0.4;">Тут пока пусто...</p>'; footer.style.display = 'none'; } 
+        else {
             let total = 0;
             container.innerHTML = cartItems.map(item => {
                 total += item.price;
@@ -249,6 +246,28 @@
             document.getElementById('total-price').innerText = total + ' ₽';
             footer.style.display = 'block';
         }
+    }
+
+    // ЛОГИКА AI ЧАТА
+    function sendToAI() {
+        const input = document.getElementById('ai-input');
+        const chat = document.getElementById('chat-box');
+        if(!input.value) return;
+
+        chat.innerHTML += `<div class="user-msg">${input.value}</div>`;
+        const val = input.value.toLowerCase();
+        input.value = '';
+
+        setTimeout(() => {
+            let res = "Запрос принят. Анализирую базу данных nexTech... ";
+            if(val.includes('мышь')) res += "Для киберспорта рекомендую VXE R1 SE (51г).";
+            else if(val.includes('видео')) res += "В наличии Sapphire Nitro+ RX 580 — топ за свои деньги.";
+            else res += "Пожалуйста, уточните запрос (видеокарты, процессоры или периферия).";
+            
+            chat.innerHTML += `<div class="ai-msg"><b>[AI]:</b> ${res}</div>`;
+            chat.scrollTop = chat.scrollHeight;
+            tg.HapticFeedback.impactOccurred('light');
+        }, 500);
     }
 </script>
 </body>
