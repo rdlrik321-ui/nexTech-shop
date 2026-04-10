@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <style>
+        /* ТВОЙ СТИЛЬ: ТЕРМИНАЛ */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
         body { 
             background-color: #0d0d0f; 
@@ -39,12 +39,11 @@
         h1 { font-size: 11px; letter-spacing: 5px; opacity: 0.4; text-transform: uppercase; }
 
         .card {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 25px; padding: 20px;
-            text-align: center; margin-bottom: 20px;
-            cursor: pointer; display: block;
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 25px; padding: 20px; text-align: center; margin-bottom: 20px;
+            cursor: pointer; display: block; transition: 0.2s;
         }
+        .card:active { transform: scale(0.98); background: rgba(255,255,255,0.05); }
         .card img { width: 100%; border-radius: 15px; margin-bottom: 15px; }
 
         .price { font-size: 24px; font-weight: 900; margin-top: 10px; }
@@ -57,8 +56,7 @@
 
         .modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #0d0d0f; z-index: 3000; display: none;
-            padding: 20px; overflow-y: auto;
+            background: #0d0d0f; z-index: 3000; display: none; padding: 20px; overflow-y: auto;
         }
         .modal.active { display: block; animation: slideIn 0.3s ease-out; }
         @keyframes slideIn { from { transform: translateY(100%); } to { transform: translateY(0); } }
@@ -92,6 +90,7 @@
         </div>
         <div class="card" style="padding: 25px;" onclick="openPage('gpu-list')"><b>ВИДЕОКАРТЫ</b></div>
         <div class="card" style="padding: 25px;" onclick="openPage('cpu-list')"><b>ПРОЦЕССОРЫ</b></div>
+        <div class="card" style="padding: 25px;" onclick="openPage('peripheral-list')"><b>ПЕРИФЕРИЯ</b></div>
     </div>
 
     <div id="gpu-list" class="page">
@@ -104,20 +103,38 @@
                 <div class="price">5 800 ₽</div>
             </div>
         </div>
-        <div id="gpu-empty" class="no-results">РЕЗУЛЬТАТОВ НЕ НАЙДЕНО</div>
+        <div id="gpu-empty" class="no-results">НИЧЕГО НЕ НАЙДЕНО</div>
     </div>
 
     <div id="cpu-list" class="page">
         <div class="back" onclick="openPage('home')">← ТЕРМИНАЛ</div>
         <input type="text" class="search-box" placeholder="ПОИСК..." oninput="filterItems(this, 'cpu-items', 'cpu-empty')">
         <div id="cpu-items">
-            <div class="card item" onclick="openProduct('AMD Ryzen 5 5600X', 12500, 'cpu1.jpg', '<b>Линейка:</b> Ryzen 5 Vermeer<br><b>Ядра:</b> 6 / 12<br><br><b>Описание:</b> Высокая производительность Zen 3. Идеально для гейминга и работы. Проверен под нагрузкой.')">
+            <div class="card item" onclick="openProduct('AMD Ryzen 5 5600X', 12500, 'cpu1.jpg', '<b>Линейка:</b> Ryzen 5<br><b>Ядра:</b> 6 / 12<br><b>Частота:</b> 4.6 GHz<br><b>Сокет:</b> AM4<br><br><b>Описание:</b><br>Высокая производительность Zen 3. Идеально для гейминга и работы. Состояние: Grade A.<br><br><b>Гарантия:</b> 3 дня.')">
                 <img src="cpu1.jpg">
                 <h3 class="name">AMD Ryzen 5 5600X</h3>
                 <div class="price">12 500 ₽</div>
             </div>
         </div>
-        <div id="cpu-empty" class="no-results">РЕЗУЛЬТАТОВ НЕ НАЙДЕНО</div>
+        <div id="cpu-empty" class="no-results">НИЧЕГО НЕ НАЙДЕНО</div>
+    </div>
+
+    <div id="peripheral-list" class="page">
+        <div class="back" onclick="openPage('home')">← ТЕРМИНАЛ</div>
+        <input type="text" class="search-box" placeholder="ПОИСК (МЫШЬ, КЛАВА...)" oninput="filterItems(this, 'peripheral-items', 'peripheral-empty')">
+        <div id="peripheral-items">
+            <div class="card item" onclick="openProduct('VXE R1 SE Black', 2000, 'mouse1.jpg', '<b>Тип:</b> Игровая мышь<br><b>Сенсор:</b> PAW3395 SE<br><b>Вес:</b> 51г<br><b>Связь:</b> 2.4G / BT / Type-C<br><br><b>Описание:</b><br>Ультралегкая беспроводная мышь. Топовый сенсор и минимальный вес для киберспорта. Состояние: Grade A.<br><br><b>Гарантия:</b> 3 дня.')">
+                <img src="mouse1.jpg">
+                <h3 class="name">Мышь VXE R1 SE</h3>
+                <div class="price">2 000 ₽</div>
+            </div>
+            <div class="card item" onclick="openProduct('Akko 3068B Plus', 5500, 'kb1.jpg', '<b>Тип:</b> Механическая<br><b>Переключатели:</b> Akko Jelly Pink<br><b>Формат:</b> 65%<br><b>Подсветка:</b> RGB<br><br><b>Описание:</b><br>Компактная механика с Hot-swap. Три режима подключения и отличный тайпинг. Состояние: Grade A.<br><br><b>Гарантия:</b> 3 дня.')">
+                <img src="kb1.jpg">
+                <h3 class="name">Клавиатура Akko 3068B</h3>
+                <div class="price">5 500 ₽</div>
+            </div>
+        </div>
+        <div id="peripheral-empty" class="no-results">НИЧЕГО НЕ НАЙДЕНО</div>
     </div>
 
     <div id="cart" class="page">
@@ -127,7 +144,7 @@
         </div>
         <div id="cart-footer" style="display:none;">
             <div class="price" id="total-price" style="margin-bottom:20px;">0 ₽</div>
-            <button class="buy" onclick="tg.showAlert('Заказ оформлен!')">ОФОРМИТЬ ЗАКАЗ</button>
+            <button class="buy" onclick="tg.showAlert('Заказ оформлен! Мы свяжемся с вами.')">ОФОРМИТЬ ЗАКАЗ</button>
         </div>
     </div>
 
@@ -135,7 +152,7 @@
         <h2 style="margin-bottom: 20px; font-weight: 800;">ПРОФИЛЬ</h2>
         <div class="profile-section">
             <span class="section-label">О магазине</span>
-            <p style="font-size: 14px;">nexTech — специализированный магазин компьютерных комплектующих. Контроль качества каждого устройства. Гарантия — 3 дня.</p>
+            <p style="font-size: 14px;">nexTech — специализированный магазин комплектующих. Контроль качества каждого устройства. Гарантия — 3 дня.</p>
         </div>
         <div class="profile-section">
             <span class="section-label">Заказы</span>
@@ -143,7 +160,7 @@
         </div>
         <div class="profile-section">
             <span class="section-label">Поддержка</span>
-            <button class="buy" style="margin-top: 10px; padding: 15px;" onclick="tg.openTelegramLink('https://t.me/username3211123')">СВЯЗАТЬСЯ</button>
+            <button class="buy" style="margin-top: 10px; padding: 15px;" onclick="tg.openTelegramLink('https://t.me/support')">СВЯЗАТЬСЯ</button>
         </div>
     </div>
 </div>
@@ -168,8 +185,13 @@
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-        if(['home', 'gpu-list', 'cpu-list'].includes(id)) document.getElementById('nav-home').classList.add('active');
-        else document.getElementById('nav-' + id).classList.add('active');
+        
+        if(['home', 'gpu-list', 'cpu-list', 'peripheral-list'].includes(id)) {
+            document.getElementById('nav-home').classList.add('active');
+        } else {
+            document.getElementById('nav-' + id).classList.add('active');
+        }
+        
         if(id === 'cart') renderCart();
         tg.HapticFeedback.selectionChanged();
     }
