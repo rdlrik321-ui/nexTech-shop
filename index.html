@@ -262,23 +262,44 @@
 
     function closeProduct() { document.getElementById('product-modal').classList.remove('active'); }
 
-    function sendToAI() {
-        const input = document.getElementById('ai-input');
-        const chat = document.getElementById('chat-box');
-        if(!input.value) return;
-        chat.innerHTML += `<div class="user-msg">${input.value}</div>`;
-        const val = input.value.toLowerCase();
-        input.value = '';
-        setTimeout(() => {
-            let res = "Анализ... ";
-            if(val.includes('мышь')) res += "Рекомендую VXE R1 SE (51г, PAW3395).";
-            else if(val.includes('видео')) res += "В наличии Sapphire Nitro+ RX 580.";
-            else res += "Уточните запрос: видеокарты, процессоры или периферия.";
-            chat.innerHTML += `<div class="ai-msg"><b>[AI]:</b> ${res}</div>`;
-            chat.scrollTop = chat.scrollHeight;
-            tg.HapticFeedback.impactOccurred('light');
-        }, 500);
+    async function sendToAI() {
+    const input = document.getElementById('ai-input');
+    const chat = document.getElementById('chat-box');
+    
+    if (!input.value.trim()) return;
+
+    const userText = input.value;
+    // Отображаем сообщение пользователя
+    chat.innerHTML += `<div class="user-msg">${userText}</div>`;
+    input.value = '';
+    
+    // Скроллим вниз
+    chat.scrollTop = chat.scrollHeight;
+
+    try {
+        // Запрос к твоему локальному серверу Python
+        const response = await fetch('http://127.0.0.1:8000/ask', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ message: userText })
+        });
+
+        if (!response.ok) throw new Error('Ошибка сервера');
+
+        const data = await response.json();
+        
+        // Отображаем ответ ИИ
+        chat.innerHTML += `<div class="ai-msg"><b>[AI]:</b> ${data.reply}</div>`;
+        tg.HapticFeedback.impactOccurred('medium');
+    } catch (e) {
+        console.error(e);
+        chat.innerHTML += `<div class="ai-msg" style="color: #ff4444;"><b>[SYSTEM]:</b> Сервер не отвечает. Убедитесь, что запущен main.py</div>`;
     }
+    
+    chat.scrollTop = chat.scrollHeight;
+}
 </script>
 </body>
 </html>
