@@ -270,37 +270,57 @@
     function closeProduct() { document.getElementById('product-modal').classList.remove('active'); }
 
     async function sendToAI() {
-    const input = document.getElementById('ai-input');
-    const chat = document.getElementById('chat-box');
-    
-    if (!input.value.trim()) return;
-
-    const userText = input.value;
-    chat.innerHTML += `<div class="user-msg">${userText}</div>`;
-    input.value = '';
-    chat.scrollTop = chat.scrollHeight;
-
-    try {
-        const response = await fetch('http://localhost:8000/ask', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: userText })
-        });
-
-        if (!response.ok) throw new Error('Сервер недоступен');
-
-        const data = await response.json();
-        chat.innerHTML += `<div class="ai-msg"><b>[AI]:</b> ${data.reply}</div>`;
+        const input = document.getElementById('ai-input');
+        const chat = document.getElementById('chat-box');
+        const btn = document.getElementById('ai-send-btn');
         
-        // Виброотклик для Telegram
-        if (window.Telegram && Telegram.WebApp) {
-            Telegram.WebApp.HapticFeedback.impactOccurred('light');
+        if (!input.value.trim() || btn.disabled) return;
+
+        const userText = input.value;
+        chat.innerHTML += `<div class="user-msg">${userText}</div>`;
+        input.value = '';
+        chat.scrollTop = chat.scrollHeight;
+
+        // Блокируем кнопку
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+
+        // Создаем временный блок "анализа"
+        const typingId = 'typing-' + Date.now();
+        chat.innerHTML += `<div class="ai-msg" id="${typingId}"><b>[AI]:</b> <span style="opacity: 0.5;">анализ данных...</span></div>`;
+        chat.scrollTop = chat.scrollHeight;
+
+        try {
+            // Завтра заменим localhost на реальный адрес сервера
+            const response = await fetch('http://localhost:8000/ask', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: userText })
+            });
+
+            const data = await response.json();
+            
+            // Заменяем "анализ данных" на реальный ответ
+            const typingElem = document.getElementById(typingId);
+            if (typingElem) {
+                typingElem.innerHTML = `<b>[AI]:</b> ${data.reply}`;
+            }
+
+            if (window.Telegram && Telegram.WebApp) {
+                Telegram.WebApp.HapticFeedback.impactOccurred('light');
+            }
+        } catch (e) {
+            const typingElem = document.getElementById(typingId);
+            if (typingElem) {
+                typingElem.innerHTML = `<b style="color: #ff4d4d;">[SYSTEM ERROR]:</b> Потеря связи с ядром.`;
+            }
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i>';
+            chat.scrollTop = chat.scrollHeight;
+            input.focus();
         }
-    } catch (e) {
-        chat.innerHTML += `<div class="ai-msg" style="color: #ff4d4d;"><b>[SYSTEM]:</b> Ошибка: проверь, запущен ли main.py</div>`;
     }
-    chat.scrollTop = chat.scrollHeight;
-}
 </script>
 </body>
 </html>
