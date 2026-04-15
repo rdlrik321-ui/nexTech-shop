@@ -156,12 +156,19 @@
 
     <div id="ai-chat" class="page">
         <h2 style="margin-bottom: 20px; font-weight: 800;">AI ПОМОЩНИК</h2>
-        <div class="profile-section" id="chat-box">
-            <div class="ai-msg"><b>[SYSTEM]:</b> Модуль активен. Готов помочь с подбором железа nexTech.</div>
+        
+        <div class="profile-section" id="chat-box" style="height: calc(100vh - 350px); overflow-y: auto;">
         </div>
+
+        <div id="quick-replies" style="display: flex; gap: 8px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; -ms-overflow-style: none;">
+            <button onclick="quickSend('Прайс-лист')" style="background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 20px; font-size: 11px; white-space: nowrap; cursor: pointer;">📋 ПРАЙС</button>
+            <button onclick="quickSend('Гарантия')" style="background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 20px; font-size: 11px; white-space: nowrap; cursor: pointer;">🛡️ ГАРАНТИЯ</button>
+            <button onclick="quickSend('Доставка')" style="background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 20px; font-size: 11px; white-space: nowrap; cursor: pointer;">📦 ДОСТАВКА</button>
+        </div>
+
         <div style="display: flex; gap: 10px;">
-            <input type="text" id="ai-input" class="search-box" placeholder="Вопрос..." style="margin-bottom: 0;">
-            <button class="buy" style="width: 60px; padding: 0;" onclick="sendToAI()"><i class="fa-solid fa-paper-plane"></i></button>
+            <input type="text" id="ai-input" class="search-box" placeholder="Вопрос..." style="margin-bottom: 0; flex-grow: 1;">
+            <button id="ai-send-btn" class="buy" style="width: 60px; padding: 0;" onclick="sendToAI()"><i class="fa-solid fa-paper-plane"></i></button>
         </div>
     </div>
 </div>
