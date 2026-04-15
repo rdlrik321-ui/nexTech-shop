@@ -80,6 +80,25 @@
         .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .delete-btn { color: #ff4444; margin-left: 15px; cursor: pointer; padding: 5px; font-size: 16px; }
         .no-results { text-align: center; opacity: 0.4; margin-top: 50px; font-weight: 800; display: none; }
+        /* Анимация появления в стиле терминала */
+        @keyframes terminalFade {
+            0% { 
+                opacity: 0; 
+                transform: translateX(-5px); /* Небольшой сдвиг влево для динамики */
+                filter: blur(2px); /* Легкое размытие в начале */
+            }
+            100% { 
+                opacity: 1; 
+                transform: translateX(0); 
+                filter: blur(0);
+            }
+        }
+
+        /* Применяем ко всем сообщениям в чате */
+        .ai-msg, .user-msg {
+            animation: terminalFade 0.25s ease-out forwards;
+            will-change: opacity, transform; /* Оптимизация, чтобы не тормозило на телефоне */
+        }
     </style>
 </head>
 <body>
