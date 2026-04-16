@@ -36,7 +36,7 @@
             display: flex; align-items: center; justify-content: center;
             box-shadow: 0 10px 30px rgba(0,0,0,0.8); margin-bottom: 15px;
         }
-        h1 { font-size: 11px; letter-spacing: 5px; opacity: 0.4; text-transform: uppercase; }
+        h1 { font-size: 11px; letter-spacing: 5px; opacity: 0.4; text-transform: uppercase; display: flex; align-items: center; }
 
         .card {
             background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);
@@ -50,9 +50,11 @@
         .search-box { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 18px; padding: 15px; width: 100%; color: #fff; margin-bottom: 25px; outline: none; }
         .back { color: rgba(255,255,255,0.5); padding: 15px 0; display: block; text-align: center; font-weight: 800; font-size: 13px; cursor: pointer; }
 
-        /* УВЕЛИЧЕННЫЙ ЧАТ */
         #chat-box { height: calc(100vh - 320px); overflow-y: auto; padding-right: 10px; margin-bottom: 15px; }
-        .ai-msg { color: #fff; margin-bottom: 15px; font-size: 14px; line-height: 1.4; }
+        #chat-box::-webkit-scrollbar { width: 4px; }
+        #chat-box::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+
+        .ai-msg { color: #fff; margin-bottom: 15px; font-size: 14px; line-height: 1.4; white-space: pre-wrap; word-wrap: break-word; }
         .user-msg { color: rgba(255,255,255,0.5); margin-bottom: 15px; font-size: 14px; text-align: right; }
 
         .hotbar {
@@ -61,7 +63,7 @@
             border: 1px solid rgba(255,255,255,0.1); border-radius: 35px;
             display: flex; justify-content: space-around; padding: 12px; z-index: 2000;
         }
-        .nav-item { color: rgba(255,255,255,0.2); font-size: 20px; transition: 0.3s; }
+        .nav-item { color: rgba(255,255,255,0.2); font-size: 20px; transition: 0.3s; cursor: pointer; }
         .nav-item.active { color: #fff; }
 
         .modal {
@@ -80,77 +82,29 @@
         .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .delete-btn { color: #ff4444; margin-left: 15px; cursor: pointer; padding: 5px; font-size: 16px; }
         .no-results { text-align: center; opacity: 0.4; margin-top: 50px; font-weight: 800; display: none; }
-        /* Анимация появления в стиле терминала */
+
         @keyframes terminalFade {
-            0% { 
-                opacity: 0; 
-                transform: translateX(-5px); /* Небольшой сдвиг влево для динамики */
-                filter: blur(2px); /* Легкое размытие в начале */
-            }
-            100% { 
-                opacity: 1; 
-                transform: translateX(0); 
-                filter: blur(0);
-            }
+            0% { opacity: 0; transform: translateX(-5px); filter: blur(2px); }
+            100% { opacity: 1; transform: translateX(0); filter: blur(0); }
         }
+        .ai-msg, .user-msg { animation: terminalFade 0.25s ease-out forwards; will-change: opacity, transform; }
 
-        /* Применяем ко всем сообщениям в чате */
-        .ai-msg, .user-msg {
-            animation: terminalFade 0.25s ease-out forwards;
-            will-change: opacity, transform; /* Оптимизация, чтобы не тормозило на телефоне */
-        }
-        /* КАСТОМНЫЙ СКРОЛЛБАР */
-        #chat-box::-webkit-scrollbar { width: 4px; }
-        #chat-box::-webkit-scrollbar-track { background: transparent; }
-        #chat-box::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
-        
-        /* СКЕЛЕТОН-ЗАГРУЗКА */
-        @keyframes pulse {
-            0% { opacity: 0.3; }
-            50% { opacity: 0.7; }
-            100% { opacity: 0.3; }
-        }
+        @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 0.7; } 100% { opacity: 0.3; } }
         .skeleton-container { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-        .skeleton-line { 
-            background: rgba(255, 255, 255, 0.1); 
-            height: 12px; 
-            border-radius: 6px; 
-            animation: pulse 1.5s infinite ease-in-out; 
-        }
-        
-        /* КОРРЕКТНЫЕ ПЕРЕНОСЫ ТЕКСТА БОТА */
-        .ai-msg { white-space: pre-wrap; word-wrap: break-word; }
-        /* Индикатор онлайна */
-        .status-dot {
-            width: 8px; height: 8px; border-radius: 50%;
-            display: inline-block; margin-right: 8px;
-            background: #ff4d4d; /* Красный, если офлайн */
-            box-shadow: 0 0 10px #ff4d4d;
-            transition: 0.3s;
-        }
-        .status-dot.online { 
-            background: #00ff88; 
-            box-shadow: 0 0 10px #00ff88; 
-        }
+        .skeleton-line { background: rgba(255, 255, 255, 0.1); height: 12px; border-radius: 6px; animation: pulse 1.5s infinite ease-in-out; }
 
-        /* Кнопки покупки внутри чата */
-        .chat-btn {
-            background: #fff; color: #000; border: none;
-            padding: 10px 18px; border-radius: 15px;
-            font-size: 12px; font-weight: 900; margin-top: 10px;
-            cursor: pointer; display: inline-block;
-            text-transform: uppercase;
-        }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 8px; background: #ff4d4d; box-shadow: 0 0 10px #ff4d4d; transition: 0.3s; }
+        .status-dot.online { background: #00ff88; box-shadow: 0 0 10px #00ff88; }
+        .chat-btn { background: #fff; color: #000; border: none; padding: 10px 18px; border-radius: 15px; font-size: 12px; font-weight: 900; margin-top: 10px; cursor: pointer; display: inline-block; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    
     <div id="home" class="page active">
         <div class="header">
             <div class="logo-box"><img src="https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/logo.png" width="60"></div>
-            <h1>NEXTECH // TERMINAL</h1>
+            <h1><span id="status-dot" class="status-dot"></span>NEXTECH // TERMINAL</h1>
         </div>
         <div class="card" onclick="openPage('gpu-list')"><b>ВИДЕОКАРТЫ</b></div>
         <div class="card" onclick="openPage('cpu-list')"><b>ПРОЦЕССОРЫ</b></div>
@@ -161,7 +115,7 @@
         <div class="back" onclick="openPage('home')">← ТЕРМИНАЛ</div>
         <input type="text" class="search-box" placeholder="ПОИСК..." oninput="filterItems(this, 'gpu-items', 'gpu-empty')">
         <div id="gpu-items">
-            <div class="card item" onclick="openProduct('Sapphire Nitro+ RX 580', 5800, 'gpu1.jpg', '<b>Модель:</b> Sapphire Nitro+<br><b>Память:</b> 4GB GDDR5<br><b>Шина:</b> 256-bit<br><b>Частота:</b> 1411 MHz<br><br><b>Описание:</b><br>Классическое решение для гейминга. Серия Nitro+ с усиленным питанием и охлаждением. Состояние: Grade A.<br><br><b>Гарантия:</b> 3 дня.')">
+            <div class="card item" onclick="openProduct('Sapphire Nitro+ RX 580', 5800, 'gpu1.jpg', '<b>Модель:</b> Sapphire Nitro+<br><b>Память:</b> 8GB GDDR5<br><b>Описание:</b> Grade A.')">
                 <img src="gpu1.jpg"><h3 class="name">Sapphire Nitro+ RX 580</h3><div class="price">5 800 ₽</div>
             </div>
         </div>
@@ -172,7 +126,7 @@
         <div class="back" onclick="openPage('home')">← ТЕРМИНАЛ</div>
         <input type="text" class="search-box" placeholder="ПОИСК..." oninput="filterItems(this, 'cpu-items', 'cpu-empty')">
         <div id="cpu-items">
-            <div class="card item" onclick="openProduct('AMD Ryzen 5 5600X', 12500, 'cpu1.jpg', '<b>Ядра:</b> 6 / 12<br><b>Частота:</b> 4.6 GHz<br><b>Сокет:</b> AM4<br><br><b>Описание:</b><br>Zen 3 архитектура. Идеально для работы и игр. Состояние: Grade A.<br><br><b>Гарантия:</b> 3 дня.')">
+            <div class="card item" onclick="openProduct('AMD Ryzen 5 5600X', 12500, 'cpu1.jpg', '6 ядер / 12 потоков.')">
                 <img src="cpu1.jpg"><h3 class="name">AMD Ryzen 5 5600X</h3><div class="price">12 500 ₽</div>
             </div>
         </div>
@@ -183,7 +137,7 @@
         <div class="back" onclick="openPage('home')">← ТЕРМИНАЛ</div>
         <input type="text" class="search-box" placeholder="ПОИСК..." oninput="filterItems(this, 'peripheral-items', 'peripheral-empty')">
         <div id="peripheral-items">
-            <div class="card item" onclick="openProduct('Мышь VXE R1 SE', 2000, 'mouse1.jpg', '<b>Вес:</b> 51г<br><b>Сенсор:</b> PAW3395 SE<br><br><b>Описание:</b><br>Ультралегкая беспроводная мышь. Состояние: Grade A.<br><br><b>Гарантия:</b> 3 дня.')">
+            <div class="card item" onclick="openProduct('Мышь VXE R1 SE', 2000, 'mouse1.jpg', '51 грамм, PAW3395.')">
                 <img src="mouse1.jpg"><h3 class="name">Мышь VXE R1 SE</h3><div class="price">2 000 ₽</div>
             </div>
         </div>
@@ -195,38 +149,18 @@
         <div class="profile-section" id="cart-content"></div>
         <div id="cart-footer" style="display:none;">
             <div class="price" id="total-price" style="margin-bottom:20px;">0 ₽</div>
-            <button class="buy" onclick="tg.showAlert('Заказ оформлен! Мы свяжемся с вами.')">ОФОРМИТЬ ЗАКАЗ</button>
+            <button class="buy" onclick="tg.showAlert('Заказ оформлен!')">ОФОРМИТЬ ЗАКАЗ</button>
         </div>
     </div>
 
     <div id="profile" class="page">
         <h2 style="margin-bottom: 20px; font-weight: 800;">ПРОФИЛЬ</h2>
-        <div class="profile-section">
-            <span class="section-label">О магазине</span>
-            <p style="font-size: 14px;">nexTech — специализированный магазин компьютерных комплектующих. Мы обеспечиваем строгий контроль качества каждого устройства. Гарантия на все товары составляет 3 дня.</p>
-        </div>
-        <div class="profile-section">
-            <span class="section-label">Заказы</span>
-            <p style="font-size: 14px; opacity: 0.4;">История заказов пуста.</p>
-        </div>
-        <div class="profile-section">
-            <span class="section-label">Поддержка</span>
-            <button class="buy" style="margin-top: 10px; padding: 15px;" onclick="tg.openTelegramLink('https://t.me/username3211123')">СВЯЗАТЬСЯ</button>
-        </div>
+        <div class="profile-section"><span class="section-label">О магазине</span><p>nexTech Томск.</p></div>
     </div>
 
     <div id="ai-chat" class="page">
         <h2 style="margin-bottom: 20px; font-weight: 800;">AI ПОМОЩНИК</h2>
-        
-        <div class="profile-section" id="chat-box" style="height: calc(100vh - 350px); overflow-y: auto;">
-        </div>
-
-        <div id="quick-replies" style="display: flex; gap: 8px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; -ms-overflow-style: none;">
-            <button onclick="quickSend('Прайс-лист')" style="background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 20px; font-size: 11px; white-space: nowrap; cursor: pointer;">📋 ПРАЙС</button>
-            <button onclick="quickSend('Гарантия')" style="background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 20px; font-size: 11px; white-space: nowrap; cursor: pointer;">🛡️ ГАРАНТИЯ</button>
-            <button onclick="quickSend('Доставка')" style="background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 20px; font-size: 11px; white-space: nowrap; cursor: pointer;">📦 ДОСТАВКА</button>
-        </div>
-
+        <div class="profile-section" id="chat-box"></div>
         <div style="display: flex; gap: 10px;">
             <input type="text" id="ai-input" class="search-box" placeholder="Вопрос..." style="margin-bottom: 0; flex-grow: 1;">
             <button id="ai-send-btn" class="buy" style="width: 60px; padding: 0;" onclick="sendToAI()"><i class="fa-solid fa-paper-plane"></i></button>
@@ -249,20 +183,14 @@
 <script>
     const tg = window.Telegram.WebApp;
     tg.expand();
-    
-    // ПАМЯТЬ КОРЗИНЫ
     let cartItems = JSON.parse(localStorage.getItem('nexTech_cart')) || [];
 
     function openPage(id) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-        
-        if(['home', 'gpu-list', 'cpu-list', 'peripheral-list'].includes(id)) {
-            document.getElementById('nav-home').classList.add('active');
-        } else {
-            document.getElementById('nav-' + id).classList.add('active');
-        }
+        const navId = ['home', 'gpu-list', 'cpu-list', 'peripheral-list'].includes(id) ? 'nav-home' : 'nav-' + id;
+        if(document.getElementById(navId)) document.getElementById(navId).classList.add('active');
         if(id === 'cart') renderCart();
         tg.HapticFeedback.selectionChanged();
     }
@@ -273,14 +201,13 @@
         cartItems.push({name, price, id: Date.now()});
         saveCart();
         tg.HapticFeedback.notificationOccurred('success');
-        tg.showAlert('Добавлено в корзину');
+        tg.showAlert('Добавлено!');
         closeProduct();
     }
 
     function removeFromCart(id) {
         cartItems = cartItems.filter(item => item.id !== id);
-        saveCart();
-        renderCart();
+        saveCart(); renderCart();
         tg.HapticFeedback.impactOccurred('medium');
     }
 
@@ -288,7 +215,7 @@
         const container = document.getElementById('cart-content');
         const footer = document.getElementById('cart-footer');
         if(cartItems.length === 0) {
-            container.innerHTML = '<p style="opacity: 0.4;">Ваша корзина пуста.</p>';
+            container.innerHTML = '<p style="opacity: 0.4;">Пусто</p>';
             footer.style.display = 'none';
         } else {
             let total = 0;
@@ -334,83 +261,48 @@
         const input = document.getElementById('ai-input');
         const chat = document.getElementById('chat-box');
         const btn = document.getElementById('ai-send-btn');
-        
         if (!input.value.trim() || btn.disabled) return;
 
-        const userText = input.value;
-        chat.innerHTML += `<div class="user-msg">${userText}</div>`;
+        const text = input.value;
+        chat.innerHTML += `<div class="user-msg">${text}</div>`;
         input.value = '';
-        chat.scrollTop = chat.scrollHeight;
-
-        // Блокируем кнопку
         btn.disabled = true;
         btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
 
-        // Создаем скелетон-загрузку (3 полоски разной длины)
-        const typingId = 'typing-' + Date.now();
-        chat.innerHTML += `
-            <div class="ai-msg" id="${typingId}">
-                <b>[AI]:</b>
-                <div class="skeleton-container">
-                    <div class="skeleton-line" style="width: 85%;"></div>
-                    <div class="skeleton-line" style="width: 60%;"></div>
-                    <div class="skeleton-line" style="width: 75%;"></div>
-                </div>
-            </div>`;
+        const tid = 't-' + Date.now();
+        chat.innerHTML += `<div class="ai-msg" id="${tid}"><b>[AI]:</b><div class="skeleton-container"><div class="skeleton-line" style="width:85%"></div><div class="skeleton-line" style="width:60%"></div></div></div>`;
         chat.scrollTop = chat.scrollHeight;
 
         try {
-            // Замени localhost на свой IP или адрес ngrok, если тестишь с телефона
-            const response = await fetch('http://localhost:8000/ask', {
+            const res = await fetch('http://localhost:8000/ask', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: userText })
+                body: JSON.stringify({ message: text })
             });
-
-            const data = await response.json();
-            
-            // Заменяем скелетоны на реальный ответ
-            const typingElem = document.getElementById(typingId);
-            if (typingElem) {
-                // Превращаем текст [КУПИТЬ: Товар] в реальную кнопку
-            let finalReply = data.reply.replace(/\[КУПИТЬ: (.*?)\]/g, '<br><button class="chat-btn" onclick="addToCart(\'$1\', 0)">🛒 КУПИТЬ $1</button>');
-            
-            const typingElem = document.getElementById(typingId);
-            if (typingElem) {
-                typingElem.innerHTML = `<b>[AI]:</b> ${finalReply}`;
-            }
-
-            if (window.Telegram && Telegram.WebApp) {
-                tg.HapticFeedback.impactOccurred('light');
-            }
-        } catch (e) {
-            const typingElem = document.getElementById(typingId);
-            if (typingElem) {
-                typingElem.innerHTML = `<b style="color: #ff4d4d;">[SYSTEM ERROR]:</b> Потеря связи с ядром.`;
-            }
+            const data = await res.json();
+            let reply = data.reply.replace(/\[КУПИТЬ: (.*?)\]/g, '<br><button class="chat-btn" onclick="addToCart(\'$1\', 0)">🛒 КУПИТЬ $1</button>');
+            document.getElementById(tid).innerHTML = `<b>[AI]:</b> ${reply}`;
+            tg.HapticFeedback.impactOccurred('light');
+        } catch {
+            document.getElementById(tid).innerHTML = `<b style="color:#ff4d4d;">[ERROR]:</b> Нет связи.`;
         } finally {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i>';
+            btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i>';
             chat.scrollTop = chat.scrollHeight;
-            input.focus();
         }
     }
-    // ПРИВЕТСТВИЕ
-    document.getElementById('chat-box').innerHTML = `<div class="ai-msg"><b>[SYSTEM]:</b> Модуль nexTech активен. Готов к анализу комплектующих.</div>`;
-    // Функция проверки, включен ли сервер Python
+
     async function checkServer() {
         const dot = document.getElementById('status-dot');
         try {
-            // Пробуем достучаться до сервера
             await fetch('http://localhost:8000/ask', { method: 'OPTIONS' });
-            dot.classList.add('online'); // Делаем точку зеленой
-        } catch (e) {
-            dot.classList.remove('online'); // Возвращаем красный
+            dot.classList.add('online');
+        } catch {
+            dot.classList.remove('online');
         }
     }
-    // Проверять каждые 3 секунды
     setInterval(checkServer, 3000);
     checkServer();
+    document.getElementById('chat-box').innerHTML = `<div class="ai-msg"><b>[SYSTEM]:</b> Модуль nexTech активен.</div>`;
 </script>
 </body>
 </html>
