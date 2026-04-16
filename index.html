@@ -120,6 +120,27 @@
         
         /* КОРРЕКТНЫЕ ПЕРЕНОСЫ ТЕКСТА БОТА */
         .ai-msg { white-space: pre-wrap; word-wrap: break-word; }
+        /* Индикатор онлайна */
+        .status-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            display: inline-block; margin-right: 8px;
+            background: #ff4d4d; /* Красный, если офлайн */
+            box-shadow: 0 0 10px #ff4d4d;
+            transition: 0.3s;
+        }
+        .status-dot.online { 
+            background: #00ff88; 
+            box-shadow: 0 0 10px #00ff88; 
+        }
+
+        /* Кнопки покупки внутри чата */
+        .chat-btn {
+            background: #fff; color: #000; border: none;
+            padding: 10px 18px; border-radius: 15px;
+            font-size: 12px; font-weight: 900; margin-top: 10px;
+            cursor: pointer; display: inline-block;
+            text-transform: uppercase;
+        }
     </style>
 </head>
 <body>
@@ -351,7 +372,12 @@
             // Заменяем скелетоны на реальный ответ
             const typingElem = document.getElementById(typingId);
             if (typingElem) {
-                typingElem.innerHTML = `<b>[AI]:</b> ${data.reply}`;
+                // Превращаем текст [КУПИТЬ: Товар] в реальную кнопку
+            let finalReply = data.reply.replace(/\[КУПИТЬ: (.*?)\]/g, '<br><button class="chat-btn" onclick="addToCart(\'$1\', 0)">🛒 КУПИТЬ $1</button>');
+            
+            const typingElem = document.getElementById(typingId);
+            if (typingElem) {
+                typingElem.innerHTML = `<b>[AI]:</b> ${finalReply}`;
             }
 
             if (window.Telegram && Telegram.WebApp) {
@@ -371,6 +397,20 @@
     }
     // ПРИВЕТСТВИЕ
     document.getElementById('chat-box').innerHTML = `<div class="ai-msg"><b>[SYSTEM]:</b> Модуль nexTech активен. Готов к анализу комплектующих.</div>`;
+    // Функция проверки, включен ли сервер Python
+    async function checkServer() {
+        const dot = document.getElementById('status-dot');
+        try {
+            // Пробуем достучаться до сервера
+            await fetch('http://localhost:8000/ask', { method: 'OPTIONS' });
+            dot.classList.add('online'); // Делаем точку зеленой
+        } catch (e) {
+            dot.classList.remove('online'); // Возвращаем красный
+        }
+    }
+    // Проверять каждые 3 секунды
+    setInterval(checkServer, 3000);
+    checkServer();
 </script>
 </body>
 </html>
