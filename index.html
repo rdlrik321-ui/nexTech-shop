@@ -99,6 +99,27 @@
             animation: terminalFade 0.25s ease-out forwards;
             will-change: opacity, transform; /* Оптимизация, чтобы не тормозило на телефоне */
         }
+        /* КАСТОМНЫЙ СКРОЛЛБАР */
+        #chat-box::-webkit-scrollbar { width: 4px; }
+        #chat-box::-webkit-scrollbar-track { background: transparent; }
+        #chat-box::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+        
+        /* СКЕЛЕТОН-ЗАГРУЗКА */
+        @keyframes pulse {
+            0% { opacity: 0.3; }
+            50% { opacity: 0.7; }
+            100% { opacity: 0.3; }
+        }
+        .skeleton-container { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+        .skeleton-line { 
+            background: rgba(255, 255, 255, 0.1); 
+            height: 12px; 
+            border-radius: 6px; 
+            animation: pulse 1.5s infinite ease-in-out; 
+        }
+        
+        /* КОРРЕКТНЫЕ ПЕРЕНОСЫ ТЕКСТА БОТА */
+        .ai-msg { white-space: pre-wrap; word-wrap: break-word; }
     </style>
 </head>
 <body>
@@ -304,13 +325,21 @@
         btn.disabled = true;
         btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
 
-        // Создаем временный блок "анализа"
+        // Создаем скелетон-загрузку (3 полоски разной длины)
         const typingId = 'typing-' + Date.now();
-        chat.innerHTML += `<div class="ai-msg" id="${typingId}"><b>[AI]:</b> <span style="opacity: 0.5;">анализ данных...</span></div>`;
+        chat.innerHTML += `
+            <div class="ai-msg" id="${typingId}">
+                <b>[AI]:</b>
+                <div class="skeleton-container">
+                    <div class="skeleton-line" style="width: 85%;"></div>
+                    <div class="skeleton-line" style="width: 60%;"></div>
+                    <div class="skeleton-line" style="width: 75%;"></div>
+                </div>
+            </div>`;
         chat.scrollTop = chat.scrollHeight;
 
         try {
-            // Завтра заменим localhost на реальный адрес сервера
+            // Замени localhost на свой IP или адрес ngrok, если тестишь с телефона
             const response = await fetch('http://localhost:8000/ask', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -319,14 +348,14 @@
 
             const data = await response.json();
             
-            // Заменяем "анализ данных" на реальный ответ
+            // Заменяем скелетоны на реальный ответ
             const typingElem = document.getElementById(typingId);
             if (typingElem) {
                 typingElem.innerHTML = `<b>[AI]:</b> ${data.reply}`;
             }
 
             if (window.Telegram && Telegram.WebApp) {
-                Telegram.WebApp.HapticFeedback.impactOccurred('light');
+                tg.HapticFeedback.impactOccurred('light');
             }
         } catch (e) {
             const typingElem = document.getElementById(typingId);
@@ -340,6 +369,8 @@
             input.focus();
         }
     }
+    // ПРИВЕТСТВИЕ
+    document.getElementById('chat-box').innerHTML = `<div class="ai-msg"><b>[SYSTEM]:</b> Модуль nexTech активен. Готов к анализу комплектующих.</div>`;
 </script>
 </body>
 </html>
