@@ -154,16 +154,30 @@
     </div>
 
     <div id="profile" class="page">
+       <div id="profile" class="page">
         <h2 style="margin-bottom: 20px; font-weight: 800;">ПРОФИЛЬ</h2>
-        <div class="profile-section"><span class="section-label">О магазине</span><p>nexTech Томск.</p></div>
-    </div>
+        
+        <div class="profile-section">
+            <span class="section-label">О магазине</span>
+            <p style="font-size: 14px; line-height: 1.5;">
+                <b>nexTech Tomsk</b> — специализированный магазин компьютерных комплектующих. 
+                Контроль качества каждого устройства. Гарантия — 3 дня.
+            </p>
+        </div>
 
-    <div id="ai-chat" class="page">
-        <h2 style="margin-bottom: 20px; font-weight: 800;">AI ПОМОЩНИК</h2>
-        <div class="profile-section" id="chat-box"></div>
-        <div style="display: flex; gap: 10px;">
-            <input type="text" id="ai-input" class="search-box" placeholder="Вопрос..." style="margin-bottom: 0; flex-grow: 1;">
-            <button id="ai-send-btn" class="buy" style="width: 60px; padding: 0;" onclick="sendToAI()"><i class="fa-solid fa-paper-plane"></i></button>
+        <div class="profile-section">
+            <span class="section-label">Заказы</span>
+            <div id="orders-history">
+                <p style="font-size: 14px; opacity: 0.4;">История заказов пуста.</p>
+            </div>
+        </div>
+
+        <div class="profile-section">
+            <span class="section-label">Поддержка и связь</span>
+            <p style="font-size: 12px; opacity: 0.6; margin-bottom: 12px;">Есть вопросы по наличию или сборке? Пиши напрямую:</p>
+            <button class="buy" style="padding: 15px; background: #24A1DE; color: #fff;" onclick="tg.openTelegramLink('https://t.me/username3211123')">
+                <i class="fa-brands fa-telegram"></i> НАПИСАТЬ В ТГ
+            </button>
         </div>
     </div>
 </div>
