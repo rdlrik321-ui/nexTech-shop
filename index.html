@@ -45,15 +45,13 @@
         }
         .card img { width: 100%; border-radius: 15px; margin-bottom: 15px; }
         .price { font-size: 24px; font-weight: 900; margin-top: 10px; }
-        .buy { background: #fff; color: #000; border: none; padding: 20px; border-radius: 18px; font-weight: 900; width: 100%; cursor: pointer; }
+        .buy { background: #fff; color: #000; border: none; padding: 20px; border-radius: 18px; font-weight: 900; width: 100%; cursor: pointer; transition: 0.2s; }
+        .buy:active { transform: scale(0.98); opacity: 0.8; }
 
         .search-box { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 18px; padding: 15px; width: 100%; color: #fff; margin-bottom: 25px; outline: none; }
         .back { color: rgba(255,255,255,0.5); padding: 15px 0; display: block; text-align: center; font-weight: 800; font-size: 13px; cursor: pointer; }
 
         #chat-box { height: calc(100vh - 320px); overflow-y: auto; padding-right: 10px; margin-bottom: 15px; }
-        #chat-box::-webkit-scrollbar { width: 4px; }
-        #chat-box::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
-
         .ai-msg { color: #fff; margin-bottom: 15px; font-size: 14px; line-height: 1.4; white-space: pre-wrap; word-wrap: break-word; }
         .user-msg { color: rgba(255,255,255,0.5); margin-bottom: 15px; font-size: 14px; text-align: right; }
 
@@ -66,13 +64,6 @@
         .nav-item { color: rgba(255,255,255,0.2); font-size: 20px; transition: 0.3s; cursor: pointer; }
         .nav-item.active { color: #fff; }
 
-        .modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #0d0d0f; z-index: 3000; display: none; padding: 20px; overflow-y: auto;
-        }
-        .modal.active { display: block; animation: slideIn 0.3s ease-out; }
-        @keyframes slideIn { from { transform: translateY(100%); } to { transform: translateY(0); } }
-
         .profile-section {
             background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
             border-radius: 22px; padding: 20px; margin-bottom: 15px; text-align: left;
@@ -83,19 +74,19 @@
         .delete-btn { color: #ff4444; margin-left: 15px; cursor: pointer; padding: 5px; font-size: 16px; }
         .no-results { text-align: center; opacity: 0.4; margin-top: 50px; font-weight: 800; display: none; }
 
-        @keyframes terminalFade {
-            0% { opacity: 0; transform: translateX(-5px); filter: blur(2px); }
-            100% { opacity: 1; transform: translateX(0); filter: blur(0); }
-        }
-        .ai-msg, .user-msg { animation: terminalFade 0.25s ease-out forwards; will-change: opacity, transform; }
-
-        @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 0.7; } 100% { opacity: 0.3; } }
-        .skeleton-container { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-        .skeleton-line { background: rgba(255, 255, 255, 0.1); height: 12px; border-radius: 6px; animation: pulse 1.5s infinite ease-in-out; }
-
         .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 8px; background: #ff4d4d; box-shadow: 0 0 10px #ff4d4d; transition: 0.3s; }
         .status-dot.online { background: #00ff88; box-shadow: 0 0 10px #00ff88; }
         .chat-btn { background: #fff; color: #000; border: none; padding: 10px 18px; border-radius: 15px; font-size: 12px; font-weight: 900; margin-top: 10px; cursor: pointer; display: inline-block; text-transform: uppercase; }
+
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0d0d0f; z-index: 3000; display: none; padding: 20px; overflow-y: auto; }
+        .modal.active { display: block; animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        
+        @keyframes terminalFade { 0% { opacity: 0; transform: translateX(-5px); } 100% { opacity: 1; transform: translateX(0); } }
+        .ai-msg, .user-msg { animation: terminalFade 0.25s ease-out forwards; }
+
+        .skeleton-line { background: rgba(255, 255, 255, 0.1); height: 12px; border-radius: 6px; margin: 5px 0; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.7; } }
     </style>
 </head>
 <body>
@@ -115,8 +106,8 @@
         <div class="back" onclick="openPage('home')">← ТЕРМИНАЛ</div>
         <input type="text" class="search-box" placeholder="ПОИСК..." oninput="filterItems(this, 'gpu-items', 'gpu-empty')">
         <div id="gpu-items">
-            <div class="card item" onclick="openProduct('Sapphire Nitro+ RX 580', 5800, 'gpu1.jpg', '<b>Модель:</b> Sapphire Nitro+<br><b>Память:</b> 8GB GDDR5<br><b>Описание:</b> Grade A.')">
-                <img src="gpu1.jpg"><h3 class="name">Sapphire Nitro+ RX 580</h3><div class="price">5 800 ₽</div>
+            <div class="card item" onclick="openProduct('Sapphire Nitro+ RX 580', 5800, 'gpu1.jpg', 'Grade A. 8GB GDDR5.')">
+                <h3 class="name">Sapphire Nitro+ RX 580</h3><div class="price">5 800 ₽</div>
             </div>
         </div>
         <div id="gpu-empty" class="no-results">НИЧЕГО НЕ НАЙДЕНО</div>
@@ -127,7 +118,7 @@
         <input type="text" class="search-box" placeholder="ПОИСК..." oninput="filterItems(this, 'cpu-items', 'cpu-empty')">
         <div id="cpu-items">
             <div class="card item" onclick="openProduct('AMD Ryzen 5 5600X', 12500, 'cpu1.jpg', '6 ядер / 12 потоков.')">
-                <img src="cpu1.jpg"><h3 class="name">AMD Ryzen 5 5600X</h3><div class="price">12 500 ₽</div>
+                <h3 class="name">AMD Ryzen 5 5600X</h3><div class="price">12 500 ₽</div>
             </div>
         </div>
         <div id="cpu-empty" class="no-results">НИЧЕГО НЕ НАЙДЕНО</div>
@@ -138,7 +129,7 @@
         <input type="text" class="search-box" placeholder="ПОИСК..." oninput="filterItems(this, 'peripheral-items', 'peripheral-empty')">
         <div id="peripheral-items">
             <div class="card item" onclick="openProduct('Мышь VXE R1 SE', 2000, 'mouse1.jpg', '51 грамм, PAW3395.')">
-                <img src="mouse1.jpg"><h3 class="name">Мышь VXE R1 SE</h3><div class="price">2 000 ₽</div>
+                <h3 class="name">Мышь VXE R1 SE</h3><div class="price">2 000 ₽</div>
             </div>
         </div>
         <div id="peripheral-empty" class="no-results">НИЧЕГО НЕ НАЙДЕНО</div>
@@ -149,35 +140,28 @@
         <div class="profile-section" id="cart-content"></div>
         <div id="cart-footer" style="display:none;">
             <div class="price" id="total-price" style="margin-bottom:20px;">0 ₽</div>
-            <button class="buy" onclick="tg.showAlert('Заказ оформлен!')">ОФОРМИТЬ ЗАКАЗ</button>
+            <button class="buy" onclick="placeOrder()">ОФОРМИТЬ ЗАКАЗ</button>
         </div>
     </div>
 
     <div id="profile" class="page">
-       <div id="profile" class="page">
         <h2 style="margin-bottom: 20px; font-weight: 800;">ПРОФИЛЬ</h2>
-        
         <div class="profile-section">
             <span class="section-label">О магазине</span>
-            <p style="font-size: 14px; line-height: 1.5;">
-                <b>nexTech Tomsk</b> — специализированный магазин компьютерных комплектующих. 
-                Контроль качества каждого устройства. Гарантия — 3 дня.
-            </p>
+            <p style="font-size: 14px;">nexTech Tomsk — комплектующие с гарантией.</p>
         </div>
-
         <div class="profile-section">
-            <span class="section-label">Заказы</span>
-            <div id="orders-history">
-                <p style="font-size: 14px; opacity: 0.4;">История заказов пуста.</p>
-            </div>
+            <span class="section-label">Поддержка</span>
+            <button class="buy" style="background: #24A1DE; color: #fff; padding: 15px;" onclick="tg.openTelegramLink('https://t.me/username3211123')">НАПИСАТЬ В ТГ</button>
         </div>
+    </div>
 
-        <div class="profile-section">
-            <span class="section-label">Поддержка и связь</span>
-            <p style="font-size: 12px; opacity: 0.6; margin-bottom: 12px;">Есть вопросы по наличию или сборке? Пиши напрямую:</p>
-            <button class="buy" style="padding: 15px; background: #24A1DE; color: #fff;" onclick="tg.openTelegramLink('https://t.me/username3211123')">
-                <i class="fa-brands fa-telegram"></i> НАПИСАТЬ В ТГ
-            </button>
+    <div id="ai-chat" class="page">
+        <h2 style="margin-bottom: 20px; font-weight: 800;">AI ПОМОЩНИК</h2>
+        <div id="chat-box" class="profile-section"></div>
+        <div style="display: flex; gap: 10px;">
+            <input type="text" id="ai-input" class="search-box" placeholder="Вопрос..." style="margin-bottom: 0;">
+            <button id="ai-send-btn" class="buy" style="width: 60px; padding: 0;" onclick="sendToAI()"><i class="fa-solid fa-paper-plane"></i></button>
         </div>
     </div>
 </div>
@@ -203,26 +187,12 @@
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        
         const navId = ['home', 'gpu-list', 'cpu-list', 'peripheral-list'].includes(id) ? 'nav-home' : 'nav-' + id;
         if(document.getElementById(navId)) document.getElementById(navId).classList.add('active');
+        
         if(id === 'cart') renderCart();
         tg.HapticFeedback.selectionChanged();
-    }
-
-    function saveCart() { localStorage.setItem('nexTech_cart', JSON.stringify(cartItems)); }
-
-    function addToCart(name, price) {
-        cartItems.push({name, price, id: Date.now()});
-        saveCart();
-        tg.HapticFeedback.notificationOccurred('success');
-        tg.showAlert('Добавлено!');
-        closeProduct();
-    }
-
-    function removeFromCart(id) {
-        cartItems = cartItems.filter(item => item.id !== id);
-        saveCart(); renderCart();
-        tg.HapticFeedback.impactOccurred('medium');
     }
 
     function renderCart() {
@@ -236,14 +206,39 @@
             container.innerHTML = cartItems.map(item => {
                 total += item.price;
                 return `<div class="cart-item">
-                    <div style="display:flex; flex-direction:column;"><span style="font-size:14px; font-weight:600;">${item.name}</span><span style="font-size:12px; opacity:0.5;">${item.price} ₽</span></div>
-                    <i class="fa-solid fa-trash-can delete-btn" onclick="removeFromCart(${item.id})"></i>
+                    <span>${item.name}</span>
+                    <span>${item.price}₽ <i class="fa-solid fa-trash" onclick="removeFromCart(${item.id})"></i></span>
                 </div>`;
             }).join('');
             document.getElementById('total-price').innerText = total + ' ₽';
             footer.style.display = 'block';
         }
     }
+
+    function addToCart(name, price) {
+        cartItems.push({name, price, id: Date.now()});
+        localStorage.setItem('nexTech_cart', JSON.stringify(cartItems));
+        tg.showAlert('Добавлено!');
+        closeProduct();
+    }
+
+    function removeFromCart(id) {
+        cartItems = cartItems.filter(i => i.id !== id);
+        localStorage.setItem('nexTech_cart', JSON.stringify(cartItems));
+        renderCart();
+    }
+
+    function openProduct(name, price, img, desc) {
+        document.getElementById('modal-content').innerHTML = `
+            <h2 style="margin-top:20px;">${name}</h2>
+            <div class="profile-section" style="margin:20px 0;">${desc}</div>
+            <div class="price">${price} ₽</div>
+            <button class="buy" onclick="addToCart('${name}', ${price})">КУПИТЬ</button>
+        `;
+        document.getElementById('product-modal').classList.add('active');
+    }
+
+    function closeProduct() { document.getElementById('product-modal').classList.remove('active'); }
 
     function filterItems(input, listId, emptyId) {
         const val = input.value.toLowerCase();
@@ -257,19 +252,16 @@
         document.getElementById(emptyId).style.display = found ? "none" : "block";
     }
 
-    function openProduct(name, price, img, desc) {
-        document.getElementById('modal-content').innerHTML = `
-            <img src="${img}" style="width:100%; border-radius:25px; margin-top:20px;">
-            <h2 style="font-size:26px; margin-top:20px; text-align:center;">${name}</h2>
-            <div class="profile-section" style="margin:20px 0; font-size: 14px; line-height: 1.6;">${desc}</div>
-            <div class="price" style="text-align:center; font-size:32px; margin-bottom:20px;">${price} ₽</div>
-            <button class="buy" onclick="addToCart('${name}', ${price})">ДОБАВИТЬ В КОРЗИНУ</button>
-        `;
-        document.getElementById('product-modal').classList.add('active');
-        tg.HapticFeedback.impactOccurred('medium');
+    function placeOrder() {
+        const text = cartItems.map(i => i.name).join(', ');
+        tg.showConfirm("Отправить заказ?", (ok) => {
+            if(ok) {
+                tg.sendData("ЗАКАЗ: " + text);
+                cartItems = []; localStorage.setItem('nexTech_cart', '[]');
+                openPage('home');
+            }
+        });
     }
-
-    function closeProduct() { document.getElementById('product-modal').classList.remove('active'); }
 
     async function sendToAI() {
         const input = document.getElementById('ai-input');
@@ -281,10 +273,9 @@
         chat.innerHTML += `<div class="user-msg">${text}</div>`;
         input.value = '';
         btn.disabled = true;
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
 
         const tid = 't-' + Date.now();
-        chat.innerHTML += `<div class="ai-msg" id="${tid}"><b>[AI]:</b><div class="skeleton-container"><div class="skeleton-line" style="width:85%"></div><div class="skeleton-line" style="width:60%"></div></div></div>`;
+        chat.innerHTML += `<div class="ai-msg" id="${tid}"><b>[AI]:</b><div class="skeleton-line"></div></div>`;
         chat.scrollTop = chat.scrollHeight;
 
         try {
@@ -296,27 +287,21 @@
             const data = await res.json();
             let reply = data.reply.replace(/\[КУПИТЬ: (.*?)\]/g, '<br><button class="chat-btn" onclick="addToCart(\'$1\', 0)">🛒 КУПИТЬ $1</button>');
             document.getElementById(tid).innerHTML = `<b>[AI]:</b> ${reply}`;
-            tg.HapticFeedback.impactOccurred('light');
         } catch {
-            document.getElementById(tid).innerHTML = `<b style="color:#ff4d4d;">[ERROR]:</b> Нет связи.`;
+            document.getElementById(tid).innerHTML = `<b>[ERROR]:</b> Нет связи.`;
         } finally {
-            btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i>';
+            btn.disabled = false;
             chat.scrollTop = chat.scrollHeight;
         }
     }
 
     async function checkServer() {
         const dot = document.getElementById('status-dot');
-        try {
-            await fetch('http://localhost:8000/ask', { method: 'OPTIONS' });
-            dot.classList.add('online');
-        } catch {
-            dot.classList.remove('online');
-        }
+        try { await fetch('http://localhost:8000/ask', { method: 'OPTIONS' }); dot.classList.add('online'); }
+        catch { dot.classList.remove('online'); }
     }
     setInterval(checkServer, 3000);
-    checkServer();
-    document.getElementById('chat-box').innerHTML = `<div class="ai-msg"><b>[SYSTEM]:</b> Модуль nexTech активен.</div>`;
+    document.getElementById('chat-box').innerHTML = `<div class="ai-msg"><b>[SYSTEM]:</b> Готов к работе.</div>`;
 </script>
 </body>
 </html>
