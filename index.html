@@ -276,7 +276,7 @@
 
     setInterval(async () => {
         const dot = document.getElementById('status-dot');
-        try { await fetch('http://localhost:8000/ask', { method: 'OPTIONS' }); dot.classList.add('online'); }
+        try { await fetch('const API_URL = "https://pliable-yeast-prudishly.ngrok-free.dev";', { method: 'OPTIONS' }); dot.classList.add('online'); }
         catch { dot.classList.remove('online'); }
     }, 3000);
 
