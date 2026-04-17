@@ -249,21 +249,26 @@
         if(document.getElementById(emptyId)) document.getElementById(emptyId).style.display = found ? "none" : "block";
     }
 
-    <script>
-    // 1. Инициализация Telegram WebApp
-    const tg = window.Telegram.WebApp;
-    tg.expand();
+   function filterItems(input, listId, emptyId) {
+        const val = input.value.toLowerCase();
+        const items = document.getElementById(listId).getElementsByClassName('item');
+        let found = false;
+        for (let item of items) {
+            const name = item.querySelector('.name').innerText.toLowerCase();
+            if (name.includes(val)) { item.style.display = "block"; found = true; } 
+            else { item.style.display = "none"; }
+        }
+        if(document.getElementById(emptyId)) document.getElementById(emptyId).style.display = found ? "none" : "block";
+    } // Скобка закрыта, теперь всё ок
 
-    // 2. ПЕРЕМЕННАЯ ССЫЛКИ (Должна быть ВНЕ функций, чтобы все её видели)
+    // --- БЛОК AI И СТАТУСА ---
     const API_URL = "https://pliable-yeast-prudishly.ngrok-free.dev";
 
-    // 3. ФУНКЦИЯ ОТПРАВКИ (Твой обновленный блок)
     async function sendToAI() {
         const input = document.getElementById('ai-input');
         const chat = document.getElementById('chat-box');
         const btn = document.getElementById('ai-send-btn');
         
-        // Проверка на пустой ввод
         if (!input.value.trim() || btn.disabled) return;
         
         const val = input.value;
@@ -280,31 +285,27 @@
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
-                    'ngrok-skip-browser-warning': 'true' // Убирает страницу-заглушку ngrok
+                    'ngrok-skip-browser-warning': 'true' 
                 },
                 body: JSON.stringify({ message: val })
             });
 
-            if (!res.ok) {
-                throw new Error(`Ошибка сервера: ${res.status}`);
-            }
+            if (!res.ok) throw new Error(`Ошибка сервера: ${res.status}`);
 
             const data = await res.json();
             document.getElementById(tid).innerHTML = `<b>[AI]:</b> ${data.reply}`;
         } catch (error) {
             console.error("ПОЛНАЯ ОШИБКА:", error);
-            document.getElementById(tid).innerHTML = `<b>[SYSTEM]:</b> Ошибка связи. Проверь консоль (F12).`;
+            document.getElementById(tid).innerHTML = `<b>[SYSTEM]:</b> Ошибка связи.`;
         } finally {
             btn.disabled = false; 
             chat.scrollTop = chat.scrollHeight;
         }
     }
 
-    // 4. ИНТЕРВАЛ ПРОВЕРКИ СТАТУСА (Точка)
     setInterval(async () => {
         const dot = document.getElementById('status-dot');
         try { 
-            // Используем ту же переменную API_URL
             const check = await fetch(`${API_URL}/ask`, { 
                 method: 'OPTIONS',
                 headers: { 'ngrok-skip-browser-warning': 'true' } 
@@ -320,6 +321,7 @@
         }
     }, 3000);
 
-    // Начальное сообщение
     document.getElementById('chat-box').innerHTML = '<div class="ai-msg">Система nexTech готова.</div>';
 </script>
+</body>
+</html>
