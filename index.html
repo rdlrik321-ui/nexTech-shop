@@ -260,11 +260,14 @@
         const tid = 't' + Date.now();
         chat.innerHTML += `<div class="ai-msg" id="${tid}"><b>[AI]:</b><div class="skeleton-line"></div></div>`;
         try {
-            const res = await fetch('http://localhost:8000/ask', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: val })
-            });
+            const res = await fetch(`${API_URL}/ask`, {
+    method: 'POST',
+    headers: { 
+        'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true' // ЭТА СТРОКА УБИРАЕТ ОШИБКУ
+    },
+    body: JSON.stringify({ message: val })
+});
             const data = await res.json();
             document.getElementById(tid).innerHTML = `<b>[AI]:</b> ${data.reply}`;
         } catch {
@@ -274,12 +277,18 @@
         }
     }
 
-    setInterval(async () => {
+   setInterval(async () => {
         const dot = document.getElementById('status-dot');
-        try { await fetch('const API_URL = "https://pliable-yeast-prudishly.ngrok-free.dev";', { method: 'OPTIONS' }); dot.classList.add('online'); }
+        const API_URL = "https://pliable-yeast-prudishly.ngrok-free.dev"; // Убедись, что ссылка актуальна
+        try { 
+            await fetch(`${API_URL}/ask`, { 
+                method: 'OPTIONS',
+                headers: { 'ngrok-skip-browser-warning': 'true' } 
+            }); 
+            dot.classList.add('online'); 
+        }
         catch { dot.classList.remove('online'); }
     }, 3000);
-
     document.getElementById('chat-box').innerHTML = '<div class="ai-msg">Система nexTech готова.</div>';
 </script>
 </body>
