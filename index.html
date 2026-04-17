@@ -261,19 +261,25 @@
         chat.innerHTML += `<div class="ai-msg" id="${tid}"><b>[AI]:</b><div class="skeleton-line"></div></div>`;
         try {
             const res = await fetch(`${API_URL}/ask`, {
-    method: 'POST',
-    headers: { 
-        'Content-Type': 'application/json',
-        'ngrok-skip-browser-warning': 'true' // ЭТА СТРОКА УБИРАЕТ ОШИБКУ
-    },
-    body: JSON.stringify({ message: val })
-});
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'ngrok-skip-browser-warning': 'true' 
+                },
+                body: JSON.stringify({ message: val })
+            });
+
+            if (!res.ok) {
+                // Если сервер ответил, но с ошибкой (например, 404 или 500)
+                throw new Error(`Ошибка сервера: ${res.status}`);
+            }
+
             const data = await res.json();
             document.getElementById(tid).innerHTML = `<b>[AI]:</b> ${data.reply}`;
-        } catch {
-            document.getElementById(tid).innerHTML = `<b>[SYSTEM]:</b> Ошибка связи.`;
-        } finally {
-            btn.disabled = false; chat.scrollTop = chat.scrollHeight;
+        } catch (error) {
+            // ВЫВОДИМ РЕАЛЬНУЮ ОШИБКУ В КОНСОЛЬ
+            console.error("ПОЛНАЯ ОШИБКА:", error);
+            document.getElementById(tid).innerHTML = `<b>[SYSTEM]:</b> Ошибка связи. Подробности в консоли (F12).`;
         }
     }
 
