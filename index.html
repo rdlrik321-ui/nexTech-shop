@@ -7,6 +7,7 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <style>
+        /* Твои оригинальные стили без изменений */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
         body { 
             background-color: #0d0d0f; 
@@ -58,7 +59,6 @@
         .skeleton-line { background: rgba(255, 255, 255, 0.1); height: 12px; border-radius: 6px; margin: 5px 0; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.7; } }
 
-        /* МОДАЛЬНОЕ ОКНО */
         .modal { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: #0d0d0f; z-index: 3000; display: none; 
@@ -92,6 +92,32 @@
             </div>
         </div>
         <div id="gpu-empty" class="no-results" style="display:none; text-align:center; opacity:0.4;">НИЧЕГО НЕ НАЙДЕНО</div>
+    </div>
+
+    <div id="cpu-list" class="page">
+        <div class="back" onclick="openPage('home')">← ТЕРМИНАЛ</div>
+        <input type="text" class="search-box" placeholder="ПОИСК..." oninput="filterItems(this, 'cpu-items', 'cpu-empty')">
+        <div id="cpu-items">
+            <div class="card item" onclick="openProduct('Intel Core i5-12400F', 11500, 'cpu1.jpg', '<b>Ядра:</b> 6<br><b>Потоки:</b> 12<br><b>Описание:</b> Новый, LGA1700.')">
+                <img src="cpu1.jpg">
+                <h3 class="name">Intel Core i5-12400F</h3>
+                <div class="price">11 500 ₽</div>
+            </div>
+        </div>
+        <div id="cpu-empty" class="no-results" style="display:none; text-align:center; opacity:0.4;">НИЧЕГО НЕ НАЙДЕНО</div>
+    </div>
+
+    <div id="peripheral-list" class="page">
+        <div class="back" onclick="openPage('home')">← ТЕРМИНАЛ</div>
+        <input type="text" class="search-box" placeholder="ПОИСК..." oninput="filterItems(this, 'per-items', 'per-empty')">
+        <div id="per-items">
+            <div class="card item" onclick="openProduct('Logitech G Pro X Superlight', 9200, 'mouse1.jpg', '<b>Тип:</b> Беспроводная<br><b>Вес:</b> 63г<br><b>Описание:</b> Состояние идеал.')">
+                <img src="mouse1.jpg">
+                <h3 class="name">Logitech G Pro X Superlight</h3>
+                <div class="price">9 200 ₽</div>
+            </div>
+        </div>
+        <div id="per-empty" class="no-results" style="display:none; text-align:center; opacity:0.4;">НИЧЕГО НЕ НАЙДЕНО</div>
     </div>
 
     <div id="cart" class="page">
@@ -135,8 +161,7 @@
 
 <div id="product-modal" class="modal">
     <div class="back" onclick="closeProduct()">✕ ЗАКРЫТЬ</div>
-    <div id="modal-content" style="text-align: center;">
-        </div>
+    <div id="modal-content" style="text-align: center;"></div>
 </div>
 
 <script>
@@ -148,7 +173,14 @@
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-        const navId = ['home', 'gpu-list'].includes(id) ? 'nav-home' : 'nav-' + id;
+        
+        // Маппинг для правильной подсветки кнопок в хотбаре
+        let navId = 'nav-home';
+        if (id === 'cart') navId = 'nav-cart';
+        if (id === 'profile') navId = 'nav-profile';
+        if (id === 'ai-chat') navId = 'nav-ai-chat';
+        if (id === 'gpu-list' || id === 'cpu-list' || id === 'peripheral-list') navId = 'nav-home';
+        
         if(document.getElementById(navId)) document.getElementById(navId).classList.add('active');
         if(id === 'cart') renderCart();
         tg.HapticFeedback.selectionChanged();
@@ -214,7 +246,7 @@
             if (name.includes(val)) { item.style.display = "block"; found = true; } 
             else { item.style.display = "none"; }
         }
-        document.getElementById(emptyId).style.display = found ? "none" : "block";
+        if(document.getElementById(emptyId)) document.getElementById(emptyId).style.display = found ? "none" : "block";
     }
 
     async function sendToAI() {
