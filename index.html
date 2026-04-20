@@ -131,26 +131,41 @@
 
     <div id="profile" class="page">
         <h2 style="margin-bottom: 20px;">ПРОФИЛЬ</h2>
+        
+        <div class="profile-section">
+            <span class="section-label">ЮРИДИЧЕСКАЯ ИНФОРМАЦИЯ</span>
+            <p style="font-size: 13px; line-height: 1.5; color: rgba(255,255,255,0.9);">
+                <b>Исполнитель:</b> Вишняк Никита Денисович<br>
+                <b>ИНН:</b> [ВСТАВЬ_ТВОЙ_ИНН]<br>
+                <b>Локация:</b> г. Томск, Россия<br>
+                <b>Условия:</b> Возврат товара в течение 14 дней при сохранении товарного вида.
+            </p>
+        </div>
+
         <div class="profile-section">
             <span class="section-label">ИНФОРМАЦИЯ</span>
-            <p>nexTech Tomsk — комплектующие в наличии.</p>
+            <p>nexTech Tomsk — комплектующие и сборки. Техническая поддержка и гарантия на всё железо.</p>
         </div>
+
         <div class="profile-section">
             <span class="section-label">ЗАКАЗЫ</span>
-            <div id="orders-history"><p style="opacity: 0.4;">История пуста.</p></div>
+            <div id="orders-history">
+                <p style="opacity: 0.4; font-size: 13px;">История заказов пуста.</p>
+            </div>
         </div>
-        <button class="buy" onclick="tg.openTelegramLink('https://t.me/username3211123')">СВЯЗЬ С МЕНЕДЖЕРОМ</button>
-    </div>
 
-    <div id="ai-chat" class="page">
-        <h2 style="margin-bottom: 20px;">AI ПОМОЩНИК</h2>
-        <div id="chat-box" class="profile-section"></div>
-        <div style="display: flex; gap: 10px;">
-            <input type="text" id="ai-input" class="search-box" placeholder="Запрос..." style="margin-bottom: 0; flex-grow: 1;">
-            <button id="ai-send-btn" class="buy" style="width: 60px; padding: 0;" onclick="sendToAI()"><i class="fa-solid fa-paper-plane"></i></button>
+        <div class="profile-section">
+            <span class="section-label">ПОДДЕРЖКА</span>
+            <p style="font-size: 12px; opacity: 0.5; margin-bottom: 15px;">
+                По вопросам оплаты или наличия пишите менеджеру:
+            </p>
+            
+            <button class="buy" style="background: #fff; color: #000; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 900;" 
+                onclick="tg.openTelegramLink('https://t.me/username3211123')">
+                <i class="fa-brands fa-telegram" style="font-size: 18px;"></i> НАПИСАТЬ В TG
+            </button>
         </div>
     </div>
-</div>
 
 <div class="hotbar">
     <div class="nav-item active" id="nav-home" onclick="openPage('home')"><i class="fa-solid fa-terminal"></i></div>
