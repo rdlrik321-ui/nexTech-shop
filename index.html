@@ -136,7 +136,7 @@
             <span class="section-label">ЮРИДИЧЕСКАЯ ИНФОРМАЦИЯ</span>
             <p style="font-size: 13px; line-height: 1.5; color: rgba(255,255,255,0.9);">
                 <b>Исполнитель:</b> Вишняк Никита Денисович<br>
-                <b>ИНН:</b> [701771771750]<br>
+                <b>ИНН:</b> 701771771750<br>
                 <b>Локация:</b> г. Томск, Россия<br>
                 <b>Условия:</b> Возврат товара в течение 14 дней при сохранении товарного вида.
             </p>
@@ -167,6 +167,15 @@
         </div>
     </div>
 
+    <div id="ai-chat" class="page">
+        <h2 style="margin-bottom: 20px;">AI АССИСТЕНТ</h2>
+        <div id="chat-box"></div>
+        <div style="display:flex; gap:10px;">
+            <input type="text" id="ai-input" class="search-box" placeholder="ВАШ ВОПРОС..." style="margin-bottom:0;">
+            <button id="ai-send-btn" class="buy" style="width:60px; padding:0;" onclick="sendToAI()"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+    </div>
+
 <div class="hotbar">
     <div class="nav-item active" id="nav-home" onclick="openPage('home')"><i class="fa-solid fa-terminal"></i></div>
     <div class="nav-item" id="nav-cart" onclick="openPage('cart')"><i class="fa-solid fa-cart-shopping"></i></div>
@@ -189,7 +198,6 @@
         document.getElementById(id).classList.add('active');
         document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
         
-        // Маппинг для правильной подсветки кнопок в хотбаре
         let navId = 'nav-home';
         if (id === 'cart') navId = 'nav-cart';
         if (id === 'profile') navId = 'nav-profile';
@@ -241,13 +249,35 @@
         }
     }
 
-    function placeOrder() {
-        const text = cartItems.map(i => i.name).join(', ');
-        tg.showConfirm("Отправить заказ?", (ok) => {
-            if(ok) {
-                tg.sendData("ЗАКАЗ: " + text);
-                cartItems = []; localStorage.setItem('nexTech_cart', '[]');
-                openPage('home');
+    async function placeOrder() {
+        if (cartItems.length === 0) return;
+        const totalAmount = cartItems.reduce((sum, item) => sum + item.price, 0);
+        const description = "Заказ nexTech: " + cartItems.map(i => i.name).join(', ');
+
+        tg.showConfirm(`Оплатить заказ на сумму ${totalAmount} ₽?`, async (ok) => {
+            if (ok) {
+                tg.MainButton.setText("СОЗДАЕМ ПЛАТЕЖ...");
+                tg.MainButton.show();
+                tg.MainButton.disable();
+                try {
+                    const res = await fetch(`${API_URL}/create-payment`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
+                        body: JSON.stringify({ amount: totalAmount, description: description })
+                    });
+                    if (!res.ok) throw new Error("Ошибка сервера");
+                    const data = await res.json();
+                    if (data.payment_url) {
+                        tg.openLink(data.payment_url);
+                        cartItems = []; 
+                        localStorage.setItem('nexTech_cart', '[]');
+                        openPage('home');
+                    }
+                } catch (error) {
+                    tg.showAlert("Ошибка платежа.");
+                } finally {
+                    tg.MainButton.hide();
+                }
             }
         });
     }
@@ -264,53 +294,29 @@
         if(document.getElementById(emptyId)) document.getElementById(emptyId).style.display = found ? "none" : "block";
     }
 
-   function filterItems(input, listId, emptyId) {
-        const val = input.value.toLowerCase();
-        const items = document.getElementById(listId).getElementsByClassName('item');
-        let found = false;
-        for (let item of items) {
-            const name = item.querySelector('.name').innerText.toLowerCase();
-            if (name.includes(val)) { item.style.display = "block"; found = true; } 
-            else { item.style.display = "none"; }
-        }
-        if(document.getElementById(emptyId)) document.getElementById(emptyId).style.display = found ? "none" : "block";
-    } // Скобка закрыта, теперь всё ок
-
-    // --- БЛОК AI И СТАТУСА ---
     const API_URL = "https://pliable-yeast-prudishly.ngrok-free.dev";
 
     async function sendToAI() {
         const input = document.getElementById('ai-input');
         const chat = document.getElementById('chat-box');
         const btn = document.getElementById('ai-send-btn');
-        
         if (!input.value.trim() || btn.disabled) return;
-        
         const val = input.value;
         chat.innerHTML += `<div class="user-msg">${val}</div>`;
         input.value = ''; 
         btn.disabled = true;
-
         const tid = 't' + Date.now();
         chat.innerHTML += `<div class="ai-msg" id="${tid}"><b>[AI]:</b><div class="skeleton-line"></div></div>`;
         chat.scrollTop = chat.scrollHeight;
-
         try {
             const res = await fetch(`${API_URL}/ask`, {
                 method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'ngrok-skip-browser-warning': 'true' 
-                },
+                headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
                 body: JSON.stringify({ message: val })
             });
-
-            if (!res.ok) throw new Error(`Ошибка сервера: ${res.status}`);
-
             const data = await res.json();
             document.getElementById(tid).innerHTML = `<b>[AI]:</b> ${data.reply}`;
         } catch (error) {
-            console.error("ПОЛНАЯ ОШИБКА:", error);
             document.getElementById(tid).innerHTML = `<b>[SYSTEM]:</b> Ошибка связи.`;
         } finally {
             btn.disabled = false; 
@@ -325,15 +331,12 @@
                 method: 'OPTIONS',
                 headers: { 'ngrok-skip-browser-warning': 'true' } 
             }); 
-            
             if (check.ok || check.status === 200 || check.status === 204) {
                 dot.classList.add('online');
             } else {
                 dot.classList.remove('online');
             }
-        } catch (err) { 
-            dot.classList.remove('online'); 
-        }
+        } catch (err) { dot.classList.remove('online'); }
     }, 3000);
 
     document.getElementById('chat-box').innerHTML = '<div class="ai-msg">Система nexTech готова.</div>';
