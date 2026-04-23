@@ -178,7 +178,6 @@
     
     const API_URL = "https://pliable-yeast-prudishly.ngrok-free.dev";
     
-    // 1. БАЗА ДАННЫХ
     const products = [
         { id: 'rx580', category: 'gpu', name: 'Sapphire Nitro+ RX 580', price: 5800, img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/rx580.jpg', desc: '<b>Модель:</b> Sapphire Nitro+<br><b>Память:</b> 8GB GDDR5<br><b>Описание:</b> Grade A.' },
         { id: 'rtx3050', category: 'gpu', name: 'ASUS Dual RTX 3050', price: 22000, img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/rtx3050.jpg', desc: '<b>Модель:</b> RTX 3050<br><b>Память:</b> 8GB GDDR6<br><b>Описание:</b> DLSS и Ray Tracing.' },
@@ -188,37 +187,29 @@
 
     let cartItems = JSON.parse(localStorage.getItem('nexTech_cart')) || [];
 
-    // 2. НАВИГАЦИЯ
     function openPage(id) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         const targetPage = document.getElementById(id);
         if (targetPage) targetPage.classList.add('active');
-
         document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-        
         let navId = 'nav-home';
         if (id === 'cart') navId = 'nav-cart';
         if (id === 'profile') navId = 'nav-profile';
         if (id === 'ai-chat') navId = 'nav-ai-chat';
         if (id.includes('-list')) navId = 'nav-home';
-        
         const activeNav = document.getElementById(navId);
         if(activeNav) activeNav.classList.add('active');
-        
         if(id === 'cart') renderCart();
         tg.HapticFeedback.selectionChanged();
     }
 
-    // 3. ОТРИСОВКА ТОВАРОВ
     function renderAllProducts() {
         const containers = {
             'gpu': document.getElementById('gpu-items'),
             'cpu': document.getElementById('cpu-items'),
             'per': document.getElementById('per-items')
         };
-        
         for (let key in containers) { if (containers[key]) containers[key].innerHTML = ''; }
-
         products.forEach(p => {
             const target = containers[p.category];
             if (target) {
@@ -249,20 +240,25 @@
 
     function closeProduct() { document.getElementById('product-modal').classList.remove('active'); }
 
-    // 4. КОРЗИНА
     function addToCart(productId) {
         const p = products.find(item => item.id === productId);
         const existing = cartItems.find(item => item.id === productId);
-        
         if (existing) {
             existing.count += 1;
         } else {
             cartItems.push({ ...p, count: 1 });
         }
-        
         localStorage.setItem('nexTech_cart', JSON.stringify(cartItems));
-        tg.showAlert('Добавлено в корзину!');
+        tg.showAlert('Добавлено!');
         closeProduct();
+    }
+
+    // НОВАЯ ФУНКЦИЯ УДАЛЕНИЯ
+    function removeFromCart(productId) {
+        cartItems = cartItems.filter(item => item.id !== productId);
+        localStorage.setItem('nexTech_cart', JSON.stringify(cartItems));
+        renderCart();
+        tg.HapticFeedback.impactOccurred('light');
     }
 
     function renderCart() {
@@ -275,9 +271,12 @@
             let total = 0;
             cont.innerHTML = cartItems.map(i => {
                 total += (i.price * i.count);
-                return `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; font-size:14px;">
+                return `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; font-size:14px;">
                     <span>${i.name} <b>(x${i.count})</b></span>
-                    <b>${i.price * i.count} ₽</b>
+                    <div style="display:flex; align-items:center; gap:15px;">
+                        <b>${i.price * i.count} ₽</b>
+                        <i class="fa-solid fa-trash" style="color:#ff4d4d; cursor:pointer;" onclick="removeFromCart('${i.id}')"></i>
+                    </div>
                 </div>`;
             }).join('');
             document.getElementById('total-price').innerText = total + ' ₽';
@@ -288,7 +287,6 @@
     async function placeOrder() {
         if (cartItems.length === 0) return;
         const totalAmount = cartItems.reduce((sum, item) => sum + (item.price * item.count), 0);
-        
         tg.showConfirm(`Оплатить ${totalAmount} ₽?`, async (ok) => {
             if (ok) {
                 tg.MainButton.setText("СОЗДАЕМ ПЛАТЕЖ...").show().disable();
@@ -309,7 +307,7 @@
                         openPage('home');
                     }
                 } catch (e) { 
-                    tg.showAlert("Ошибка платежа. Проверьте соединение с сервером."); 
+                    tg.showAlert("Ошибка связи с сервером."); 
                 } finally { 
                     tg.MainButton.hide(); 
                 }
@@ -317,7 +315,6 @@
         });
     }
 
-    // 5. ВСПОМОГАТЕЛЬНОЕ
     function filterItems(input, listId, emptyId) {
         const val = input.value.toLowerCase();
         const items = document.getElementById(listId).getElementsByClassName('item');
@@ -335,16 +332,13 @@
         const chat = document.getElementById('chat-box');
         const btn = document.getElementById('ai-send-btn');
         if (!input.value.trim() || btn.disabled) return;
-        
         const val = input.value;
         chat.innerHTML += `<div class="user-msg">${val}</div>`;
         input.value = '';
         btn.disabled = true;
-        
         const tid = 't' + Date.now();
         chat.innerHTML += `<div class="ai-msg" id="${tid}"><b>[AI]:</b> <div class="skeleton-line"></div></div>`;
         chat.scrollTop = chat.scrollHeight;
-
         try {
             const res = await fetch(`${API_URL}/ask`, {
                 method: 'POST',
@@ -361,7 +355,6 @@
         }
     }
 
-    // Статус-чек
     setInterval(async () => {
         const dot = document.getElementById('status-dot');
         try { 
@@ -373,7 +366,6 @@
         } catch (e) { dot.classList.remove('online'); }
     }, 5000);
 
-    // Инициализация
     window.onload = () => {
         renderAllProducts();
         document.getElementById('chat-box').innerHTML = '<div class="ai-msg">Система nexTech готова.</div>';
