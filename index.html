@@ -85,11 +85,7 @@
         <div class="back" onclick="openPage('home')">← ТЕРМИНАЛ</div>
         <input type="text" class="search-box" placeholder="ПОИСК..." oninput="filterItems(this, 'gpu-items', 'gpu-empty')">
         <div id="gpu-items">
-            <div class="card item" onclick="openProduct('Sapphire Nitro+ RX 580', 5800, 'gpu1.jpg', '<b>Модель:</b> Sapphire Nitro+<br><b>Память:</b> 8GB GDDR5<br><b>Описание:</b> Grade A. Идеальное состояние.')">
-                <img src="gpu1.jpg">
-                <h3 class="name">Sapphire Nitro+ RX 580</h3>
-                <div class="price">5 800 ₽</div>
-            </div>
+            <div class="card item" 
         </div>
         <div id="gpu-empty" class="no-results" style="display:none; text-align:center; opacity:0.4;">НИЧЕГО НЕ НАЙДЕНО</div>
     </div>
@@ -340,6 +336,37 @@
     }, 3000);
 
     document.getElementById('chat-box').innerHTML = '<div class="ai-msg">Система nexTech готова.</div>';
+<script>
+    // 1. Твой "Склад" (база данных)
+    const products = [
+        { 
+            id: 'rx580', 
+            category: 'gpu', 
+            name: 'Sapphire Nitro+ RX 580', 
+            price: 5800, 
+            img: 'gpu1.jpg', 
+            desc: '<b>Модель:</b> Sapphire Nitro+<br><b>Память:</b> 8GB GDDR5<br><b>Описание:</b> Grade A. Идеальное состояние.' 
+        }
+    ];
+
+    // 2. Функция, которая берет данные и рисует их в HTML
+    function renderGpus() {
+        const container = document.getElementById('gpu-items');
+        if (!container) return; // Предохранитель: если блока нет, ничего не делаем
+
+        const gpus = products.filter(item => item.category === 'gpu');
+
+        container.innerHTML = gpus.map(p => `
+            <div class="card item" onclick="openProduct('${p.id}')">
+                <img src="${p.img}">
+                <h3 class="name">${p.name}</h3>
+                <div class="price">${p.price} ₽</div>
+            </div>
+        `).join('');
+    }
+
+    // 3. Не забудь ВЫЗВАТЬ функцию, чтобы она сработала!
+    renderGpus();
 </script>
 </body>
 </html>
