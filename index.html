@@ -187,6 +187,16 @@
 
     let cartItems = JSON.parse(localStorage.getItem('nexTech_cart')) || [];
 
+    // МЕХАНИЗМ ЗАЩИТЫ ОТ БИТЫХ ДАННЫХ
+    function validateCart() {
+        const hasBadItems = cartItems.some(item => !item.id || isNaN(item.price));
+        if (hasBadItems) {
+            console.log("Обнаружены битые данные в корзине. Очистка...");
+            cartItems = [];
+            localStorage.setItem('nexTech_cart', '[]');
+        }
+    }
+
     function openPage(id) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         const targetPage = document.getElementById(id);
@@ -242,6 +252,7 @@
 
     function addToCart(productId) {
         const p = products.find(item => item.id === productId);
+        if (!p) return;
         const existing = cartItems.find(item => item.id === productId);
         if (existing) {
             existing.count += 1;
@@ -253,7 +264,6 @@
         closeProduct();
     }
 
-    // НОВАЯ ФУНКЦИЯ УДАЛЕНИЯ
     function removeFromCart(productId) {
         cartItems = cartItems.filter(item => item.id !== productId);
         localStorage.setItem('nexTech_cart', JSON.stringify(cartItems));
@@ -261,24 +271,40 @@
         tg.HapticFeedback.impactOccurred('light');
     }
 
+    // НОВАЯ ФУНКЦИЯ ПОЛНОГО СБРОСА
+    function clearCart() {
+        cartItems = [];
+        localStorage.setItem('nexTech_cart', '[]');
+        renderCart();
+        tg.HapticFeedback.notificationOccurred('success');
+    }
+
     function renderCart() {
         const cont = document.getElementById('cart-content');
         const foot = document.getElementById('cart-footer');
         if(cartItems.length === 0) {
-            cont.innerHTML = '<p style="opacity:0.4">Корзина пуста</p>';
+            cont.innerHTML = '<p style="opacity:0.4; text-align:center;">Корзина пуста</p>';
             foot.style.display = 'none';
         } else {
             let total = 0;
-            cont.innerHTML = cartItems.map(i => {
-                total += (i.price * i.count);
-                return `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; font-size:14px;">
+            let html = cartItems.map(i => {
+                const itemTotal = i.price * i.count;
+                total += itemTotal;
+                return `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; font-size:14px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:10px;">
                     <span>${i.name} <b>(x${i.count})</b></span>
                     <div style="display:flex; align-items:center; gap:15px;">
-                        <b>${i.price * i.count} ₽</b>
-                        <i class="fa-solid fa-trash" style="color:#ff4d4d; cursor:pointer;" onclick="removeFromCart('${i.id}')"></i>
+                        <b>${itemTotal} ₽</b>
+                        <i class="fa-solid fa-trash" style="color:#ff4d4d; cursor:pointer; padding:5px;" onclick="removeFromCart('${i.id}')"></i>
                     </div>
                 </div>`;
             }).join('');
+            
+            // Добавляем кнопку "Очистить всё" в конец списка
+            html += `<div style="text-align:center; margin-top:15px;">
+                        <span onclick="clearCart()" style="color:#ff4d4d; font-size:12px; font-weight:bold; opacity:0.6; cursor:pointer;">ОЧИСТИТЬ КОРЗИНУ</span>
+                     </div>`;
+            
+            cont.innerHTML = html;
             document.getElementById('total-price').innerText = total + ' ₽';
             foot.style.display = 'block';
         }
@@ -287,9 +313,11 @@
     async function placeOrder() {
         if (cartItems.length === 0) return;
         const totalAmount = cartItems.reduce((sum, item) => sum + (item.price * item.count), 0);
+        
         tg.showConfirm(`Оплатить ${totalAmount} ₽?`, async (ok) => {
             if (ok) {
-                tg.MainButton.setText("СОЗДАЕМ ПЛАТЕЖ...").show().disable();
+                // Если сервер выключен, даем возможность очистить корзину вручную
+                tg.MainButton.setText("ОЖИДАНИЕ СЕРВЕРА...").show().disable();
                 try {
                     const res = await fetch(`${API_URL}/create-payment`, {
                         method: 'POST',
@@ -302,12 +330,11 @@
                     const data = await res.json();
                     if (data.payment_url) {
                         tg.openLink(data.payment_url);
-                        cartItems = []; 
-                        localStorage.setItem('nexTech_cart', '[]');
+                        clearCart();
                         openPage('home');
                     }
                 } catch (e) { 
-                    tg.showAlert("Ошибка связи с сервером."); 
+                    tg.showAlert("Сервер nexTech сейчас Offline. Но корзину можно очистить вручную внизу списка."); 
                 } finally { 
                     tg.MainButton.hide(); 
                 }
@@ -348,7 +375,7 @@
             const data = await res.json();
             document.getElementById(tid).innerHTML = `<b>[AI]:</b> ${data.reply}`;
         } catch (e) { 
-            document.getElementById(tid).innerHTML = `<b>[SYSTEM]:</b> Ошибка связи.`; 
+            document.getElementById(tid).innerHTML = `<b>[SYSTEM]:</b> Сервер офлайн.`; 
         } finally {
             btn.disabled = false;
             chat.scrollTop = chat.scrollHeight;
@@ -367,6 +394,7 @@
     }, 5000);
 
     window.onload = () => {
+        validateCart(); // Самопроверка при запуске
         renderAllProducts();
         document.getElementById('chat-box').innerHTML = '<div class="ai-msg">Система nexTech готова.</div>';
     };
