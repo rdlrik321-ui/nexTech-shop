@@ -93,11 +93,6 @@
         <div class="back" onclick="openPage('home')">← ТЕРМИНАЛ</div>
         <input type="text" class="search-box" placeholder="ПОИСК..." oninput="filterItems(this, 'cpu-items', 'cpu-empty')">
         <div id="cpu-items">
-            <div class="card item" onclick="openProduct('Intel Core i5-12400F', 11500, 'cpu1.jpg', '<b>Ядра:</b> 6<br><b>Потоки:</b> 12<br><b>Описание:</b> Новый, LGA1700.')">
-                <img src="cpu1.jpg">
-                <h3 class="name">Intel Core i5-12400F</h3>
-                <div class="price">11 500 ₽</div>
-            </div>
         </div>
         <div id="cpu-empty" class="no-results" style="display:none; text-align:center; opacity:0.4;">НИЧЕГО НЕ НАЙДЕНО</div>
     </div>
@@ -105,13 +100,7 @@
     <div id="peripheral-list" class="page">
         <div class="back" onclick="openPage('home')">← ТЕРМИНАЛ</div>
         <input type="text" class="search-box" placeholder="ПОИСК..." oninput="filterItems(this, 'per-items', 'per-empty')">
-        <div id="per-items">
-            <div class="card item" onclick="openProduct('Logitech G Pro X Superlight', 9200, 'mouse1.jpg', '<b>Тип:</b> Беспроводная<br><b>Вес:</b> 63г<br><b>Описание:</b> Состояние идеал.')">
-                <img src="mouse1.jpg">
-                <h3 class="name">Logitech G Pro X Superlight</h3>
-                <div class="price">9 200 ₽</div>
-            </div>
-        </div>
+        <div id="per-items">        </div>
         <div id="per-empty" class="no-results" style="display:none; text-align:center; opacity:0.4;">НИЧЕГО НЕ НАЙДЕНО</div>
     </div>
 
@@ -336,7 +325,7 @@
 
     document.getElementById('chat-box').innerHTML = '<div class="ai-msg">Система nexTech готова.</div>';
 <script>
-    // 1. Твой "Склад" (база данных)
+    // 1. Твой расширенный склад
     const products = [
         { 
             id: 'rx580', 
@@ -345,27 +334,82 @@
             price: 5800, 
             img: 'gpu1.jpg', 
             desc: '<b>Модель:</b> Sapphire Nitro+<br><b>Память:</b> 8GB GDDR5<br><b>Описание:</b> Grade A. Идеальное состояние.' 
+        },
+        { 
+            id: 'rtx3050', 
+            category: 'gpu', 
+            name: 'ASUS Dual RTX 3050', 
+            price: 22000, 
+            img: 'gpu2.jpg', 
+            desc: '<b>Модель:</b> RTX 3050<br><b>Память:</b> 8GB GDDR6<br><b>Описание:</b> Трассировка лучей и DLSS.' 
+        },
+        { 
+            id: 'i5_12400', 
+            category: 'cpu', 
+            name: 'Intel Core i5-12400F', 
+            price: 11500, 
+            img: 'cpu1.jpg', 
+            desc: '<b>Ядра:</b> 6<br><b>Потоки:</b> 12<br><b>Описание:</b> Новый процессор, LGA1700.' 
+        },
+        { 
+            id: 'gpro', 
+            category: 'per', 
+            name: 'Logitech G Pro X Superlight', 
+            price: 9200, 
+            img: 'mouse1.jpg', 
+            desc: '<b>Тип:</b> Беспроводная<br><b>Вес:</b> 63г<br><b>Описание:</b> Топовый сенсор HERO 25K.' 
         }
     ];
 
-    // 2. Функция, которая берет данные и рисует их в HTML
-    function renderGpus() {
-        const container = document.getElementById('gpu-items');
-        if (!container) return; // Предохранитель: если блока нет, ничего не делаем
+    // 2. Функция, которая распределяет товары по страницам
+    function renderAllProducts() {
+        // Связываем категории из массива с ID блоков в HTML
+        const containers = {
+            'gpu': document.getElementById('gpu-items'),
+            'cpu': document.getElementById('cpu-items'),
+            'per': document.getElementById('per-items')
+        };
 
-        const gpus = products.filter(item => item.category === 'gpu');
+        // Очищаем блоки (на всякий случай)
+        for (let key in containers) {
+            if (containers[key]) containers[key].innerHTML = '';
+        }
 
-        container.innerHTML = gpus.map(p => `
-            <div class="card item" onclick="openProduct('${p.id}')">
-                <img src="${p.img}">
-                <h3 class="name">${p.name}</h3>
-                <div class="price">${p.price} ₽</div>
-            </div>
-        `).join('');
+        // Генерируем карточки
+        products.forEach(p => {
+            const target = containers[p.category];
+            if (target) {
+                target.innerHTML += `
+                    <div class="card item" onclick="openProduct('${p.id}')">
+                        <img src="${p.img}">
+                        <h3 class="name">${p.name}</h3>
+                        <div class="price">${p.price} ₽</div>
+                    </div>
+                `;
+            }
+        });
     }
 
-    // 3. Не забудь ВЫЗВАТЬ функцию, чтобы она сработала!
-    renderGpus();
+    // 3. НОВАЯ функция открытия карточки (работает по ID)
+    function openProduct(productId) {
+        const p = products.find(item => item.id === productId);
+        if (p) {
+            document.getElementById('modal-content').innerHTML = `
+                <img src="${p.img}" style="width:100%; border-radius:25px; margin-top:20px;">
+                <h2 style="margin-top:20px;">${p.name}</h2>
+                <div class="profile-section" style="margin:20px 0; font-size: 14px; line-height: 1.6;">${p.desc}</div>
+                <div class="price" style="font-size:32px;">${p.price} ₽</div>
+                <button class="buy" style="margin-top:20px;" onclick="addToCart('${p.name}', ${p.price})">ДОБАВИТЬ В КОРЗИНУ</button>
+            `;
+            document.getElementById('product-modal').classList.add('active');
+            if(window.Telegram.WebApp.HapticFeedback) {
+                window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
+            }
+        }
+    }
+
+    // ЗАПУСК!
+    renderAllProducts();
 </script>
 </body>
 </html>
