@@ -66,6 +66,9 @@
         }
         .modal.active { display: block; animation: slideUp 0.3s ease-out; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+        /* Стиль для плашек заказов */
+        .order-card { border-left: 2px solid #fff; padding-left: 15px; margin-bottom: 15px; }
     </style>
 </head>
 <body>
@@ -116,11 +119,6 @@
     <div id="profile" class="page">
         <h2 style="margin-bottom: 20px;">ПРОФИЛЬ</h2>
         
-        <div class="profile-section">
-                <b>Условия:</b> Возврат товара в течение 14 дней при сохранении товарного вида.
-            </p>
-        </div>
-
         <div class="profile-section">
             <span class="section-label">ИНФОРМАЦИЯ</span>
             <p>nexTech Tomsk — комплектующие и сборки. Техническая поддержка и гарантия на всё железо.</p>
@@ -181,12 +179,11 @@
     ];
 
     let cartItems = JSON.parse(localStorage.getItem('nexTech_cart')) || [];
+    let ordersHistory = JSON.parse(localStorage.getItem('nexTech_orders')) || [];
 
-    // МЕХАНИЗМ ЗАЩИТЫ ОТ БИТЫХ ДАННЫХ
     function validateCart() {
         const hasBadItems = cartItems.some(item => !item.id || isNaN(item.price));
         if (hasBadItems) {
-            console.log("Обнаружены битые данные в корзине. Очистка...");
             cartItems = [];
             localStorage.setItem('nexTech_cart', '[]');
         }
@@ -199,7 +196,7 @@
         document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
         let navId = 'nav-home';
         if (id === 'cart') navId = 'nav-cart';
-        if (id === 'profile') navId = 'nav-profile';
+        if (id === 'profile') { navId = 'nav-profile'; renderOrders(); }
         if (id === 'ai-chat') navId = 'nav-ai-chat';
         if (id.includes('-list')) navId = 'nav-home';
         const activeNav = document.getElementById(navId);
@@ -249,11 +246,8 @@
         const p = products.find(item => item.id === productId);
         if (!p) return;
         const existing = cartItems.find(item => item.id === productId);
-        if (existing) {
-            existing.count += 1;
-        } else {
-            cartItems.push({ ...p, count: 1 });
-        }
+        if (existing) { existing.count += 1; } 
+        else { cartItems.push({ ...p, count: 1 }); }
         localStorage.setItem('nexTech_cart', JSON.stringify(cartItems));
         tg.showAlert('Добавлено!');
         closeProduct();
@@ -266,7 +260,6 @@
         tg.HapticFeedback.impactOccurred('light');
     }
 
-    // НОВАЯ ФУНКЦИЯ ПОЛНОГО СБРОСА
     function clearCart() {
         cartItems = [];
         localStorage.setItem('nexTech_cart', '[]');
@@ -293,46 +286,61 @@
                     </div>
                 </div>`;
             }).join('');
-            
-            // Добавляем кнопку "Очистить всё" в конец списка
-            html += `<div style="text-align:center; margin-top:15px;">
-                        <span onclick="clearCart()" style="color:#ff4d4d; font-size:12px; font-weight:bold; opacity:0.6; cursor:pointer;">ОЧИСТИТЬ КОРЗИНУ</span>
-                     </div>`;
-            
+            html += `<div style="text-align:center; margin-top:15px;"><span onclick="clearCart()" style="color:#ff4d4d; font-size:12px; font-weight:bold; opacity:0.6; cursor:pointer;">ОЧИСТИТЬ КОРЗИНУ</span></div>`;
             cont.innerHTML = html;
             document.getElementById('total-price').innerText = total + ' ₽';
             foot.style.display = 'block';
         }
     }
 
+    // ФУНКЦИЯ ДЛЯ ИСТОРИИ ЗАКАЗОВ
+    function renderOrders() {
+        const histCont = document.getElementById('orders-history');
+        if (ordersHistory.length === 0) {
+            histCont.innerHTML = '<p style="opacity: 0.4; font-size: 13px;">История заказов пуста.</p>';
+            return;
+        }
+        histCont.innerHTML = ordersHistory.reverse().map(order => `
+            <div class="order-card">
+                <div style="font-size:10px; opacity:0.5;">${order.date}</div>
+                <div style="font-size:13px; margin:5px 0;">${order.items}</div>
+                <b style="color:#00ff88;">${order.amount} ₽ — Оплачено</b>
+            </div>
+        `).join('');
+    }
+
     async function placeOrder() {
         if (cartItems.length === 0) return;
         const totalAmount = cartItems.reduce((sum, item) => sum + (item.price * item.count), 0);
+        const orderDetails = cartItems.map(i => `${i.name} (x${i.count})`).join(', ');
         
         tg.showConfirm(`Оплатить ${totalAmount} ₽?`, async (ok) => {
             if (ok) {
-                // Если сервер выключен, даем возможность очистить корзину вручную
                 tg.MainButton.setText("ОЖИДАНИЕ СЕРВЕРА...").show().disable();
                 try {
                     const res = await fetch(`${API_URL}/create-payment`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
-                        body: JSON.stringify({ 
-                            amount: totalAmount, 
-                            description: "Заказ nexTech: " + cartItems.map(i => i.name).join(', ') 
-                        })
+                        body: JSON.stringify({ amount: totalAmount, description: "Заказ: " + orderDetails })
                     });
                     const data = await res.json();
                     if (data.payment_url) {
+                        // Сохраняем в историю ПЕРЕД переходом
+                        const newOrder = {
+                            date: new Date().toLocaleString(),
+                            amount: totalAmount,
+                            items: orderDetails
+                        };
+                        ordersHistory.push(newOrder);
+                        localStorage.setItem('nexTech_orders', JSON.stringify(ordersHistory));
+                        
                         tg.openLink(data.payment_url);
                         clearCart();
                         openPage('home');
                     }
                 } catch (e) { 
-                    tg.showAlert("Сервер nexTech сейчас Offline. Но корзину можно очистить вручную внизу списка."); 
-                } finally { 
-                    tg.MainButton.hide(); 
-                }
+                    tg.showAlert("Сервер Offline. Заказ не может быть обработан."); 
+                } finally { tg.MainButton.hide(); }
             }
         });
     }
@@ -349,23 +357,31 @@
         document.getElementById(emptyId).style.display = found ? "none" : "block";
     }
 
+    // УМНЫЙ AI С КОНТЕКСТОМ ТОВАРОВ
     async function sendToAI() {
         const input = document.getElementById('ai-input');
         const chat = document.getElementById('chat-box');
         const btn = document.getElementById('ai-send-btn');
         if (!input.value.trim() || btn.disabled) return;
-        const val = input.value;
-        chat.innerHTML += `<div class="user-msg">${val}</div>`;
+        
+        const userMsg = input.value;
+        chat.innerHTML += `<div class="user-msg">${userMsg}</div>`;
         input.value = '';
         btn.disabled = true;
+        
         const tid = 't' + Date.now();
         chat.innerHTML += `<div class="ai-msg" id="${tid}"><b>[AI]:</b> <div class="skeleton-line"></div></div>`;
         chat.scrollTop = chat.scrollHeight;
+
+        // Собираем данные о товарах, чтобы AI их знал
+        const shopContext = products.map(p => `${p.name} за ${p.price}р`).join(', ');
+        const fullPrompt = `Инфо о магазине nexTech: у нас есть ${shopContext}. Вопрос клиента: ${userMsg}`;
+
         try {
             const res = await fetch(`${API_URL}/ask`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
-                body: JSON.stringify({ message: val })
+                body: JSON.stringify({ message: fullPrompt })
             });
             const data = await res.json();
             document.getElementById(tid).innerHTML = `<b>[AI]:</b> ${data.reply}`;
@@ -380,18 +396,15 @@
     setInterval(async () => {
         const dot = document.getElementById('status-dot');
         try { 
-            const check = await fetch(`${API_URL}/ask`, { 
-                method: 'OPTIONS',
-                headers: { 'ngrok-skip-browser-warning': 'true' }
-            }); 
+            const check = await fetch(`${API_URL}/ask`, { method: 'OPTIONS', headers: { 'ngrok-skip-browser-warning': 'true' } }); 
             if (check.ok) dot.classList.add('online'); else dot.classList.remove('online');
         } catch (e) { dot.classList.remove('online'); }
     }, 5000);
 
     window.onload = () => {
-        validateCart(); // Самопроверка при запуске
+        validateCart();
         renderAllProducts();
-        document.getElementById('chat-box').innerHTML = '<div class="ai-msg">Система nexTech готова.</div>';
+        document.getElementById('chat-box').innerHTML = '<div class="ai-msg">Система nexTech готова. Спросите меня о наличии товаров!</div>';
     };
 </script>
 </body>
