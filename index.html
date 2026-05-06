@@ -394,12 +394,24 @@
     }
 
     setInterval(async () => {
-        const dot = document.getElementById('status-dot');
-        try { 
-            const check = await fetch(`${API_URL}/ask`, { method: 'OPTIONS', headers: { 'ngrok-skip-browser-warning': 'true' } }); 
-            if (check.ok) dot.classList.add('online'); else dot.classList.remove('online');
-        } catch (e) { dot.classList.remove('online'); }
-    }, 5000);
+    const dot = document.getElementById('status-dot');
+    try { 
+        const check = await fetch(`${API_URL}/ask`, { 
+            method: 'OPTIONS', 
+            headers: { 'ngrok-skip-browser-warning': 'true' } 
+        }); 
+        
+        // Добавляем проверку на 405 статус. Если сервер ответил "Метод не разрешен", 
+        // значит сервер ЖИВОЙ и он на связи, просто OPTIONS не основной метод.
+        if (check.ok || check.status === 405) {
+            dot.classList.add('online');
+        } else {
+            dot.classList.remove('online');
+        }
+    } catch (e) { 
+        dot.classList.remove('online'); 
+    }
+}, 5000);
 
     window.onload = () => {
         validateCart();
