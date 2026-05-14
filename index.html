@@ -171,23 +171,68 @@
     
     const API_URL = "https://pliable-yeast-prudishly.ngrok-free.dev";
     
-    const products = [
-        { id: 'rx580', category: 'gpu', name: 'Sapphire Nitro+ RX 580', price: 5800, img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/rx580.jpg', desc: '<b>Модель:</b> Sapphire Nitro+<br><b>Память:</b> 8GB GDDR5<br><b>Описание:</b> Grade A.' },
-        { id: 'rtx3050', category: 'gpu', name: 'ASUS Dual RTX 3050', price: 22000, img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/rtx3050.jpg', desc: '<b>Модель:</b> RTX 3050<br><b>Память:</b> 8GB GDDR6<br><b>Описание:</b> DLSS и Ray Tracing.' },
-        { id: 'i5_12400', category: 'cpu', name: 'Intel Core i5-12400F', price: 11500, img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/i5.jpg', desc: '<b>Ядра:</b> 6<br><b>Потоки:</b> 12<br><b>Описание:</b> LGA1700.' },
-        { id: 'gpro', category: 'per', name: 'Logitech G Pro X Superlight', price: 9200, img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/gpro.jpg', desc: '<b>Тип:</b> Беспроводная<br><b>Вес:</b> 63г<br><b>Описание:</b> Сенсор HERO 25K.' }
-    ];
-
-    let cartItems = JSON.parse(localStorage.getItem('nexTech_cart')) || [];
-    let ordersHistory = JSON.parse(localStorage.getItem('nexTech_orders')) || [];
-
-    function validateCart() {
-        const hasBadItems = cartItems.some(item => !item.id || isNaN(item.price));
-        if (hasBadItems) {
-            cartItems = [];
-            localStorage.setItem('nexTech_cart', '[]');
+   const products = [
+        { 
+            id: 'rx580', 
+            category: 'gpu', 
+            name: 'Sapphire Nitro+ RX 580', 
+            price: 5800, 
+            img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/rx580.jpg', 
+            desc: `
+                <div style="text-align:left; font-family: monospace; font-size:12px; line-height:1.5;">
+                    [ТЕХНИЧЕСКИЕ_ДАННЫЕ]<br>
+                    > ПАМЯТЬ: 8GB GDDR5 / 256-BIT<br>
+                    > ОХЛАЖДЕНИЕ: NITRO+ DUAL-X<br>
+                    > СОСТОЯНИЕ: ОБСЛУЖЕНА<br>
+                    > ТЕРМОИНТЕРФЕЙС: ARCTIC MX-4
+                </div>` 
+        },
+        { 
+            id: 'rtx3050', 
+            category: 'gpu', 
+            name: 'ASUS Dual RTX 3050', 
+            price: 22000, 
+            img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/rtx3050.jpg', 
+            desc: `
+                <div style="text-align:left; font-family: monospace; font-size:12px; line-height:1.5;">
+                    [ТЕХНИЧЕСКИЕ_ДАННЫЕ]<br>
+                    > АРХИТЕКТУРА: NVIDIA AMPERE<br>
+                    > ПАМЯТЬ: 8GB GDDR6<br>
+                    > ТЕХНОЛОГИИ: DLSS / RAY TRACING<br>
+                    > СТАТУС: ЗАВОДСКИЕ ПЛОМБЫ
+                </div>` 
+        },
+        { 
+            id: 'i5_12400', 
+            category: 'cpu', 
+            name: 'Intel Core i5-12400F', 
+            price: 11500, 
+            img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/i5.jpg', 
+            desc: `
+                <div style="text-align:left; font-family: monospace; font-size:12px; line-height:1.5;">
+                    [ТЕХНИЧЕСКИЕ_ДАННЫЕ]<br>
+                    > ЯДРА: 6 (P-CORES) / 12 ПОТОКОВ<br>
+                    > ЧАСТОТА: ДО 4.40 ГГц<br>
+                    > СОКЕТ: LGA1700 / L3 18МБ<br>
+                    > ЭНЕРГОПОТРЕБЛЕНИЕ: 65Вт - 117Вт
+                </div>` 
+        },
+        { 
+            id: 'gpro', 
+            category: 'per', 
+            name: 'Logitech G Pro X Superlight', 
+            price: 9200, 
+            img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/gpro.jpg', 
+            desc: `
+                <div style="text-align:left; font-family: monospace; font-size:12px; line-height:1.5;">
+                    [ТЕХНИЧЕСКИЕ_ДАННЫЕ]<br>
+                    > ВЕС: МЕНЕЕ 63 ГРАММ<br>
+                    > СЕНСОР: HERO 25K / 25600 DPI<br>
+                    > СВЯЗЬ: LIGHTSPEED БЕСПРОВОДНАЯ<br>
+                    > ГЛАЙДЫ: 100% PTFE
+                </div>` 
         }
-    }
+    ];
 
     function openPage(id) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
