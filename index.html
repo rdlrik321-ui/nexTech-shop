@@ -7,6 +7,51 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <style>
+        /* Контейнер для строки характеристик */
+.spec-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Тонкая линия-разделитель */
+    padding: 6px 0;
+    font-family: 'Courier New', monospace; /* Тот самый консольный шрифт */
+}
+
+/* Стилизация левой части (название параметра) */
+.spec-line span:first-child {
+    color: #aaa; /* Серый цвет для названий */
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Стилизация правой части (значение) */
+.spec-line span:last-child {
+    color: #fff; /* Белый цвет для значений */
+    font-size: 13px;
+    font-weight: bold;
+}
+
+/* Дополнительный эффект для свечения (неон) */
+.neon-glow-green {
+    text-shadow: 0 0 8px rgba(0, 255, 136, 0.6);
+}
+
+.neon-glow-blue {
+    text-shadow: 0 0 8px rgba(0, 242, 255, 0.6);
+}
+
+/* Анимация для стрелочек >>> в описании */
+@keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0.3; }
+    100% { opacity: 1; }
+}
+
+.ready-status {
+    animation: blink 1.5s infinite;
+    font-weight: bold;
+}
         /* Твои оригинальные стили без изменений */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
         body { 
@@ -179,12 +224,25 @@
             price: 5800, 
             img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/rx580.jpg', 
             desc: `
-                <div style="text-align:left; font-family: monospace; font-size:12px; line-height:1.5;">
-                    [ТЕХНИЧЕСКИЕ_ДАННЫЕ]<br>
-                    > ПАМЯТЬ: 8GB GDDR5 / 256-BIT<br>
-                    > ОХЛАЖДЕНИЕ: NITRO+ DUAL-X<br>
-                    > СОСТОЯНИЕ: ОБСЛУЖЕНА<br>
-                    > ТЕРМОИНТЕРФЕЙС: ARCTIC MX-4
+                <div style="font-family: monospace;">
+                    <div style="color: #00ff88; font-weight: bold; margin-bottom: 10px; text-shadow: 0 0 8px #00ff88;">
+                        [ СТАТУС: ПРОВЕРЕНО ]
+                    </div>
+                    <div class="spec-line">
+                        <span style="color:#aaa;">ПАМЯТЬ</span>
+                        <span style="color:#fff;">8 ГБ GDDR5</span>
+                    </div>
+                    <div class="spec-line">
+                        <span style="color:#aaa;">ШИНА</span>
+                        <span style="color:#fff;">256 БИТ</span>
+                    </div>
+                    <div class="spec-line">
+                        <span style="color:#aaa;">ОБСЛУЖИВАНИЕ</span>
+                        <span style="color:#fff;">MX-4 / NEW PADS</span>
+                    </div>
+                    <div style="margin-top:12px; color:#00ff88; font-size:11px; letter-spacing:2px;">
+                        >>> СТРЕСС-ТЕСТ: OK
+                    </div>
                 </div>` 
         },
         { 
@@ -194,12 +252,53 @@
             price: 22000, 
             img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/rtx3050.jpg', 
             desc: `
-                <div style="text-align:left; font-family: monospace; font-size:12px; line-height:1.5;">
-                    [ТЕХНИЧЕСКИЕ_ДАННЫЕ]<br>
-                    > АРХИТЕКТУРА: NVIDIA AMPERE<br>
-                    > ПАМЯТЬ: 8GB GDDR6<br>
-                    > ТЕХНОЛОГИИ: DLSS / RAY TRACING<br>
-                    > СТАТУС: ЗАВОДСКИЕ ПЛОМБЫ
+                <div style="font-family: monospace;">
+                    <div style="color: #00f2ff; font-weight: bold; margin-bottom: 10px; text-shadow: 0 0 8px #00f2ff;">
+                        [ СТАТУС: НОВЫЙ UNIT ]
+                    </div>
+                    <div class="spec-line" style="border-bottom: 1px solid rgba(0, 242, 255, 0.2);">
+                        <span style="color:#aaa;">АРХИТЕКТУРА</span>
+                        <span style="color:#fff;">AMPERE</span>
+                    </div>
+                    <div class="spec-line" style="border-bottom: 1px solid rgba(0, 242, 255, 0.2);">
+                        <span style="color:#aaa;">DLSS / RT</span>
+                        <span style="color:#fff;">SUPPORTED</span>
+                    </div>
+                    <div class="spec-line" style="border-bottom: 1px solid rgba(0, 242, 255, 0.2);">
+                        <span style="color:#aaa;">ГАРАНТИЯ</span>
+                        <span style="color:#fff;">ЗАВОДСКАЯ</span>
+                    </div>
+                    <div style="margin-top:12px; color:#00f2ff; font-size:11px; letter-spacing:2px;">
+                        >>> ПЛОМБЫ ЦЕЛЫ
+                    </div>
+                </div>` 
+        },
+        { 
+            id: 'r5_5600x', 
+            category: 'cpu', 
+            name: 'AMD Ryzen 5 5600X', 
+            price: 12500, 
+            img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/r5_5600x.jpg', 
+            desc: `
+                <div style="font-family: monospace;">
+                    <div style="color: #00ff88; font-weight: bold; margin-bottom: 10px; text-shadow: 0 0 8px #00ff88;">
+                        [ СТАТУС: HIGH_PERF ]
+                    </div>
+                    <div class="spec-line">
+                        <span style="color:#aaa;">ЯДРА / ПОТОКИ</span>
+                        <span style="color:#fff;">6 / 12</span>
+                    </div>
+                    <div class="spec-line">
+                        <span style="color:#aaa;">ЧАСТОТА</span>
+                        <span style="color:#fff;">4.6 ГГц BOOST</span>
+                    </div>
+                    <div class="spec-line">
+                        <span style="color:#aaa;">КЭШ L3</span>
+                        <span style="color:#fff;">32 МБ</span>
+                    </div>
+                    <div style="margin-top:12px; color:#00ff88; font-size:11px; letter-spacing:2px;">
+                        >>> ZEN 3 ARCH
+                    </div>
                 </div>` 
         },
         { 
@@ -209,12 +308,25 @@
             price: 11500, 
             img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/i5.jpg', 
             desc: `
-                <div style="text-align:left; font-family: monospace; font-size:12px; line-height:1.5;">
-                    [ТЕХНИЧЕСКИЕ_ДАННЫЕ]<br>
-                    > ЯДРА: 6 (P-CORES) / 12 ПОТОКОВ<br>
-                    > ЧАСТОТА: ДО 4.40 ГГц<br>
-                    > СОКЕТ: LGA1700 / L3 18МБ<br>
-                    > ЭНЕРГОПОТРЕБЛЕНИЕ: 65Вт - 117Вт
+                <div style="font-family: monospace;">
+                    <div style="color: #00f2ff; font-weight: bold; margin-bottom: 10px; text-shadow: 0 0 8px #00f2ff;">
+                        [ СТАТУС: СТАБИЛЬНО ]
+                    </div>
+                    <div class="spec-line" style="border-bottom: 1px solid rgba(0, 242, 255, 0.2);">
+                        <span style="color:#aaa;">СОКЕТ</span>
+                        <span style="color:#fff;">LGA1700</span>
+                    </div>
+                    <div class="spec-line" style="border-bottom: 1px solid rgba(0, 242, 255, 0.2);">
+                        <span style="color:#aaa;">ПОДДЕРЖКА</span>
+                        <span style="color:#fff;">DDR4 / DDR5</span>
+                    </div>
+                    <div class="spec-line" style="border-bottom: 1px solid rgba(0, 242, 255, 0.2);">
+                        <span style="color:#aaa;">TDP</span>
+                        <span style="color:#fff;">65W - 117W</span>
+                    </div>
+                    <div style="margin-top:12px; color:#00f2ff; font-size:11px; letter-spacing:2px;">
+                        >>> ALDER LAKE
+                    </div>
                 </div>` 
         },
         { 
@@ -224,12 +336,25 @@
             price: 9200, 
             img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/gpro.jpg', 
             desc: `
-                <div style="text-align:left; font-family: monospace; font-size:12px; line-height:1.5;">
-                    [ТЕХНИЧЕСКИЕ_ДАННЫЕ]<br>
-                    > ВЕС: МЕНЕЕ 63 ГРАММ<br>
-                    > СЕНСОР: HERO 25K / 25600 DPI<br>
-                    > СВЯЗЬ: LIGHTSPEED БЕСПРОВОДНАЯ<br>
-                    > ГЛАЙДЫ: 100% PTFE
+                <div style="font-family: monospace;">
+                    <div style="color: #f2ff00; font-weight: bold; margin-bottom: 10px; text-shadow: 0 0 8px #f2ff00;">
+                        [ СТАТУС: E-SPORTS ]
+                    </div>
+                    <div class="spec-line" style="border-bottom: 1px solid rgba(242, 255, 0, 0.2);">
+                        <span style="color:#aaa;">ВЕС</span>
+                        <span style="color:#fff;">63 Г</span>
+                    </div>
+                    <div class="spec-line" style="border-bottom: 1px solid rgba(242, 255, 0, 0.2);">
+                        <span style="color:#aaa;">СЕНСОР</span>
+                        <span style="color:#fff;">HERO 25K</span>
+                    </div>
+                    <div class="spec-line" style="border-bottom: 1px solid rgba(242, 255, 0, 0.2);">
+                        <span style="color:#aaa;">СВЯЗЬ</span>
+                        <span style="color:#fff;">LIGHTSPEED</span>
+                    </div>
+                    <div style="margin-top:12px; color:#f2ff00; font-size:11px; letter-spacing:2px;">
+                        >>> NO_LIMITS
+                    </div>
                 </div>` 
         }
     ];
