@@ -233,6 +233,18 @@
                 </div>` 
         }
     ];
+    // --- ВОССТАНОВЛЕННЫЙ БЛОК ЛОГИКИ ---
+    let cartItems = JSON.parse(localStorage.getItem('nexTech_cart')) || [];
+    let ordersHistory = JSON.parse(localStorage.getItem('nexTech_orders')) || [];
+
+    function validateCart() {
+        const hasBadItems = cartItems.some(item => !item.id || isNaN(item.price));
+        if (hasBadItems) {
+            cartItems = [];
+            localStorage.setItem('nexTech_cart', '[]');
+        }
+    }
+    // ----------------------------------
 
     function openPage(id) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
