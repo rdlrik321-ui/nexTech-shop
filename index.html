@@ -245,53 +245,7 @@
    const products = [
        // Вставь это внутрь твоего массива const products = [ ... ]
 
-{ 
-    id: 'vxe_r1_se', 
-    category: 'per', 
-    name: 'VXE R1 SE Wireless', 
-    price: 2200, 
-    img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/vxe_r1.jpg', 
-    desc: `
-        <div style="font-family: monospace;">
-            <div class="s-class-header">
-                [ КЛАСС: S ]
-            </div>
-            <div class="spec-line"><span>ВЕС ДЕВАЙСА</span><span>51 ГРАММ</span></div>
-            <div class="spec-line"><span>СЕНСОР</span><span>PAW3395 SE</span></div>
-            <div class="spec-line"><span>ТИП СВЯЗИ</span><span>2.4G / BLUETOOTH / WIRE</span></div>
-            <div class="spec-line"><span>КОНТРОЛЛЕР</span><span>BEIKEN ЮЗЕР-ЧИП</span></div>
-            <div class="spec-line"><span>АККУМУЛЯТОР</span><span>ДО 35 ЧАСОВ</span></div>
-            <div class="spec-line"><span>МИКРИКИ</span><span>HUANO SINKING</span></div>
-            <!-- ДОБАВИЛ ЖЕЛТЫЙ НЕОН ДЛЯ КЛАССА S -->
-            <div class="blink" style="margin-top:12px; color:#f2ff00; font-size:11px; letter-spacing:2px; font-weight: bold; text-shadow: 0 0 8px #f2ff00;">
-                >>> ЛУЧШАЯ В СВОЕМ РОДЕ
-            </div>
-        </div>` 
-},
-{ 
-    id: 'ajazz_ak680_max', 
-    category: 'per', 
-    name: 'Ajazz AK680 Max RGB', 
-    price: 2800, 
-    img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/ak680.jpg', 
-    desc: `
-        <div style="font-family: monospace;">
-            <!-- ИСПРАВИЛ НА A-CLASS (ГОЛУБОЙ) ПОД ТВОЙ ГРЕЙД А+ -->
-            <div class="a-class-header">
-                [ КЛАСС: A+ ]
-            </div>
-            <div class="spec-line"><span>ФОРМ-ФАКТОР</span><span>65% (68 КЛАВИШ)</span></div>
-            <div class="spec-line"><span>ТИП ПЕРЕКЛЮЧАТЕЛЕЙ</span><span>MAGNETIC</span></div>
-            <div class="spec-line"><span>HOT-SWAP</span><span>ЕСТЬ (3-PIN / 5-PIN)</span></div>
-            <div class="spec-line"><span>ПОДСВЕТКА</span><span>FULL RGB ЧИСТАЯ</span></div>
-            <div class="spec-line"><span>ПОДКЛЮЧЕНИЕ</span><span>СЪЕМНЫЙ TYPE-C</span></div>
-            <div class="spec-line"><span>ШУМОИЗОЛЯЦИЯ</span><span>EVA FOAM СЛОЙ</span></div>
-            <!-- ИСПРАВИЛ НА ГОЛУБОЙ НЕОН ПОД СТИЛЬ ГРЕЙДА -->
-            <div class="blink" style="margin-top:12px; color:#00f2ff; font-size:11px; letter-spacing:2px; font-weight: bold; text-shadow: 0 0 8px #00f2ff;">
-                >>> МИНИМАЛЬНЫЙ ОТКЛИК
-            </div>
-        </div>` 
-},
+const products = [
     { 
         id: 'rx580', 
         category: 'gpu', 
@@ -300,17 +254,15 @@
         img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/rx580.jpg', 
         desc: `
             <div style="font-family: monospace;">
-                <div style="color: #00ff88; font-weight: bold; margin-bottom: 10px; text-shadow: 0 0 8px #00ff88;">
-                    [ КЛАСС: B ]
-                </div>
+                <div class="b-class-header">[ КЛАСС: B ]</div>
                 <div class="spec-line"><span>ОБЪЕМ ПАМЯТИ</span><span>8 ГБ</span></div>
                 <div class="spec-line"><span>ТИП ПАМЯТИ</span><span>GDDR5</span></div>
                 <div class="spec-line"><span>ШИНА ПАМЯТИ</span><span>256 БИТ</span></div>
                 <div class="spec-line"><span>ИНТЕРФЕЙС</span><span>PCI-E 3.0</span></div>
                 <div class="spec-line"><span>РАЗЪЕМЫ</span><span>2xHDMI, 2xDP, DVI</span></div>
                 <div class="spec-line"><span>ДОП. ПИТАНИЕ</span><span>8+6 PIN</span></div>
-                <div style="margin-top:12px; color:#00ff88; font-size:11px; letter-spacing:2px;">
-                    >>> СТАБИЛЬНОСТЬ
+                <div class="blink" style="margin-top:12px; color:#00ff88; font-size:11px; letter-spacing:2px; font-weight: bold; text-shadow: 0 0 8px #00ff88;">
+                    >>> СТАБИЛЬНОСТЬ ПОДТВЕРЖДЕНА
                 </div>
             </div>` 
     },
@@ -322,17 +274,15 @@
         img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/rtx3050.jpg', 
         desc: `
             <div style="font-family: monospace;">
-                <div style="color: #00f2ff; font-weight: bold; margin-bottom: 10px; text-shadow: 0 0 8px #00f2ff;">
-                    [ КЛАСС: A+ ]
-                </div>
+                <div class="a-class-header">[ КЛАСС: A+ ]</div>
                 <div class="spec-line"><span>ОБЪЕМ ПАМЯТИ</span><span>8 ГБ</span></div>
                 <div class="spec-line"><span>ТИП ПАМЯТИ</span><span>GDDR6</span></div>
                 <div class="spec-line"><span>ТЕХНОЛОГИИ</span><span>RAY TRACING / DLSS</span></div>
                 <div class="spec-line"><span>АРХИТЕКТУРА</span><span>NVIDIA AMPERE</span></div>
                 <div class="spec-line"><span>ИНТЕРФЕЙС</span><span>PCI-E 4.0</span></div>
                 <div class="spec-line"><span>РЕКОМ. БП</span><span>450-550W</span></div>
-                <div style="margin-top:12px; color:#00f2ff; font-size:11px; letter-spacing:2px;">
-                    >>> NVIDIA DLSS & RAY TRACING
+                <div class="blink" style="margin-top:12px; color:#00f2ff; font-size:11px; letter-spacing:2px; font-weight: bold; text-shadow: 0 0 8px #00f2ff;">
+                    >>> NVIDIA DLSS SUPPORT
                 </div>
             </div>` 
     },
@@ -344,16 +294,14 @@
         img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/r5_5600x.jpg', 
         desc: `
             <div style="font-family: monospace;">
-                <div style="color: #00f2ff; font-weight: bold; margin-bottom: 10px; text-shadow: 0 0 8px #00f2ff;">
-                    [ КЛАСС: A+ ]
-                </div>
+                <div class="a-class-header">[ КЛАСС: A+ ]</div>
                 <div class="spec-line"><span>СОКЕТ</span><span>AM4</span></div>
                 <div class="spec-line"><span>ЯДРА / ПОТОКИ</span><span>6 / 12</span></div>
                 <div class="spec-line"><span>БАЗОВАЯ ЧАСТОТА</span><span>3.7 ГГЦ</span></div>
                 <div class="spec-line"><span>ТУРБО ЧАСТОТА</span><span>4.6 ГГЦ</span></div>
                 <div class="spec-line"><span>КЭШ L3</span><span>32 МБ</span></div>
                 <div class="spec-line"><span>ТЕХПРОЦЕСС</span><span>7 НМ</span></div>
-                <div style="margin-top:12px; color:#00f2ff; font-size:11px; letter-spacing:2px;">
+                <div class="blink" style="margin-top:12px; color:#00f2ff; font-size:11px; letter-spacing:2px; font-weight: bold; text-shadow: 0 0 8px #00f2ff;">
                     >>> АРХИТЕКТУРА ZEN 3
                 </div>
             </div>` 
@@ -366,17 +314,95 @@
         img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/gpro.jpg', 
         desc: `
             <div style="font-family: monospace;">
-                <div style="color: #f2ff00; font-weight: bold; margin-bottom: 10px; text-shadow: 0 0 8px #f2ff00;">
-                    [ КЛАСС: S ]
-                </div>
+                <div class="s-class-header">[ КЛАСС: S ]</div>
                 <div class="spec-line"><span>ВЕС</span><span>МЕНЕЕ 63 ГРАММ</span></div>
                 <div class="spec-line"><span>СЕНСОР</span><span>HERO 25K</span></div>
                 <div class="spec-line"><span>ТИП СВЯЗИ</span><span>БЕСПРОВОДНАЯ</span></div>
                 <div class="spec-line"><span>АККУМУЛЯТОР</span><span>ДО 70 ЧАСОВ</span></div>
                 <div class="spec-line"><span>МАКС. DPI</span><span>25600</span></div>
                 <div class="spec-line"><span>ГЛАЙДЫ</span><span>100% PTFE</span></div>
-                <div style="margin-top:12px; color:#f2ff00; font-size:11px; letter-spacing:2px;">
+                <div class="blink" style="margin-top:12px; color:#f2ff00; font-size:11px; letter-spacing:2px; font-weight: bold; text-shadow: 0 0 8px #f2ff00;">
                     >>> LIGHTSPEED TECHNOLOGY
+                </div>
+            </div>` 
+    },
+    { 
+        id: 'gtx1660super', 
+        category: 'gpu', 
+        name: 'Gigabyte GTX 1660 Super OC', 
+        price: 11500, 
+        img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/1660s.jpg', 
+        desc: `
+            <div style="font-family: monospace;">
+                <div class="a-class-header">[ КЛАСС: A ]</div>
+                <div class="spec-line"><span>ОБЪЕМ ПАМЯТИ</span><span>6 ГБ</span></div>
+                <div class="spec-line"><span>ТИП ПАМЯТИ</span><span>GDDR6</span></div>
+                <div class="spec-line"><span>ШИНА ПАМЯТИ</span><span>192 БИТ</span></div>
+                <div class="spec-line"><span>ЧАСТОТА ЧИПА</span><span>1830 МГЦ</span></div>
+                <div class="spec-line"><span>ОХЛАЖДЕНИЕ</span><span>WINDFORCE 2X</span></div>
+                <div class="spec-line"><span>ДОП. ПИТАНИЕ</span><span>8 PIN</span></div>
+                <div class="blink" style="margin-top:12px; color:#00f2ff; font-size:11px; letter-spacing:2px; font-weight: bold; text-shadow: 0 0 8px #00f2ff;">
+                    >>> ИДЕАЛЬНО ДЛЯ FULL HD
+                </div>
+            </div>` 
+    },
+    { 
+        id: 'r5_3600', 
+        category: 'cpu', 
+        name: 'AMD Ryzen 5 3600', 
+        price: 6400, 
+        img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/r5_3600.jpg', 
+        desc: `
+            <div style="font-family: monospace;">
+                <div class="b-class-header">[ КЛАСС: B ]</div>
+                <div class="spec-line"><span>СОКЕТ</span><span>AM4</span></div>
+                <div class="spec-line"><span>ЯДРА / ПОТОКИ</span><span>6 / 12</span></div>
+                <div class="spec-line"><span>БАЗОВАЯ ЧАСТОТА</span><span>3.6 ГГЦ</span></div>
+                <div class="spec-line"><span>ТУРБО ЧАСТОТА</span><span>4.2 ГГЦ</span></div>
+                <div class="spec-line"><span>КЭШ L3</span><span>32 МБ</span></div>
+                <div class="spec-line"><span>ТЕХПРОЦЕСС</span><span>7 НМ</span></div>
+                <div class="blink" style="margin-top:12px; color:#00ff88; font-size:11px; letter-spacing:2px; font-weight: bold; text-shadow: 0 0 8px #00ff88;">
+                    >>> НАДЕЖНЫЙ НАРОДНЫЙ ХИТ
+                </div>
+            </div>` 
+    },
+    { 
+        id: 'vxe_r1_se', 
+        category: 'per', 
+        name: 'VXE R1 SE Wireless', 
+        price: 2200, 
+        img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/vxe_r1.jpg', 
+        desc: `
+            <div style="font-family: monospace;">
+                <div class="s-class-header">[ КЛАСС: S ]</div>
+                <div class="spec-line"><span>ВЕС ДЕВАЙСА</span><span>51 ГРАММ</span></div>
+                <div class="spec-line"><span>СЕНСОР</span><span>PAW3395 SE</span></div>
+                <div class="spec-line"><span>ТИП СВЯЗИ</span><span>2.4G / BLUETOOTH / WIRE</span></div>
+                <div class="spec-line"><span>КОНТРОЛЛЕР</span><span>BEIKEN ЮЗЕР-ЧИП</span></div>
+                <div class="spec-line"><span>АККУМУЛЯТОР</span><span>ДО 35 ЧАСОВ</span></div>
+                <div class="spec-line"><span>МИКРИКИ</span><span>HUANO SINKING</span></div>
+                <div class="blink" style="margin-top:12px; color:#f2ff00; font-size:11px; letter-spacing:2px; font-weight: bold; text-shadow: 0 0 8px #f2ff00;">
+                    >>> ЛУЧШАЯ В СВОЕМ РОДЕ
+                </div>
+            </div>` 
+    },
+    { 
+        id: 'ajazz_ak680_max', 
+        category: 'per', 
+        name: 'Ajazz AK680 Max RGB', 
+        price: 2800, 
+        img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/ak680.jpg', 
+        desc: `
+            <div style="font-family: monospace;">
+                <div class="a-class-header">[ КЛАСС: A+ ]</div>
+                <div class="spec-line"><span>ФОРМ-ФАКТОР</span><span>65% (68 КЛАВИШ)</span></div>
+                <div class="spec-line"><span>ТИП ПЕРЕКЛЮЧАТЕЛЕЙ</span><span>MAGNETIC</span></div>
+                <div class="spec-line"><span>HOT-SWAP</span><span>ЕСТЬ (3-PIN / 5-PIN)</span></div>
+                <div class="spec-line"><span>ПОДСВЕТКА</span><span>FULL RGB ЧИСТАЯ</span></div>
+                <div class="spec-line"><span>ПОДКЛЮЧЕНИЕ</span><span>СЪЕМНЫЙ TYPE-C</span></div>
+                <div class="spec-line"><span>ШУМОИЗОЛЯЦИЯ</span><span>EVA FOAM СЛОЙ</span></div>
+                <div class="blink" style="margin-top:12px; color:#00f2ff; font-size:11px; letter-spacing:2px; font-weight: bold; text-shadow: 0 0 8px #00f2ff;">
+                    >>> МИНИМАЛЬНЫЙ ОТКЛИК
                 </div>
             </div>` 
     }
