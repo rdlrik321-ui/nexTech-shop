@@ -164,53 +164,57 @@
     </div>
 
     <div id="profile" class="page">
-        <h2 style="margin-bottom: 20px;">ПРОФИЛЬ</h2>
+    <h2 style="margin-bottom: 20px;">ПРОФИЛЬ</h2>
         
-        <div class="profile-section">
-            <span class="section-label">ИНФОРМАЦИЯ</span>
-            <p>nexTech Tomsk — комплектующие и сборки. Техническая поддержка и гарантия на всё железо.</p>
-        </div>
+    <div class="profile-section">
+        <span class="section-label">ИНФОРМАЦИЯ</span>
+        <p>nexTech Tomsk — комплектующие и сборки. Техническая поддержка и гарантия на всё железо.</p>
+    </div>
 
-        <div class="profile-section">
-            <span class="section-label">ЗАКАЗЫ</span>
-            <div id="orders-history">
-                <p style="opacity: 0.4; font-size: 13px;">История заказов пуста.</p>
+    <!-- НОВЫЙ БЛОК: КЛАССИФИКАЦИЯ (Встал ровно в структуру) -->
+    <div class="profile-section" style="font-family: monospace;">
+        <span class="section-label">ГРЕЙДЫ ЖЕЛЕЗА</span>
+        
+        <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 10px;">
+            <!-- Класс S -->
+            <div style="display: flex; align-items: flex-start; gap: 10px;">
+                <span style="color: #f2ff00; font-weight: bold; text-shadow: 0 0 8px #f2ff00; min-width: 75px; display: inline-block;">[КЛАСС S]</span>
+                <span style="font-size: 12px; opacity: 0.7; line-height: 1.3;">— Абсолютный топ. Новое железо или флагманы с максимальной производительностью.</span>
+            </div>
+
+            <!-- Класс A -->
+            <div style="display: flex; align-items: flex-start; gap: 10px;">
+                <span style="color: #00f2ff; font-weight: bold; text-shadow: 0 0 8px #00f2ff; min-width: 75px; display: inline-block;">[КЛАСС A]</span>
+                <span style="font-size: 12px; opacity: 0.7; line-height: 1.3;">— Идеальное состояние. Минимальный износ, полностью обслужено и протестировано.</span>
+            </div>
+
+            <!-- Класс B -->
+            <div style="display: flex; align-items: flex-start; gap: 10px;">
+                <span style="color: #00ff88; font-weight: bold; text-shadow: 0 0 8px #00ff88; min-width: 75px; display: inline-block;">[КЛАСС B]</span>
+                <span style="font-size: 12px; opacity: 0.7; line-height: 1.3;">— Надежный рабочий класс. Проверенное б/у железо с гарантированной стабильностью.</span>
             </div>
         </div>
+    </div>
 
-        <div class="profile-section">
-            <span class="section-label">ПОДДЕРЖКА</span>
-            <p style="font-size: 12px; opacity: 0.5; margin-bottom: 15px;">
-                По вопросам оплаты или наличия пишите менеджеру:
-            </p>
+    <div class="profile-section">
+        <span class="section-label">ЗАКАЗЫ</span>
+        <div id="orders-history">
+            <p style="opacity: 0.4; font-size: 13px;">История заказов пуста.</p>
+        </div>
+    </div>
+
+    <div class="profile-section">
+        <span class="section-label">ПОДДЕРЖКА</span>
+        <p style="font-size: 12px; opacity: 0.5; margin-bottom: 15px;">
+            По вопросам оплаты или наличия пишите менеджеру:
+        </p>
             
-            <button class="buy" style="background: #fff; color: #000; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 900;" 
-                onclick="tg.openTelegramLink('https://t.me/username3211123')">
-                <i class="fa-brands fa-telegram" style="font-size: 18px;"></i> НАПИСАТЬ В TG
-            </button>
-        </div>
+        <button class="buy" style="background: #fff; color: #000; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 900;" 
+            onclick="tg.openTelegramLink('https://t.me/username3211123')">
+            <i class="fa-brands fa-telegram" style="font-size: 18px;"></i> НАПИСАТЬ В TG
+        </button>
     </div>
-    <div class="grade-info-block" style="font-family: monospace; margin-top: 25px; padding: 15px; border: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.2); border-radius: 8px;">
-        <div style="color: #fff; font-size: 11px; font-weight: bold; margin-bottom: 15px; letter-spacing: 2px; text-transform: uppercase;">
-            // СИСТЕМА КЛАССИФИКАЦИИ ЖЕЛЕЗА
-        </div>
-        
-        <div style="margin-bottom: 12px; display: flex; align-items: flex-start;">
-            <span style="color: #f2ff00; font-weight: bold; text-shadow: 0 0 8px #f2ff00; min-width: 80px; display: inline-block;">[ КЛАСС S ]</span>
-            <span style="color: #aaa; font-size: 12px; line-height: 1.4;">— Абсолютный топ. Новое железо или флагманы с максимальной производительностью.</span>
-        </div>
-
-        <div style="margin-bottom: 12px; display: flex; align-items: flex-start;">
-            <span style="color: #00f2ff; font-weight: bold; text-shadow: 0 0 8px #00f2ff; min-width: 80px; display: inline-block;">[ КЛАСС A ]</span>
-            <span style="color: #aaa; font-size: 12px; line-height: 1.4;">— Идеальное состояние. Минимальный износ, полностью обслужено и протестировано.</span>
-        </div>
-
-        <div style="display: flex; align-items: flex-start;">
-            <span style="color: #00ff88; font-weight: bold; text-shadow: 0 0 8px #00ff88; min-width: 80px; display: inline-block;">[ КЛАСС B ]</span>
-            <span style="color: #aaa; font-size: 12px; line-height: 1.4;">— Надежный рабочий класс. Проверенное б/у железо с гарантированной стабильностью.</span>
-        </div>
-    </div>
-
+</div>
     <div id="ai-chat" class="page">
         <h2 style="margin-bottom: 20px;">AI АССИСТЕНТ</h2>
         <div id="chat-box"></div>
