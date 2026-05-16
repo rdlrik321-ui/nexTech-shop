@@ -190,6 +190,27 @@
             </button>
         </div>
     </div>
+    
+    <div class="grade-info-block" style="font-family: monospace; margin-top: 25px; padding: 15px; border: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.2); border-radius: 8px;">
+        <div style="color: #fff; font-size: 11px; font-weight: bold; margin-bottom: 15px; letter-spacing: 2px; text-transform: uppercase;">
+            // СИСТЕМА КЛАССИФИКАЦИИ ЖЕЛЕЗА
+        </div>
+        
+        <div style="margin-bottom: 12px; display: flex; align-items: flex-start;">
+            <span style="color: #f2ff00; font-weight: bold; text-shadow: 0 0 8px #f2ff00; min-width: 80px; display: inline-block;">[ КЛАСС S ]</span>
+            <span style="color: #aaa; font-size: 12px; line-height: 1.4;">— Абсолютный топ. Новое железо или флагманы с максимальной производительностью.</span>
+        </div>
+
+        <div style="margin-bottom: 12px; display: flex; align-items: flex-start;">
+            <span style="color: #00f2ff; font-weight: bold; text-shadow: 0 0 8px #00f2ff; min-width: 80px; display: inline-block;">[ КЛАСС A ]</span>
+            <span style="color: #aaa; font-size: 12px; line-height: 1.4;">— Идеальное состояние. Минимальный износ, полностью обслужено и протестировано.</span>
+        </div>
+
+        <div style="display: flex; align-items: flex-start;">
+            <span style="color: #00ff88; font-weight: bold; text-shadow: 0 0 8px #00ff88; min-width: 80px; display: inline-block;">[ КЛАСС B ]</span>
+            <span style="color: #aaa; font-size: 12px; line-height: 1.4;">— Надежный рабочий класс. Проверенное б/у железо с гарантированной стабильностью.</span>
+        </div>
+    </div>
 
     <div id="ai-chat" class="page">
         <h2 style="margin-bottom: 20px;">AI АССИСТЕНТ</h2>
@@ -219,6 +240,52 @@
     const API_URL = "https://pliable-yeast-prudishly.ngrok-free.dev";
     
    const products = [
+       // Вставь это внутрь твоего массива const products = [ ... ]
+
+{ 
+    id: 'vxe_r1_se', 
+    category: 'per', 
+    name: 'VXE R1 SE Wireless', 
+    price: 2200, 
+    img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/vxe_r1.jpg', 
+    desc: `
+        <div style="font-family: monospace;">
+            <div class="s-class-header">
+                [ КЛАСС: S ]
+            </div>
+            <div class="spec-line"><span>ВЕС ДЕВАЙСА</span><span>51 ГРАММ</span></div>
+            <div class="spec-line"><span>СЕНСОР</span><span>PAW3395 SE</span></div>
+            <div class="spec-line"><span>ТИП СВЯЗИ</span><span>2.4G / BLUETOOTH / WIRE</span></div>
+            <div class="spec-line"><span>КОНТРОЛЛЕР</span><span>BEIKEN ЮЗЕР-ЧИП</span></div>
+            <div class="spec-line"><span>АККУМУЛЯТОР</span><span>ДО 35 ЧАСОВ</span></div>
+            <div class="spec-line"><span>МИКРИКИ</span><span>HUANO SINKING</span></div>
+            <div class="blink" style="margin-top:12px; color:#f2ff00; font-size:11px; letter-spacing:2px;">
+                >>> ЛУЧШАЯ В СВОЕМ РОДЕ
+            </div>
+        </div>` 
+},
+{ 
+    id: 'ajazz_ak680_max', 
+    category: 'per', 
+    name: 'Ajazz AK680 Max RGB', 
+    price: 2800, 
+    img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/ak680.jpg', 
+    desc: `
+        <div style="font-family: monospace;">
+            <div class="s-class-header">
+                [ КЛАСС: A+ ]
+            </div>
+            <div class="spec-line"><span>ФОРМ-ФАКТОР</span><span>65% (68 КЛАВИШ)</span></div>
+            <div class="spec-line"><span>ТИП ПЕРЕКЛЮЧАТЕЛЕЙ</span><span>MECHANICAL LINEAR</span></div>
+            <div class="spec-line"><span>HOT-SWAP</span><span>ЕСТЬ (3-PIN / 5-PIN)</span></div>
+            <div class="spec-line"><span>ПОДСВЕТКА</span><span>FULL RGB ЧИСТАЯ</span></div>
+            <div class="spec-line"><span>ПОДКЛЮЧЕНИЕ</span><span>СЪЕМНЫЙ TYPE-C</span></div>
+            <div class="spec-line"><span>ШУМОИЗОЛЯЦИЯ</span><span>EVA FOAM СЛОЙ</span></div>
+            <div class="blink" style="margin-top:12px; color:#f2ff00; font-size:11px; letter-spacing:2px;">
+                >>> МИНИМАЛЬНЫЙ ОТКЛИК
+            </div>
+        </div>` 
+},
     { 
         id: 'rx580', 
         category: 'gpu', 
