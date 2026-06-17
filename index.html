@@ -586,7 +586,7 @@
     }
 
     // УМНЫЙ AI С КОНТЕКСТОМ ТОВАРОВ
-    async function sendToAI() {
+   async function sendToAI() {
         const input = document.getElementById('ai-input');
         const chat = document.getElementById('chat-box');
         const btn = document.getElementById('ai-send-btn');
@@ -608,38 +608,49 @@
         try {
             const res = await fetch(`${API_URL}/ask`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
+                headers: { 
+                    'Content-Type': 'application/json', 
+                    'ngrok-skip-browser-warning': 'true',
+                    // Передаем паспорт безопасности бэкенду 🛡️
+                    'Authorization': `Bearer ${tg.initData || ''}`
+                },
                 body: JSON.stringify({ message: fullPrompt })
             });
-            const data = await res.json();
-            document.getElementById(tid).innerHTML = `<b>[AI]:</b> ${data.reply}`;
+            
+            // Если сервер вернул ошибку верификации
+            if (res.status === 401 || res.status === 403) {
+                document.getElementById(tid).innerHTML = `<b>[SYSTEM]:</b> Ошибка верификации терминала. Доступ заблокирован.`;
+            } else {
+                const data = await res.json();
+                document.getElementById(tid).innerHTML = `<b>[AI]:</b> ${data.reply}`;
+            }
         } catch (e) { 
             document.getElementById(tid).innerHTML = `<b>[SYSTEM]:</b> Сервер офлайн.`; 
         } finally {
             btn.disabled = false;
             chat.scrollTop = chat.scrollHeight;
+            tg.HapticFeedback.selectionChanged();
         }
     }
 
+    // Проверка статуса сервера раз в 5 секунд
     setInterval(async () => {
-    const dot = document.getElementById('status-dot');
-    try { 
-        const check = await fetch(`${API_URL}/ask`, { 
-            method: 'OPTIONS', 
-            headers: { 'ngrok-skip-browser-warning': 'true' } 
-        }); 
-        
-        // Добавляем проверку на 405 статус. Если сервер ответил "Метод не разрешен", 
-        // значит сервер ЖИВОЙ и он на связи, просто OPTIONS не основной метод.
-        if (check.ok || check.status === 405) {
-            dot.classList.add('online');
-        } else {
-            dot.classList.remove('online');
+        const dot = document.getElementById('status-dot');
+        try { 
+            const check = await fetch(`${API_URL}/ask`, { 
+                method: 'OPTIONS', 
+                headers: { 'ngrok-skip-browser-warning': 'true' } 
+            }); 
+            
+            if (check.ok || check.status === 405) {
+                dot.classList.add('online');
+            } else {
+                dot.classList.remove('online');
+            }
+        } catch (e) { 
+            dot.classList.remove('online'); 
         }
-    } catch (e) { 
-        dot.classList.remove('online'); 
-    }
-}, 5000);
+    }, 5000);
 
     window.onload = () => {
         validateCart();
