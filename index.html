@@ -95,21 +95,14 @@
         }
         h1 { font-size: 11px; letter-spacing: 5px; opacity: 0.4; text-transform: uppercase; display: flex; align-items: center; }
 
-        .card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 25px; padding: 20px; text-align: center; margin-bottom: 20px; cursor: pointer; display: block; }
-        .card img { width: 100%; border-radius: 15px; margin-bottom: 15px; }
-
-        .category-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .category-card {
+        .card, .category-card, .profile-section {
             position: relative;
             overflow: hidden;
             background: linear-gradient(155deg, rgba(255,255,255,0.08), rgba(255,255,255,0.015) 65%);
             border: 1px solid rgba(255,255,255,0.09);
             border-radius: 22px;
-            padding: 22px 20px;
-            cursor: pointer;
-            transition: transform 0.15s ease, border-color 0.15s ease;
         }
-        .category-card::after {
+        .card::after, .category-card::after, .profile-section::after {
             content: '';
             position: absolute;
             top: -50%; right: -15%;
@@ -117,7 +110,11 @@
             background: radial-gradient(circle, rgba(255,255,255,0.10), transparent 70%);
             pointer-events: none;
         }
-        .category-card:active { transform: scale(0.97); border-color: rgba(255,255,255,0.22); }
+        .card, .category-card { padding: 22px 20px; cursor: pointer; transition: transform 0.15s ease, border-color 0.15s ease; text-align: center; margin-bottom: 14px; display: block; }
+        .card:active, .category-card:active { transform: scale(0.97); border-color: rgba(255,255,255,0.22); }
+        .card img { width: 100%; border-radius: 15px; margin-bottom: 15px; }
+
+        .category-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .category-card .icon { font-size: 22px; opacity: 0.85; display: block; margin-bottom: 16px; }
         .category-card .cat-name { font-weight: 800; font-size: 15px; letter-spacing: 0.3px; position: relative; }
         .category-card .cat-sub { font-size: 10px; opacity: 0.4; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.6px; position: relative; }
@@ -127,7 +124,7 @@
         .price { font-size: 24px; font-weight: 900; margin-top: 10px; }
         .buy { background: #fff; color: #000; border: none; padding: 20px; border-radius: 18px; font-weight: 900; width: 100%; cursor: pointer; transition: 0.2s; }
 
-        .search-box { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 18px; padding: 15px; width: 100%; color: #fff; margin-bottom: 25px; outline: none; }
+        .search-box { background: linear-gradient(155deg, rgba(255,255,255,0.08), rgba(255,255,255,0.015) 65%); border: 1px solid rgba(255,255,255,0.09); border-radius: 22px; padding: 15px; width: 100%; color: #fff; margin-bottom: 25px; outline: none; }
         .back { color: rgba(255,255,255,0.5); padding: 15px 0; display: block; text-align: center; font-weight: 800; font-size: 13px; cursor: pointer; }
 
         #chat-box { height: calc(100vh - 320px); overflow-y: auto; padding-right: 10px; margin-bottom: 15px; }
@@ -138,7 +135,7 @@
         .nav-item { color: rgba(255,255,255,0.2); font-size: 20px; transition: 0.3s; cursor: pointer; }
         .nav-item.active { color: #fff; }
 
-        .profile-section { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 22px; padding: 20px; margin-bottom: 15px; text-align: left; }
+        .profile-section { padding: 20px; margin-bottom: 15px; text-align: left; }
         .section-label { font-weight: 900; font-size: 12px; opacity: 0.4; text-transform: uppercase; margin-bottom: 8px; display: block; }
         
         .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 8px; background: #ff4d4d; transition: 0.3s; }
