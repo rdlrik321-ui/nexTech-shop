@@ -138,6 +138,13 @@
         .nav-item { position: relative; color: rgba(255,255,255,0.2); font-size: 20px; transition: 0.3s; cursor: pointer; }
         .nav-item.active { color: #fff; }
         .cart-badge { display: none; position: absolute; top: -6px; right: -9px; background: #ff3131; color: #fff; font-size: 10px; font-weight: 800; min-width: 16px; height: 16px; border-radius: 8px; align-items: center; justify-content: center; padding: 0 4px; text-shadow: none; }
+        @keyframes cartBump { 0% { transform: scale(1); } 35% { transform: scale(1.3); } 65% { transform: scale(0.92); } 100% { transform: scale(1); } }
+        .nav-item.bump { animation: cartBump 0.4s ease; }
+        .buy.added { background: #00ff88; color: #000; }
+
+        .qty-stepper { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.06); border-radius: 10px; padding: 4px 10px; }
+        .qty-stepper button { background: none; border: none; color: #fff; font-size: 16px; font-weight: 800; cursor: pointer; width: 18px; line-height: 1; padding: 2px 0; }
+        .qty-stepper span { min-width: 14px; text-align: center; font-weight: 700; font-size: 13px; }
 
         .profile-section { padding: 20px; margin-bottom: 15px; text-align: left; }
         .section-label { font-weight: 900; font-size: 12px; opacity: 0.4; text-transform: uppercase; margin-bottom: 8px; display: block; }
@@ -523,7 +530,7 @@
                 <h2 style="margin-top:20px;">${p.name}</h2>
                 <div class="profile-section" style="margin:20px 0; font-size: 14px; line-height: 1.6;">${p.desc}</div>
                 <div class="price" style="font-size:32px;">${p.price} ₽</div>
-                <button class="buy" style="margin-top:20px;" onclick="addToCart('${p.id}')">ДОБАВИТЬ В КОРЗИНУ</button>
+                <button class="buy" id="add-to-cart-btn" style="margin-top:20px;" onclick="addToCart('${p.id}')">ДОБАВИТЬ В КОРЗИНУ</button>
             `;
             document.getElementById('product-modal').classList.add('active');
             tg.HapticFeedback.impactOccurred('medium');
@@ -543,7 +550,17 @@
         }
     }
 
+    function pulseCartIcon() {
+        const nav = document.getElementById('nav-cart');
+        nav.classList.remove('bump');
+        void nav.offsetWidth;
+        nav.classList.add('bump');
+    }
+
     function addToCart(productId) {
+        const btn = document.getElementById('add-to-cart-btn');
+        if (btn && btn.disabled) return;
+
         const p = products.find(item => item.id === productId);
         if (!p) return;
         const existing = cartItems.find(item => item.id === productId);
@@ -551,8 +568,30 @@
         else { cartItems.push({ ...p, count: 1 }); }
         localStorage.setItem('nexTech_cart', JSON.stringify(cartItems));
         updateCartBadge();
-        tg.showAlert('Добавлено!');
-        closeProduct();
+        pulseCartIcon();
+        tg.HapticFeedback.notificationOccurred('success');
+
+        if (btn) {
+            btn.disabled = true;
+            btn.textContent = '✓ ДОБАВЛЕНО';
+            btn.classList.add('added');
+            setTimeout(closeProduct, 600);
+        } else {
+            closeProduct();
+        }
+    }
+
+    function changeQty(productId, delta) {
+        const item = cartItems.find(i => i.id === productId);
+        if (!item) return;
+        item.count += delta;
+        if (item.count <= 0) {
+            cartItems = cartItems.filter(i => i.id !== productId);
+        }
+        localStorage.setItem('nexTech_cart', JSON.stringify(cartItems));
+        updateCartBadge();
+        renderCart();
+        tg.HapticFeedback.impactOccurred('light');
     }
 
     function removeFromCart(productId) {
@@ -582,11 +621,18 @@
             let html = cartItems.map(i => {
                 const itemTotal = i.price * i.count;
                 total += itemTotal;
-                return `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; font-size:14px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:10px;">
-                    <span>${i.name} <b>(x${i.count})</b></span>
-                    <div style="display:flex; align-items:center; gap:15px;">
-                        <b>${itemTotal} ₽</b>
+                return `<div style="margin-bottom:15px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:12px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; font-size:14px; margin-bottom:8px;">
+                        <span>${i.name}</span>
                         <i class="fa-solid fa-trash" style="color:#ff4d4d; cursor:pointer; padding:5px;" onclick="removeFromCart('${i.id}')"></i>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div class="qty-stepper">
+                            <button onclick="changeQty('${i.id}', -1)">−</button>
+                            <span>${i.count}</span>
+                            <button onclick="changeQty('${i.id}', 1)">+</button>
+                        </div>
+                        <b>${itemTotal} ₽</b>
                     </div>
                 </div>`;
             }).join('');
