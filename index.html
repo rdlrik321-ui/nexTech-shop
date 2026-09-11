@@ -317,7 +317,8 @@
     { 
         id: 'rx580', 
         category: 'gpu', 
-        name: 'Sapphire Nitro+ RX 580', 
+        name: 'Sapphire Nitro+ RX 580',
+        tags: 'видеокарта видюха сапфир рх 580 амд',
         price: 5800, 
         img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/rx580.jpg', 
         desc: `
@@ -337,7 +338,8 @@
     { 
         id: 'rtx3050', 
         category: 'gpu', 
-        name: 'ASUS Dual RTX 3050', 
+        name: 'ASUS Dual RTX 3050',
+        tags: 'видеокарта видюха асус ртх 3050 нвидиа',
         price: 22000, 
         img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/rtx3050.jpg', 
         desc: `
@@ -357,7 +359,8 @@
     { 
         id: 'r5_5600x', 
         category: 'cpu', 
-        name: 'AMD Ryzen 5 5600X', 
+        name: 'AMD Ryzen 5 5600X',
+        tags: 'процессор проц амд райзен 5600',
         price: 12500, 
         img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/r5_5600x.jpg', 
         desc: `
@@ -377,7 +380,8 @@
     { 
         id: 'gpro', 
         category: 'per', 
-        name: 'Logitech G Pro X Superlight', 
+        name: 'Logitech G Pro X Superlight',
+        tags: 'мышь мышка логитек беспроводная',
         price: 9200, 
         img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/gpro.jpg', 
         desc: `
@@ -397,7 +401,8 @@
     { 
         id: 'gtx1660super', 
         category: 'gpu', 
-        name: 'Gigabyte GTX 1660 Super OC', 
+        name: 'Gigabyte GTX 1660 Super OC',
+        tags: 'видеокарта видюха гигабайт гтх 1660 нвидиа',
         price: 11500, 
         img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/1660s.jpg', 
         desc: `
@@ -417,7 +422,8 @@
     { 
         id: 'r5_3600', 
         category: 'cpu', 
-        name: 'AMD Ryzen 5 3600', 
+        name: 'AMD Ryzen 5 3600',
+        tags: 'процессор проц амд райзен 3600',
         price: 6400, 
         img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/r5_3600.jpg', 
         desc: `
@@ -437,7 +443,8 @@
     { 
         id: 'vxe_r1_se', 
         category: 'per', 
-        name: 'VXE R1 SE Wireless', 
+        name: 'VXE R1 SE Wireless',
+        tags: 'мышь мышка беспроводная',
         price: 2200, 
         img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/vxe_r1.jpg', 
         desc: `
@@ -457,7 +464,8 @@
     { 
         id: 'ajazz_ak680_max', 
         category: 'per', 
-        name: 'Ajazz AK680 Max RGB', 
+        name: 'Ajazz AK680 Max RGB',
+        tags: 'клавиатура клава аджазз механическая',
         price: 2800, 
         img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/ak680.jpg', 
         desc: `
@@ -515,7 +523,7 @@
             const target = containers[p.category];
             if (target) {
                 target.innerHTML += `
-                    <div class="card item" onclick="openProduct('${p.id}')">
+                    <div class="card item" data-tags="${(p.tags || '').toLowerCase()}" onclick="openProduct('${p.id}')">
                         <div class="photo-frame">
                             <img src="${p.img}" alt="${p.name}" onerror="this.style.opacity='0'; this.nextElementSibling.style.opacity='1';">
                             <div class="photo-fallback"><i class="fa-solid fa-image"></i></div>
@@ -717,7 +725,8 @@
         let found = false;
         for (let item of items) {
             const name = item.querySelector('.name').innerText.toLowerCase();
-            if (name.includes(val)) { item.style.display = "block"; found = true; } 
+            const tags = item.dataset.tags || '';
+            if (name.includes(val) || tags.includes(val)) { item.style.display = "block"; found = true; }
             else { item.style.display = "none"; }
         }
         document.getElementById(emptyId).style.display = found ? "none" : "block";
@@ -737,7 +746,9 @@
         }
 
         grid.style.display = 'none';
-        const matches = products.filter(p => p.name.toLowerCase().includes(q));
+        const matches = products.filter(p =>
+            p.name.toLowerCase().includes(q) || (p.tags || '').toLowerCase().includes(q)
+        );
 
         if (matches.length === 0) {
             results.style.display = 'none';
