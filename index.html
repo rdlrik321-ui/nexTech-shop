@@ -160,8 +160,10 @@
             background: #0d0d0f; z-index: 3000; display: none; 
             padding: 20px; overflow-y: auto; 
         }
-        .modal.active { display: block; animation: slideUp 0.3s ease-out; }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .modal.active { display: block; animation: slideUp 0.32s cubic-bezier(0.16, 1, 0.3, 1); }
+        .modal.closing { display: block; animation: slideDown 0.32s cubic-bezier(0.4, 0, 0.7, 0.2); }
+        @keyframes slideUp { from { transform: translateY(100%); opacity: 0.4; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes slideDown { from { transform: translateY(0); opacity: 1; } to { transform: translateY(100%); opacity: 0.4; } }
 
         /* Стиль для плашек заказов */
         .order-card { border-left: 2px solid #fff; padding-left: 15px; margin-bottom: 15px; }
@@ -537,7 +539,13 @@
         }
     }
 
-    function closeProduct() { document.getElementById('product-modal').classList.remove('active'); }
+    function closeProduct() {
+        const modal = document.getElementById('product-modal');
+        if (!modal.classList.contains('active')) return;
+        modal.classList.remove('active');
+        modal.classList.add('closing');
+        setTimeout(() => modal.classList.remove('closing'), 320);
+    }
 
     function updateCartBadge() {
         const badge = document.getElementById('cart-badge');
