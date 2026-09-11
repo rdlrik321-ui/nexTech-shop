@@ -97,6 +97,33 @@
 
         .card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 25px; padding: 20px; text-align: center; margin-bottom: 20px; cursor: pointer; display: block; }
         .card img { width: 100%; border-radius: 15px; margin-bottom: 15px; }
+
+        .category-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .category-card {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(155deg, rgba(255,255,255,0.08), rgba(255,255,255,0.015) 65%);
+            border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 22px;
+            padding: 22px 20px;
+            cursor: pointer;
+            transition: transform 0.15s ease, border-color 0.15s ease;
+        }
+        .category-card::after {
+            content: '';
+            position: absolute;
+            top: -50%; right: -15%;
+            width: 150px; height: 150px;
+            background: radial-gradient(circle, rgba(255,255,255,0.10), transparent 70%);
+            pointer-events: none;
+        }
+        .category-card:active { transform: scale(0.97); border-color: rgba(255,255,255,0.22); }
+        .category-card .icon { font-size: 22px; opacity: 0.85; display: block; margin-bottom: 16px; }
+        .category-card .cat-name { font-weight: 800; font-size: 15px; letter-spacing: 0.3px; position: relative; }
+        .category-card .cat-sub { font-size: 10px; opacity: 0.4; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.6px; position: relative; }
+        .category-card.hero { grid-column: 1 / -1; padding: 28px 24px; }
+        .category-card.hero .icon { font-size: 30px; margin-bottom: 20px; }
+        .category-card.hero .cat-name { font-size: 21px; }
         .price { font-size: 24px; font-weight: 900; margin-top: 10px; }
         .buy { background: #fff; color: #000; border: none; padding: 20px; border-radius: 18px; font-weight: 900; width: 100%; cursor: pointer; transition: 0.2s; }
 
@@ -140,9 +167,23 @@
             <div class="logo-word">nexTech</div>
             <h1><span id="status-dot" class="status-dot"></span>NEXTECH // TERMINAL</h1>
         </div>
-        <div class="card" onclick="openPage('gpu-list')"><b>ВИДЕОКАРТЫ</b></div>
-        <div class="card" onclick="openPage('cpu-list')"><b>ПРОЦЕССОРЫ</b></div>
-        <div class="card" onclick="openPage('peripheral-list')"><b>ПЕРИФЕРИЯ</b></div>
+        <div class="category-grid">
+            <div class="category-card hero" onclick="openPage('gpu-list')">
+                <i class="fa-solid fa-desktop icon"></i>
+                <div class="cat-name">Видеокарты</div>
+                <div class="cat-sub">GPU · игровая графика</div>
+            </div>
+            <div class="category-card" onclick="openPage('cpu-list')">
+                <i class="fa-solid fa-microchip icon"></i>
+                <div class="cat-name">Процессоры</div>
+                <div class="cat-sub">CPU</div>
+            </div>
+            <div class="category-card" onclick="openPage('peripheral-list')">
+                <i class="fa-solid fa-keyboard icon"></i>
+                <div class="cat-name">Периферия</div>
+                <div class="cat-sub">Мыши · клавиатуры</div>
+            </div>
+        </div>
     </div>
 
     <div id="gpu-list" class="page">
