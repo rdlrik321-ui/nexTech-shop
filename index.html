@@ -180,7 +180,10 @@
             <div class="logo-word">nexTech</div>
             <h1><span id="status-dot" class="status-dot"></span>NEXTECH // TERMINAL</h1>
         </div>
-        <div class="category-grid">
+        <input type="text" class="search-box" id="global-search" placeholder="ПОИСК ПО КАТАЛОГУ..." oninput="filterGlobalSearch(this.value)">
+        <div id="global-search-results" class="product-grid" style="display:none;"></div>
+        <div id="global-search-empty" style="display:none; text-align:center; opacity:0.4; margin-top: 10px;">НИЧЕГО НЕ НАЙДЕНО</div>
+        <div id="category-grid" class="category-grid">
             <div class="category-card hero" onclick="openPage('gpu-list')">
                 <i class="fa-solid fa-desktop icon"></i>
                 <div class="cat-name">Видеокарты</div>
@@ -718,6 +721,41 @@
             else { item.style.display = "none"; }
         }
         document.getElementById(emptyId).style.display = found ? "none" : "block";
+    }
+
+    function filterGlobalSearch(query) {
+        const q = query.trim().toLowerCase();
+        const grid = document.getElementById('category-grid');
+        const results = document.getElementById('global-search-results');
+        const empty = document.getElementById('global-search-empty');
+
+        if (!q) {
+            grid.style.display = 'grid';
+            results.style.display = 'none';
+            empty.style.display = 'none';
+            return;
+        }
+
+        grid.style.display = 'none';
+        const matches = products.filter(p => p.name.toLowerCase().includes(q));
+
+        if (matches.length === 0) {
+            results.style.display = 'none';
+            empty.style.display = 'block';
+            return;
+        }
+
+        empty.style.display = 'none';
+        results.style.display = 'grid';
+        results.innerHTML = matches.map(p => `
+            <div class="card item" onclick="openProduct('${p.id}')">
+                <div class="photo-frame">
+                    <img src="${p.img}" alt="${p.name}" onerror="this.style.opacity='0'; this.nextElementSibling.style.opacity='1';">
+                    <div class="photo-fallback"><i class="fa-solid fa-image"></i></div>
+                </div>
+                <h3 class="name">${p.name}</h3>
+                <div class="price">${p.price} ₽</div>
+            </div>`).join('');
     }
 
     // УМНЫЙ AI С КОНТЕКСТОМ ТОВАРОВ
