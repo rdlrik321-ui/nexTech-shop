@@ -107,11 +107,17 @@
             background: radial-gradient(circle, rgba(255,255,255,0.10), transparent 70%);
             pointer-events: none;
         }
-        .card, .category-card { padding: 22px 20px; cursor: pointer; transition: transform 0.15s ease, border-color 0.15s ease; text-align: center; margin-bottom: 14px; display: block; }
+        .card, .category-card { padding: 16px 14px; cursor: pointer; transition: transform 0.15s ease, border-color 0.15s ease; text-align: center; display: block; }
         .card:active, .category-card:active { transform: scale(0.97); border-color: rgba(255,255,255,0.22); }
-        .card img { width: 100%; border-radius: 15px; margin-bottom: 15px; }
 
-        .category-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .photo-frame { position: relative; width: 100%; aspect-ratio: 4 / 3; border-radius: 14px; margin-bottom: 12px; overflow: hidden; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); }
+        .photo-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .photo-fallback { display: none; position: absolute; inset: 0; align-items: center; justify-content: center; color: rgba(255,255,255,0.18); font-size: 26px; }
+        .card .name { font-size: 13px; font-weight: 700; line-height: 1.3; margin: 0; }
+        .card .price { font-size: 17px; margin-top: 6px; }
+
+        .category-grid, .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .product-grid .card { margin-bottom: 0; }
         .category-card .icon { font-size: 22px; opacity: 0.85; display: block; margin-bottom: 16px; }
         .category-card .cat-name { font-weight: 800; font-size: 15px; letter-spacing: 0.3px; position: relative; }
         .category-card .cat-sub { font-size: 10px; opacity: 0.4; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.6px; position: relative; }
@@ -129,8 +135,9 @@
         .user-msg { color: rgba(255,255,255,0.5); margin-bottom: 15px; font-size: 14px; text-align: right; }
 
         .hotbar { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); width: 92%; background: rgba(15, 15, 17, 0.95); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); border-radius: 35px; display: flex; justify-content: space-around; padding: 12px; z-index: 2000; }
-        .nav-item { color: rgba(255,255,255,0.2); font-size: 20px; transition: 0.3s; cursor: pointer; }
+        .nav-item { position: relative; color: rgba(255,255,255,0.2); font-size: 20px; transition: 0.3s; cursor: pointer; }
         .nav-item.active { color: #fff; }
+        .cart-badge { display: none; position: absolute; top: -6px; right: -9px; background: #ff3131; color: #fff; font-size: 10px; font-weight: 800; min-width: 16px; height: 16px; border-radius: 8px; align-items: center; justify-content: center; padding: 0 4px; text-shadow: none; }
 
         .profile-section { padding: 20px; margin-bottom: 15px; text-align: left; }
         .section-label { font-weight: 900; font-size: 12px; opacity: 0.4; text-transform: uppercase; margin-bottom: 8px; display: block; }
@@ -183,7 +190,7 @@
     <div id="gpu-list" class="page">
         <div class="back" onclick="openPage('home')">← ТЕРМИНАЛ</div>
         <input type="text" class="search-box" placeholder="ПОИСК..." oninput="filterItems(this, 'gpu-items', 'gpu-empty')">
-        <div id="gpu-items"> 
+        <div id="gpu-items" class="product-grid">
         </div>
         <div id="gpu-empty" class="no-results" style="display:none; text-align:center; opacity:0.4;">НИЧЕГО НЕ НАЙДЕНО</div>
     </div>
@@ -191,7 +198,7 @@
     <div id="cpu-list" class="page">
         <div class="back" onclick="openPage('home')">← ТЕРМИНАЛ</div>
         <input type="text" class="search-box" placeholder="ПОИСК..." oninput="filterItems(this, 'cpu-items', 'cpu-empty')">
-        <div id="cpu-items">
+        <div id="cpu-items" class="product-grid">
         </div>
         <div id="cpu-empty" class="no-results" style="display:none; text-align:center; opacity:0.4;">НИЧЕГО НЕ НАЙДЕНО</div>
     </div>
@@ -199,7 +206,7 @@
     <div id="peripheral-list" class="page">
         <div class="back" onclick="openPage('home')">← ТЕРМИНАЛ</div>
         <input type="text" class="search-box" placeholder="ПОИСК..." oninput="filterItems(this, 'per-items', 'per-empty')">
-        <div id="per-items">        </div>
+        <div id="per-items" class="product-grid"></div>
         <div id="per-empty" class="no-results" style="display:none; text-align:center; opacity:0.4;">НИЧЕГО НЕ НАЙДЕНО</div>
     </div>
 
@@ -275,7 +282,7 @@
 
 <div class="hotbar">
     <div class="nav-item active" id="nav-home" onclick="openPage('home')"><i class="fa-solid fa-terminal"></i></div>
-    <div class="nav-item" id="nav-cart" onclick="openPage('cart')"><i class="fa-solid fa-cart-shopping"></i></div>
+    <div class="nav-item" id="nav-cart" onclick="openPage('cart')"><i class="fa-solid fa-cart-shopping"></i><span id="cart-badge" class="cart-badge">0</span></div>
     <div class="nav-item" id="nav-profile" onclick="openPage('profile')"><i class="fa-solid fa-user"></i></div>
     <div class="nav-item" id="nav-ai-chat" onclick="openPage('ai-chat')"><i class="fa-solid fa-microchip"></i></div>
 </div>
@@ -494,7 +501,10 @@
             if (target) {
                 target.innerHTML += `
                     <div class="card item" onclick="openProduct('${p.id}')">
-                        <img src="${p.img}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/150'">
+                        <div class="photo-frame">
+                            <img src="${p.img}" alt="${p.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="photo-fallback"><i class="fa-solid fa-image"></i></div>
+                        </div>
                         <h3 class="name">${p.name}</h3>
                         <div class="price">${p.price} ₽</div>
                     </div>`;
@@ -506,7 +516,10 @@
         const p = products.find(item => item.id === productId);
         if (p) {
             document.getElementById('modal-content').innerHTML = `
-                <img src="${p.img}" style="width:100%; border-radius:25px; margin-top:20px;" onerror="this.src='https://via.placeholder.com/150'">
+                <div class="photo-frame" style="aspect-ratio: 4/3; border-radius:25px; margin-top:20px;">
+                    <img src="${p.img}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="photo-fallback" style="font-size:48px;"><i class="fa-solid fa-image"></i></div>
+                </div>
                 <h2 style="margin-top:20px;">${p.name}</h2>
                 <div class="profile-section" style="margin:20px 0; font-size: 14px; line-height: 1.6;">${p.desc}</div>
                 <div class="price" style="font-size:32px;">${p.price} ₽</div>
@@ -519,13 +532,25 @@
 
     function closeProduct() { document.getElementById('product-modal').classList.remove('active'); }
 
+    function updateCartBadge() {
+        const badge = document.getElementById('cart-badge');
+        const count = cartItems.reduce((sum, item) => sum + item.count, 0);
+        if (count > 0) {
+            badge.textContent = count > 99 ? '99+' : count;
+            badge.style.display = 'flex';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+
     function addToCart(productId) {
         const p = products.find(item => item.id === productId);
         if (!p) return;
         const existing = cartItems.find(item => item.id === productId);
-        if (existing) { existing.count += 1; } 
+        if (existing) { existing.count += 1; }
         else { cartItems.push({ ...p, count: 1 }); }
         localStorage.setItem('nexTech_cart', JSON.stringify(cartItems));
+        updateCartBadge();
         tg.showAlert('Добавлено!');
         closeProduct();
     }
@@ -533,6 +558,7 @@
     function removeFromCart(productId) {
         cartItems = cartItems.filter(item => item.id !== productId);
         localStorage.setItem('nexTech_cart', JSON.stringify(cartItems));
+        updateCartBadge();
         renderCart();
         tg.HapticFeedback.impactOccurred('light');
     }
@@ -540,6 +566,7 @@
     function clearCart() {
         cartItems = [];
         localStorage.setItem('nexTech_cart', '[]');
+        updateCartBadge();
         renderCart();
         tg.HapticFeedback.notificationOccurred('success');
     }
@@ -706,6 +733,7 @@
     window.onload = () => {
         validateCart();
         renderAllProducts();
+        updateCartBadge();
         document.getElementById('chat-box').innerHTML = '<div class="ai-msg">Система nexTech готова. Спросите меня о наличии товаров!</div>';
     };
 </script>
