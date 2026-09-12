@@ -60,7 +60,7 @@
         /* Твои оригинальные стили без изменений */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
         body {
-            background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.10), transparent 55%), #0a0a0c;
+            background: #0a0a0c;
             color: #fff;
             font-family: -apple-system, system-ui, sans-serif;
             min-height: 100vh;
@@ -93,6 +93,13 @@
         .status-line { font-size: 11px; letter-spacing: 1px; opacity: 0.45; text-transform: uppercase; margin-bottom: 22px; }
 
         .hero-title { font-family: 'Archivo Black', sans-serif; font-size: 32px; line-height: 1.08; letter-spacing: -0.5px; margin-bottom: 14px; }
+        .hero-title .glitch {
+            text-shadow:
+                -1px 0 1px rgba(255, 255, 255, 0.9),
+                -4px 0 6px rgba(255, 255, 255, 0.45),
+                -9px 0 14px rgba(255, 255, 255, 0.25),
+                -16px 0 26px rgba(255, 255, 255, 0.12);
+        }
         .hero-sub { font-size: 13px; opacity: 0.5; line-height: 1.5; margin-bottom: 22px; }
 
         .search-wrap { position: relative; margin-bottom: 16px; }
@@ -105,7 +112,8 @@
         .draft-title { font-weight: 800; font-size: 13px; color: #000; }
         .draft-sub { font-size: 10px; opacity: 0.55; margin-top: 3px; text-transform: uppercase; letter-spacing: 0.5px; color: #000; }
 
-        .section-head { font-weight: 800; font-size: 14px; margin: 4px 0 12px; }
+        .section-head { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 14px; margin: 4px 0 12px; }
+        .section-head .section-tag { font-weight: 400; font-size: 11px; opacity: 0.35; text-transform: uppercase; letter-spacing: 0.5px; }
         .hit-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; }
         .hit-thumb { width: 44px; height: 44px; border-radius: 10px; overflow: hidden; flex-shrink: 0; background: repeating-linear-gradient(45deg, rgba(255,255,255,0.07) 0 2px, transparent 2px 7px), rgba(255,255,255,0.04); }
         .hit-thumb img { width: 100%; height: 100%; object-fit: cover; }
@@ -210,7 +218,7 @@
             СКЛАД ОНЛАЙН // ТОМСК // <span id="sku-count">0</span> SKU
         </div>
 
-        <h1 class="hero-title">Железо<br>без ожидания</h1>
+        <h1 class="hero-title"><span class="glitch">Железо</span><br>без ожидания</h1>
         <p class="hero-sub">Заказ до 18:00 — доставка завтра. Проверка и стресс-тест перед отправкой.</p>
 
         <div class="search-wrap">
@@ -253,7 +261,7 @@
             </div>
         </div>
 
-        <div class="section-head"><span>Хиты недели</span></div>
+        <div class="section-head"><span>Хиты недели</span><span class="section-tag">Популярное</span></div>
         <div id="hits-list"></div>
     </div>
 
