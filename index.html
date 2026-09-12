@@ -77,29 +77,50 @@
         }
         .page.active { opacity: 1; transform: translateY(0); pointer-events: auto; }
 
-        .header { display: flex; flex-direction: column; align-items: center; margin: 60px 0 40px 0; }
-        .logo-word {
-            font-family: 'Archivo Black', -apple-system, system-ui, sans-serif;
-            font-size: 42px;
-            letter-spacing: -1px;
-            color: #fff;
-            margin-bottom: 14px;
-            text-shadow:
-                -1px 0 1px rgba(255, 255, 255, 0.9),
-                -4px 0 6px rgba(255, 255, 255, 0.45),
-                -9px 0 14px rgba(255, 255, 255, 0.25),
-                -16px 0 26px rgba(255, 255, 255, 0.12);
+        .top-bar { display: flex; align-items: center; justify-content: space-between; margin: 8px 0 18px; }
+        .brand-mini { display: flex; align-items: center; gap: 10px; }
+        .mini-logo {
+            width: 32px; height: 32px; border-radius: 9px; flex-shrink: 0;
+            background: linear-gradient(155deg, rgba(255,255,255,0.14), rgba(255,255,255,0.03));
+            border: 1px solid rgba(255,255,255,0.14);
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Archivo Black', sans-serif; font-size: 12px; letter-spacing: -0.5px;
         }
-        h1 { font-size: 11px; letter-spacing: 5px; opacity: 0.4; text-transform: uppercase; display: flex; align-items: center; }
+        .mini-name { font-family: 'Archivo Black', sans-serif; font-size: 16px; letter-spacing: -0.5px; }
+        .mini-tag { font-size: 10px; opacity: 0.35; letter-spacing: 1px; }
+        .menu-dots { background: none; border: none; color: rgba(255,255,255,0.4); font-size: 18px; letter-spacing: 2px; cursor: pointer; padding: 4px 8px; }
 
-        .card, .category-card, .profile-section {
+        .status-line { font-size: 11px; letter-spacing: 1px; opacity: 0.45; text-transform: uppercase; margin-bottom: 22px; }
+
+        .hero-title { font-family: 'Archivo Black', sans-serif; font-size: 32px; line-height: 1.08; letter-spacing: -0.5px; margin-bottom: 14px; }
+        .hero-sub { font-size: 13px; opacity: 0.5; line-height: 1.5; margin-bottom: 22px; }
+
+        .search-wrap { position: relative; margin-bottom: 16px; }
+        .search-wrap .search-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); opacity: 0.35; font-size: 14px; pointer-events: none; }
+        .search-box-icon { padding-left: 42px !important; padding-right: 52px !important; }
+        .kbd-hint { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-size: 10px; opacity: 0.3; border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 2px 6px; pointer-events: none; }
+
+        .draft-order { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: linear-gradient(155deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02)); border: 1px solid rgba(255,255,255,0.13); border-radius: 16px; padding: 14px 16px; margin-bottom: 18px; cursor: pointer; }
+        .draft-title { font-weight: 800; font-size: 13px; }
+        .draft-sub { font-size: 10px; opacity: 0.5; margin-top: 3px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .section-head { font-weight: 800; font-size: 14px; margin: 4px 0 12px; }
+        .hit-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; }
+        .hit-thumb { width: 44px; height: 44px; border-radius: 10px; overflow: hidden; flex-shrink: 0; background: rgba(255,255,255,0.05); }
+        .hit-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .hit-info { flex: 1; min-width: 0; }
+        .hit-name { font-size: 13px; font-weight: 700; }
+        .hit-meta { font-size: 11px; opacity: 0.4; margin-top: 2px; }
+        .hit-price { font-weight: 800; font-size: 14px; white-space: nowrap; }
+
+        .card, .stat-card, .profile-section {
             position: relative;
             overflow: hidden;
             background: linear-gradient(155deg, rgba(255,255,255,0.08), rgba(255,255,255,0.015) 65%);
             border: 1px solid rgba(255,255,255,0.09);
             border-radius: 22px;
         }
-        .card::after, .category-card::after, .profile-section::after {
+        .card::after, .stat-card::after, .profile-section::after {
             content: '';
             position: absolute;
             top: -50%; right: -15%;
@@ -107,8 +128,8 @@
             background: radial-gradient(circle, rgba(255,255,255,0.10), transparent 70%);
             pointer-events: none;
         }
-        .card, .category-card { padding: 16px 14px; cursor: pointer; transition: transform 0.15s ease, border-color 0.15s ease; text-align: center; display: block; }
-        .card:active, .category-card:active { transform: scale(0.97); border-color: rgba(255,255,255,0.22); }
+        .card { padding: 16px 14px; cursor: pointer; transition: transform 0.15s ease, border-color 0.15s ease; text-align: center; display: block; }
+        .card:active, .stat-card:active { transform: scale(0.97); border-color: rgba(255,255,255,0.22); }
 
         .photo-frame { position: relative; width: 100%; aspect-ratio: 4 / 3; border-radius: 14px; margin-bottom: 12px; overflow: hidden; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); }
         .photo-frame img { width: 100%; height: 100%; object-fit: cover; display: block; transition: opacity 0.3s ease; }
@@ -116,14 +137,16 @@
         .card .name { font-size: 13px; font-weight: 700; line-height: 1.3; margin: 0; }
         .card .price { font-size: 17px; margin-top: 6px; }
 
-        .category-grid, .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .product-grid .card { margin-bottom: 0; }
-        .category-card .icon { font-size: 22px; opacity: 0.85; display: block; margin-bottom: 16px; }
-        .category-card .cat-name { font-weight: 800; font-size: 15px; letter-spacing: 0.3px; position: relative; }
-        .category-card .cat-sub { font-size: 10px; opacity: 0.4; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.6px; position: relative; }
-        .category-card.hero { grid-column: 1 / -1; padding: 28px 24px; }
-        .category-card.hero .icon { font-size: 30px; margin-bottom: 20px; }
-        .category-card.hero .cat-name { font-size: 21px; }
+
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 26px; }
+        .stat-card { padding: 16px; cursor: pointer; text-align: left; transition: transform 0.15s ease; }
+        .stat-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 18px; position: relative; }
+        .stat-code { font-size: 10px; opacity: 0.4; letter-spacing: 1px; font-weight: 800; }
+        .stat-index { font-family: 'Archivo Black', sans-serif; font-size: 20px; opacity: 0.15; }
+        .stat-name { font-weight: 800; font-size: 16px; margin-bottom: 4px; position: relative; }
+        .stat-meta { font-size: 11px; opacity: 0.4; position: relative; }
         .price { font-size: 24px; font-weight: 900; margin-top: 10px; }
         .buy { background: #fff; color: #000; border: none; padding: 20px; border-radius: 18px; font-weight: 900; width: 100%; cursor: pointer; transition: 0.2s; }
 
@@ -137,8 +160,10 @@
         .user-msg { color: rgba(255,255,255,0.5); margin-bottom: 15px; font-size: 14px; text-align: right; }
 
         .hotbar { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); width: 92%; background: rgba(15, 15, 17, 0.95); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); border-radius: 35px; display: flex; justify-content: space-around; padding: 12px; z-index: 2000; }
-        .nav-item { position: relative; color: rgba(255,255,255,0.2); font-size: 20px; transition: 0.3s; cursor: pointer; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: rgba(255,255,255,0.2); font-size: 18px; transition: 0.3s; cursor: pointer; }
         .nav-item.active { color: #fff; }
+        .nav-label { font-size: 9px; font-weight: 800; letter-spacing: 0.3px; text-transform: uppercase; }
+        .nav-icon-wrap { position: relative; display: inline-flex; }
         .cart-badge { display: flex; position: absolute; top: -6px; right: -9px; background: #ff3131; color: #fff; font-size: 10px; font-weight: 800; min-width: 16px; height: 16px; border-radius: 8px; align-items: center; justify-content: center; padding: 0 4px; text-shadow: none; transform: scale(0); opacity: 0; transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease; }
         .cart-badge.show { transform: scale(1); opacity: 1; }
         @keyframes cartBump { 0% { transform: scale(1); } 35% { transform: scale(1.3); } 65% { transform: scale(0.92); } 100% { transform: scale(1); } }
@@ -176,30 +201,65 @@
 
 <div class="container">
     <div id="home" class="page active">
-        <div class="header">
-            <div class="logo-word">nexTech</div>
-            <h1><span id="status-dot" class="status-dot"></span>NEXTECH // TERMINAL</h1>
+        <div class="top-bar">
+            <div class="brand-mini">
+                <div class="mini-logo">nT</div>
+                <span class="mini-name">nexTech</span>
+                <span class="mini-tag">// TERMINAL</span>
+            </div>
+            <button class="menu-dots" onclick="openPage('profile')">•••</button>
         </div>
-        <input type="text" class="search-box" id="global-search" placeholder="ПОИСК ПО КАТАЛОГУ..." oninput="filterGlobalSearch(this.value)">
+
+        <div class="status-line">
+            <span id="status-dot" class="status-dot"></span>
+            СКЛАД ОНЛАЙН // ТОМСК // <span id="sku-count">0</span> SKU
+        </div>
+
+        <h1 class="hero-title">Железо<br>без ожидания</h1>
+        <p class="hero-sub">Заказ до 18:00 — доставка завтра. Проверка и стресс-тест перед отправкой.</p>
+
+        <div class="search-wrap">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" class="search-box search-box-icon" id="global-search" placeholder="RTX 4070, Ryzen, DDR5..." oninput="filterGlobalSearch(this.value)">
+            <span class="kbd-hint">⌘K</span>
+        </div>
+
         <div id="global-search-results" class="product-grid" style="display:none;"></div>
-        <div id="global-search-empty" style="display:none; text-align:center; opacity:0.4; margin-top: 10px;">НИЧЕГО НЕ НАЙДЕНО</div>
-        <div id="category-grid" class="category-grid">
-            <div class="category-card hero" onclick="openPage('gpu-list')">
-                <i class="fa-solid fa-desktop icon"></i>
-                <div class="cat-name">Видеокарты</div>
-                <div class="cat-sub">GPU · игровая графика</div>
+        <div id="global-search-empty" style="display:none; text-align:center; opacity:0.4; margin: 10px 0 20px;">НИЧЕГО НЕ НАЙДЕНО</div>
+
+        <div id="draft-order-banner" class="draft-order" style="display:none;" onclick="openPage('cart')">
+            <div>
+                <div class="draft-title">Незавершённый заказ</div>
+                <div class="draft-sub" id="draft-sub"></div>
             </div>
-            <div class="category-card" onclick="openPage('cpu-list')">
-                <i class="fa-solid fa-microchip icon"></i>
-                <div class="cat-name">Процессоры</div>
-                <div class="cat-sub">CPU</div>
+            <i class="fa-solid fa-chevron-right"></i>
+        </div>
+
+        <div id="category-grid" class="stat-grid">
+            <div class="stat-card" onclick="openPage('gpu-list')">
+                <div class="stat-top"><span class="stat-code">GPU</span><span class="stat-index">01</span></div>
+                <div class="stat-name">Видеокарты</div>
+                <div class="stat-meta" id="stat-gpu">—</div>
             </div>
-            <div class="category-card" onclick="openPage('peripheral-list')">
-                <i class="fa-solid fa-keyboard icon"></i>
-                <div class="cat-name">Периферия</div>
-                <div class="cat-sub">Мыши · клавиатуры</div>
+            <div class="stat-card" onclick="openPage('cpu-list')">
+                <div class="stat-top"><span class="stat-code">CPU</span><span class="stat-index">02</span></div>
+                <div class="stat-name">Процессоры</div>
+                <div class="stat-meta" id="stat-cpu">—</div>
+            </div>
+            <div class="stat-card" onclick="openPage('ram-list')">
+                <div class="stat-top"><span class="stat-code">RAM</span><span class="stat-index">03</span></div>
+                <div class="stat-name">Память</div>
+                <div class="stat-meta" id="stat-ram">—</div>
+            </div>
+            <div class="stat-card" onclick="openPage('peripheral-list')">
+                <div class="stat-top"><span class="stat-code">PER</span><span class="stat-index">04</span></div>
+                <div class="stat-name">Периферия</div>
+                <div class="stat-meta" id="stat-per">—</div>
             </div>
         </div>
+
+        <div class="section-head"><span>Хиты недели</span></div>
+        <div id="hits-list"></div>
     </div>
 
     <div id="gpu-list" class="page">
@@ -216,6 +276,13 @@
         <div id="cpu-items" class="product-grid">
         </div>
         <div id="cpu-empty" class="no-results" style="display:none; text-align:center; opacity:0.4;">НИЧЕГО НЕ НАЙДЕНО</div>
+    </div>
+
+    <div id="ram-list" class="page">
+        <div class="back" onclick="openPage('home')">← ТЕРМИНАЛ</div>
+        <input type="text" class="search-box" placeholder="ПОИСК..." oninput="filterItems(this, 'ram-items', 'ram-empty')">
+        <div id="ram-items" class="product-grid"></div>
+        <div id="ram-empty" class="no-results" style="text-align:center; opacity:0.4;">Скоро здесь появится память — модули RAM в наличии.</div>
     </div>
 
     <div id="peripheral-list" class="page">
@@ -279,13 +346,33 @@
         <p style="font-size: 12px; opacity: 0.5; margin-bottom: 15px;">
             По вопросам оплаты или наличия пишите менеджеру:
         </p>
-            
-        <button class="buy" style="background: #fff; color: #000; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 900;" 
+
+        <button class="buy" style="background: #fff; color: #000; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 900;"
             onclick="tg.openTelegramLink('https://t.me/username3211123')">
             <i class="fa-brands fa-telegram" style="font-size: 18px;"></i> НАПИСАТЬ В TG
         </button>
     </div>
+
+    <div class="profile-section" style="cursor:pointer; display:flex; align-items:center; justify-content:space-between;" onclick="openPage('ai-chat')">
+        <div style="display:flex; align-items:center; gap:12px;">
+            <i class="fa-solid fa-microchip" style="font-size:18px; opacity:0.6;"></i>
+            <div>
+                <div style="font-weight:800; font-size:14px;">AI-ассистент</div>
+                <div style="font-size:11px; opacity:0.4;">Спросите о наличии и подборе</div>
+            </div>
+        </div>
+        <i class="fa-solid fa-chevron-right" style="opacity:0.3;"></i>
+    </div>
 </div>
+    <div id="build" class="page">
+        <div class="back" onclick="openPage('home')">← ТЕРМИНАЛ</div>
+        <h2 style="margin-bottom: 16px;">СБОРКА ПК</h2>
+        <div class="profile-section" style="text-align:center; padding: 44px 20px;">
+            <i class="fa-solid fa-screwdriver-wrench" style="font-size:30px; opacity:0.3; margin-bottom:16px; display:block;"></i>
+            <div style="font-weight:800; margin-bottom:8px;">В разработке</div>
+            <div style="font-size:13px; opacity:0.5;">Конструктор сборки ПК скоро появится здесь.</div>
+        </div>
+    </div>
     <div id="ai-chat" class="page">
         <h2 style="margin-bottom: 20px;">AI АССИСТЕНТ</h2>
         <div id="chat-box"></div>
@@ -296,10 +383,22 @@
     </div>
 
 <div class="hotbar">
-    <div class="nav-item active" id="nav-home" onclick="openPage('home')"><i class="fa-solid fa-terminal"></i></div>
-    <div class="nav-item" id="nav-cart" onclick="openPage('cart')"><i class="fa-solid fa-cart-shopping"></i><span id="cart-badge" class="cart-badge">0</span></div>
-    <div class="nav-item" id="nav-profile" onclick="openPage('profile')"><i class="fa-solid fa-user"></i></div>
-    <div class="nav-item" id="nav-ai-chat" onclick="openPage('ai-chat')"><i class="fa-solid fa-microchip"></i></div>
+    <div class="nav-item active" id="nav-home" onclick="openPage('home')">
+        <i class="fa-solid fa-table-cells"></i>
+        <span class="nav-label">Каталог</span>
+    </div>
+    <div class="nav-item" id="nav-build" onclick="openPage('build')">
+        <i class="fa-solid fa-layer-group"></i>
+        <span class="nav-label">Сборка</span>
+    </div>
+    <div class="nav-item" id="nav-cart" onclick="openPage('cart')">
+        <div class="nav-icon-wrap"><i class="fa-solid fa-cart-shopping"></i><span id="cart-badge" class="cart-badge">0</span></div>
+        <span class="nav-label">Корзина</span>
+    </div>
+    <div class="nav-item" id="nav-profile" onclick="openPage('profile')">
+        <i class="fa-solid fa-user"></i>
+        <span class="nav-label">Профиль</span>
+    </div>
 </div>
 
 <div id="product-modal" class="modal">
@@ -504,7 +603,8 @@
         let navId = 'nav-home';
         if (id === 'cart') navId = 'nav-cart';
         if (id === 'profile') { navId = 'nav-profile'; renderOrders(); }
-        if (id === 'ai-chat') navId = 'nav-ai-chat';
+        if (id === 'ai-chat') navId = 'nav-profile';
+        if (id === 'build') navId = 'nav-build';
         if (id.includes('-list')) navId = 'nav-home';
         const activeNav = document.getElementById(navId);
         if(activeNav) activeNav.classList.add('active');
@@ -516,6 +616,7 @@
         const containers = {
             'gpu': document.getElementById('gpu-items'),
             'cpu': document.getElementById('cpu-items'),
+            'ram': document.getElementById('ram-items'),
             'per': document.getElementById('per-items')
         };
         for (let key in containers) { if (containers[key]) containers[key].innerHTML = ''; }
@@ -533,6 +634,38 @@
                     </div>`;
             }
         });
+    }
+
+    function updateCatalogStats() {
+        document.getElementById('sku-count').textContent = products.length;
+
+        const cats = { gpu: 'stat-gpu', cpu: 'stat-cpu', ram: 'stat-ram', per: 'stat-per' };
+        for (const key in cats) {
+            const items = products.filter(p => p.category === key);
+            const el = document.getElementById(cats[key]);
+            if (items.length === 0) {
+                el.textContent = 'Скоро в наличии';
+            } else {
+                const minPrice = Math.min(...items.map(p => p.price));
+                el.textContent = `${items.length} · от ${formatPrice(minPrice)}`;
+            }
+        }
+    }
+
+    function renderHits() {
+        const list = document.getElementById('hits-list');
+        const hits = products.slice(0, 4);
+        list.innerHTML = hits.map(p => `
+            <div class="hit-row" onclick="openProduct('${p.id}')">
+                <div class="hit-thumb">
+                    <img src="${p.img}" alt="${p.name}" onerror="this.style.opacity='0';">
+                </div>
+                <div class="hit-info">
+                    <div class="hit-name">${p.name}</div>
+                    <div class="hit-meta">Томск</div>
+                </div>
+                <div class="hit-price">${formatPrice(p.price)}</div>
+            </div>`).join('');
     }
 
     function openProduct(productId) {
@@ -561,6 +694,15 @@
         setTimeout(() => modal.classList.remove('closing'), 320);
     }
 
+    function formatPrice(n) { return n.toLocaleString('ru-RU') + ' ₽'; }
+
+    function pluralPositions(n) {
+        const mod10 = n % 10, mod100 = n % 100;
+        if (mod10 === 1 && mod100 !== 11) return 'позиция';
+        if ([2, 3, 4].includes(mod10) && ![12, 13, 14].includes(mod100)) return 'позиции';
+        return 'позиций';
+    }
+
     function updateCartBadge() {
         const badge = document.getElementById('cart-badge');
         const count = cartItems.reduce((sum, item) => sum + item.count, 0);
@@ -570,6 +712,24 @@
         } else {
             badge.classList.remove('show');
         }
+    }
+
+    function updateDraftOrderBanner() {
+        const banner = document.getElementById('draft-order-banner');
+        const count = cartItems.reduce((sum, item) => sum + item.count, 0);
+        if (count > 0) {
+            const total = cartItems.reduce((sum, item) => sum + item.price * item.count, 0);
+            document.getElementById('draft-sub').textContent =
+                `${count} ${pluralPositions(count)} · ${formatPrice(total)} // ОФОРМИТЬ ЗА 30 СЕК`;
+            banner.style.display = 'flex';
+        } else {
+            banner.style.display = 'none';
+        }
+    }
+
+    function syncCartUI() {
+        updateCartBadge();
+        updateDraftOrderBanner();
     }
 
     function pulseCartIcon() {
@@ -589,7 +749,7 @@
         if (existing) { existing.count += 1; }
         else { cartItems.push({ ...p, count: 1 }); }
         localStorage.setItem('nexTech_cart', JSON.stringify(cartItems));
-        updateCartBadge();
+        syncCartUI();
         pulseCartIcon();
         tg.HapticFeedback.notificationOccurred('success');
 
@@ -611,7 +771,7 @@
             cartItems = cartItems.filter(i => i.id !== productId);
         }
         localStorage.setItem('nexTech_cart', JSON.stringify(cartItems));
-        updateCartBadge();
+        syncCartUI();
         renderCart();
         tg.HapticFeedback.impactOccurred('light');
     }
@@ -619,7 +779,7 @@
     function removeFromCart(productId) {
         cartItems = cartItems.filter(item => item.id !== productId);
         localStorage.setItem('nexTech_cart', JSON.stringify(cartItems));
-        updateCartBadge();
+        syncCartUI();
         renderCart();
         tg.HapticFeedback.impactOccurred('light');
     }
@@ -627,7 +787,7 @@
     function clearCart() {
         cartItems = [];
         localStorage.setItem('nexTech_cart', '[]');
-        updateCartBadge();
+        syncCartUI();
         renderCart();
         tg.HapticFeedback.notificationOccurred('success');
     }
@@ -838,8 +998,8 @@
 
     // --- СВАЙП-НАВИГАЦИЯ ---
     (function () {
-        const TAB_ORDER = ['home', 'cart', 'profile', 'ai-chat'];
-        const BACK_PAGES = ['gpu-list', 'cpu-list', 'peripheral-list'];
+        const TAB_ORDER = ['home', 'build', 'cart', 'profile'];
+        const BACK_PAGES = ['gpu-list', 'cpu-list', 'ram-list', 'peripheral-list'];
         const EDGE_GUARD = 24;
         const SWIPE_THRESHOLD = 70;
         const MAX_VERTICAL = 60;
@@ -892,7 +1052,9 @@
     window.onload = () => {
         validateCart();
         renderAllProducts();
-        updateCartBadge();
+        updateCatalogStats();
+        renderHits();
+        syncCartUI();
         document.getElementById('chat-box').innerHTML = '<div class="ai-msg">Система nexTech готова. Спросите меня о наличии товаров!</div>';
     };
 </script>
