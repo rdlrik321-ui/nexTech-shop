@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=Golos+Text:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <style>
@@ -60,9 +60,9 @@
         /* Твои оригинальные стили без изменений */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
         body {
-            background: #0a0a0c;
+            background: #0E0E10;
             color: #fff;
-            font-family: -apple-system, system-ui, sans-serif;
+            font-family: 'Golos Text', -apple-system, system-ui, sans-serif;
             min-height: 100vh;
             overflow: hidden;
         }
@@ -70,59 +70,111 @@
 
         .page { 
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            padding: 20px; padding-bottom: 110px;
+            padding: 20px 16px 110px;
             opacity: 0; transform: translateY(15px);
             pointer-events: none; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             overflow-y: auto;
         }
         .page.active { opacity: 1; transform: translateY(0); pointer-events: auto; }
+        #home, #gpu-list, #cpu-list, #ram-list, #peripheral-list, #cart { padding-top: 0; }
 
-        .top-bar { display: flex; align-items: center; justify-content: space-between; margin: 8px 0 18px; }
-        .brand-mini { display: flex; align-items: center; gap: 10px; }
+        .cart-line { display: flex; align-items: center; gap: 13px; padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.12); }
+        .cart-thumb { width: 52px; height: 52px; border-radius: 50%; flex-shrink: 0; overflow: hidden; background: repeating-linear-gradient(135deg, #232429 0 5px, #17181C 5px 10px); }
+        .cart-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .cart-line-info { flex: 1; min-width: 0; }
+        .cart-line-name { font-family: 'Golos Text', sans-serif; font-weight: 500; font-size: 13px; line-height: 1.3; }
+        .cart-line-sum { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 13.5px; margin-top: 5px; }
+        .stepper { flex-shrink: 0; display: flex; align-items: center; gap: 1px; border: 1px solid rgba(255,255,255,0.14); border-radius: 10px; overflow: hidden; }
+        .stepper button { width: 28px; height: 28px; background: none; border: none; color: #fff; font-family: 'Golos Text', sans-serif; font-weight: 600; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; }
+        .stepper .qty { min-width: 24px; text-align: center; font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 12.5px; }
+
+        .cart-total-row { display: flex; justify-content: space-between; padding: 11px 0; font-family: 'Golos Text', sans-serif; font-weight: 400; font-size: 12.5px; color: rgba(255,255,255,0.55); }
+        .cart-total-row span:last-child { font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 12.5px; color: #fff; }
+        .cart-total-row.grand { border-top: 1px solid rgba(255,255,255,0.14); margin-top: 2px; padding-top: 13px; }
+        .cart-total-row.grand span:first-child { font-family: 'Golos Text', sans-serif; font-weight: 700; font-size: 15px; color: #fff; }
+        .cart-total-row.grand span:last-child { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 24px; letter-spacing: -0.02em; }
+        .cart-confirm-note { text-align: center; font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 10px; letter-spacing: 0.06em; color: rgba(255,255,255,0.64); margin-top: 4px; }
+
+        .cart-empty-box { width: 54px; height: 54px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.12); margin: 80px auto 13px; }
+        .cart-empty-title { font-family: 'Golos Text', sans-serif; font-weight: 700; font-size: 16px; text-align: center; }
+        .cart-empty-hint { font-family: 'Golos Text', sans-serif; font-weight: 400; font-size: 13px; line-height: 1.45; color: rgba(255,255,255,0.5); text-align: center; max-width: 220px; margin: 13px auto 0; }
+        .cart-empty-btn { display: block; margin: 20px auto 0; padding: 12px 22px; border-radius: 12px; background: #fff; border: none; font-family: 'Golos Text', sans-serif; font-weight: 700; font-size: 13px; color: #0E0E10; cursor: pointer; }
+
+        .success-wrap { display: flex; flex-direction: column; align-items: center; gap: 15px; padding-top: 96px; text-align: center; }
+        .success-icon { width: 62px; height: 62px; border-radius: 19px; background: #fff; display: flex; align-items: center; justify-content: center; }
+        .success-icon i { color: #0E0E10; font-size: 22px; }
+        .success-title { font-family: 'Unbounded', sans-serif; font-weight: 800; font-size: 23px; letter-spacing: -0.02em; }
+        .success-text { font-family: 'Golos Text', sans-serif; font-weight: 400; font-size: 13px; line-height: 1.5; color: rgba(255,255,255,0.62); max-width: 250px; }
+        .success-btn { margin-top: 8px; padding: 12px 22px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.16); background: none; font-family: 'Golos Text', sans-serif; font-weight: 600; font-size: 13px; color: #fff; cursor: pointer; }
+
+        .internal-header { display: flex; align-items: center; gap: 11px; height: 50px; padding: 0 16px; margin: 0 -16px 0; border-bottom: 1px solid rgba(255,255,255,0.12); }
+        .back-btn { width: 26px; height: 26px; border-radius: 8px; background: rgba(255,255,255,0.09); border: none; color: #fff; font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; padding: 0; }
+        .internal-title { font-family: 'Golos Text', sans-serif; font-weight: 700; font-size: 14.5px; letter-spacing: -0.01em; color: #fff; }
+        .internal-meta { font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 10px; letter-spacing: 0.08em; color: rgba(255,255,255,0.62); }
+
+        .sort-tabs { display: flex; margin: 0 -16px; border-bottom: 1px solid rgba(255,255,255,0.12); }
+        .sort-tab { flex: 1; text-align: center; padding: 13px 4px; font-family: 'Golos Text', sans-serif; font-weight: 600; font-size: 11.5px; color: rgba(255,255,255,0.66); cursor: pointer; box-shadow: inset 0 -2px 0 0 transparent; transition: color 0.15s, box-shadow 0.15s; }
+        .sort-tab.active { color: #fff; box-shadow: inset 0 -2px 0 0 #fff; }
+        .list-count { font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 10px; letter-spacing: 0.09em; color: rgba(255,255,255,0.64); text-transform: uppercase; padding: 12px 0; }
+
+        .list-grid { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid rgba(255,255,255,0.12); margin: 0 -16px; }
+        .list-card { background: #0E0E10; display: flex; flex-direction: column; border-bottom: 1px solid rgba(255,255,255,0.12); }
+        .list-card:nth-child(odd) { border-right: 1px solid rgba(255,255,255,0.12); }
+        .list-card.last-row { border-bottom: none; }
+        .list-photo { position: relative; height: 132px; cursor: pointer; background: repeating-linear-gradient(135deg, #232429 0 5px, #17181C 5px 10px); }
+        .list-photo img { width: 100%; height: 100%; object-fit: cover; display: block; transition: opacity 0.3s ease; }
+        .list-photo .photo-fallback { font-size: 22px; }
+        .list-stock { position: absolute; left: 10px; top: 10px; font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 9.5px; letter-spacing: 0.05em; color: rgba(255,255,255,0.62); }
+        .list-stock.in { color: #fff; }
+        .list-body { padding: 12px 12px 14px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+        .list-name { font-family: 'Golos Text', sans-serif; font-weight: 500; font-size: 12.5px; line-height: 1.32; color: #fff; cursor: pointer; flex: 1; }
+        .list-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+        .list-price { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 14px; color: #fff; }
+        .list-add { min-width: 30px; height: 30px; padding: 0 8px; border-radius: 9px; background: #fff; border: none; font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 13px; color: #0E0E10; cursor: pointer; }
+
+        .top-bar { display: flex; align-items: center; gap: 11px; height: 50px; padding: 0 16px; margin: 0 -16px 0; border-bottom: 1px solid rgba(255,255,255,0.12); }
+        .brand-mini { display: flex; align-items: center; gap: 11px; }
         .mini-logo {
-            width: 32px; height: 32px; border-radius: 9px; flex-shrink: 0;
-            background: linear-gradient(155deg, rgba(255,255,255,0.14), rgba(255,255,255,0.03));
-            border: 1px solid rgba(255,255,255,0.14);
+            width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+            background: #fff;
             display: flex; align-items: center; justify-content: center;
-            font-family: 'Archivo Black', sans-serif; font-size: 12px; letter-spacing: -0.5px;
+            font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 9.5px; color: #0E0E10;
         }
-        .mini-name { font-family: 'Archivo Black', sans-serif; font-size: 16px; letter-spacing: -0.5px; }
-        .mini-tag { font-size: 10px; opacity: 0.35; letter-spacing: 1px; }
-        .menu-dots { background: none; border: none; color: rgba(255,255,255,0.4); font-size: 18px; letter-spacing: 2px; cursor: pointer; padding: 4px 8px; }
+        .mini-name { font-family: 'Unbounded', sans-serif; font-weight: 600; font-size: 14.5px; letter-spacing: -0.02em; }
+        .mini-tag { font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 10px; color: rgba(255,255,255,0.62); letter-spacing: 0.08em; }
+        .menu-dots { margin-left: auto; background: none; border: none; color: rgba(255,255,255,0.62); font-size: 19px; letter-spacing: 1px; cursor: pointer; padding: 4px 8px; font-family: system-ui; }
 
-        .status-line { font-size: 11px; letter-spacing: 1px; opacity: 0.45; text-transform: uppercase; margin-bottom: 22px; }
+        .status-line { display: flex; align-items: center; gap: 7px; margin-top: 26px; font-family: 'JetBrains Mono', monospace; }
+        .status-line .label { font-weight: 500; font-size: 10px; color: #fff; letter-spacing: 0.12em; transition: color 0.3s; }
+        .status-line .meta { font-weight: 500; font-size: 10px; color: rgba(255,255,255,0.62); letter-spacing: 0.08em; }
+        .status-line.offline .label { color: rgba(255,255,255,0.62); }
 
-        .hero-title { font-family: 'Archivo Black', sans-serif; font-size: 32px; line-height: 1.08; letter-spacing: -0.5px; margin-bottom: 14px; }
-        .hero-title .glitch {
-            text-shadow:
-                -1px 0 1px rgba(255, 255, 255, 0.9),
-                -4px 0 6px rgba(255, 255, 255, 0.45),
-                -9px 0 14px rgba(255, 255, 255, 0.25),
-                -16px 0 26px rgba(255, 255, 255, 0.12);
-        }
-        .hero-sub { font-size: 13px; opacity: 0.5; line-height: 1.5; margin-bottom: 22px; }
+        .hero-title { font-family: 'Unbounded', sans-serif; font-weight: 800; font-size: 27px; line-height: 1.08; letter-spacing: -0.045em; margin-top: 16px; }
+        .hero-sub { font-family: 'Golos Text', sans-serif; font-weight: 400; font-size: 13px; line-height: 1.45; color: rgba(255,255,255,0.66); max-width: 250px; margin-top: 11px; }
 
-        .search-wrap { position: relative; margin-bottom: 16px; }
-        .search-wrap .search-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); opacity: 0.35; font-size: 14px; pointer-events: none; }
-        .search-box-icon { padding-left: 42px !important; padding-right: 52px !important; }
-        .kbd-hint { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-size: 10px; opacity: 0.3; border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 2px 6px; pointer-events: none; }
+        .search-wrap { position: relative; margin-top: 20px; margin-bottom: 22px; }
+        .search-wrap .search-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.7); font-size: 14px; pointer-events: none; }
+        .search-box-icon { padding-left: 42px !important; padding-right: 52px !important; font-family: 'Golos Text', sans-serif !important; font-size: 13.5px !important; }
+        .kbd-hint { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 9.5px; color: rgba(255,255,255,0.62); letter-spacing: 0.06em; pointer-events: none; }
 
-        .draft-order { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: #fff; border: none; border-radius: 16px; padding: 14px 16px; margin-bottom: 18px; cursor: pointer; }
-        .draft-order i { color: #000; opacity: 0.4; }
-        .draft-title { font-weight: 800; font-size: 13px; color: #000; }
-        .draft-sub { font-size: 10px; opacity: 0.55; margin-top: 3px; text-transform: uppercase; letter-spacing: 0.5px; color: #000; }
+        .draft-order { display: flex; align-items: center; justify-content: space-between; gap: 13px; background: #fff; border: none; border-radius: 0; padding: 14px 16px; margin: 0 -16px 0; cursor: pointer; }
+        .draft-order i { color: #0E0E10; opacity: 0.7; }
+        .draft-title { font-family: 'Golos Text', sans-serif; font-weight: 700; font-size: 13.5px; color: #0E0E10; }
+        .draft-sub { font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 11px; letter-spacing: 0.03em; margin-top: 3px; color: rgba(0,0,0,0.62); text-transform: uppercase; }
 
-        .section-head { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 14px; margin: 4px 0 12px; }
-        .section-head .section-tag { font-weight: 400; font-size: 11px; opacity: 0.35; text-transform: uppercase; letter-spacing: 0.5px; }
-        .hit-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; }
-        .hit-thumb { width: 44px; height: 44px; border-radius: 10px; overflow: hidden; flex-shrink: 0; background: repeating-linear-gradient(45deg, rgba(255,255,255,0.07) 0 2px, transparent 2px 7px), rgba(255,255,255,0.04); }
+        .section-head { display: flex; justify-content: space-between; align-items: baseline; margin: 20px 0 13px; }
+        #hits-list { padding-bottom: 22px; }
+        .section-head span:first-child { font-family: 'Unbounded', sans-serif; font-weight: 600; font-size: 15px; letter-spacing: -0.035em; }
+        .section-head .section-tag { font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 10px; color: rgba(255,255,255,0.62); letter-spacing: 0.06em; text-transform: uppercase; }
+        .hit-row { display: flex; align-items: center; gap: 14px; padding: 13px 0; border-top: 1px solid rgba(255,255,255,0.12); cursor: pointer; }
+        .hit-thumb { width: 48px; height: 48px; border-radius: 24px; overflow: hidden; flex-shrink: 0; background: repeating-linear-gradient(135deg, #232429 0 5px, #17181C 5px 10px); }
         .hit-thumb img { width: 100%; height: 100%; object-fit: cover; }
         .hit-info { flex: 1; min-width: 0; }
-        .hit-name { font-size: 13px; font-weight: 700; }
-        .hit-meta { font-size: 11px; opacity: 0.4; margin-top: 2px; }
-        .hit-price { font-weight: 800; font-size: 14px; white-space: nowrap; }
+        .hit-name { font-family: 'Golos Text', sans-serif; font-weight: 500; font-size: 13.5px; line-height: 1.3; }
+        .hit-meta { font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 10.5px; letter-spacing: 0.04em; color: rgba(255,255,255,0.62); margin-top: 4px; }
+        .hit-price { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 14.5px; white-space: nowrap; }
 
-        .card, .stat-card, .profile-section {
+        .card, .profile-section {
             position: relative;
             overflow: hidden;
             background: rgba(255,255,255,0.045);
@@ -130,7 +182,7 @@
             border-radius: 22px;
         }
         .card { padding: 16px 14px; cursor: pointer; transition: transform 0.15s ease, border-color 0.15s ease; text-align: center; display: block; }
-        .card:active, .stat-card:active { transform: scale(0.97); border-color: rgba(255,255,255,0.22); }
+        .card:active { transform: scale(0.97); border-color: rgba(255,255,255,0.22); }
 
         .photo-frame { position: relative; width: 100%; aspect-ratio: 4 / 3; border-radius: 14px; margin-bottom: 12px; overflow: hidden; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); }
         .photo-frame img { width: 100%; height: 100%; object-fit: cover; display: block; transition: opacity 0.3s ease; }
@@ -141,17 +193,19 @@
         .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .product-grid .card { margin-bottom: 0; }
 
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 26px; }
-        .stat-card { display: flex; flex-direction: column; justify-content: space-between; min-height: 132px; padding: 18px; cursor: pointer; text-align: left; transition: transform 0.15s ease; }
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: rgba(255,255,255,0.12); border-bottom: 1px solid rgba(255,255,255,0.12); margin: 0 -16px; }
+        .stat-card { background: #0E0E10; display: flex; flex-direction: column; gap: 20px; padding: 20px 16px; cursor: pointer; text-align: left; transition: background 0.15s ease; }
+        .stat-card:active { background: rgba(255,255,255,0.06); }
         .stat-top { display: flex; justify-content: space-between; align-items: flex-start; }
-        .stat-code { font-size: 10px; opacity: 0.4; letter-spacing: 1px; font-weight: 800; }
-        .stat-index { font-family: 'Archivo Black', sans-serif; font-size: 22px; color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,0.3); }
-        .stat-name { font-weight: 800; font-size: 16px; margin-bottom: 4px; }
-        .stat-meta { font-size: 11px; opacity: 0.4; }
+        .stat-code { font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 10px; letter-spacing: 0.1em; color: rgba(255,255,255,0.64); }
+        .stat-index { font-family: 'Unbounded', sans-serif; font-weight: 400; font-size: 26px; line-height: 0.8; letter-spacing: -0.04em; color: rgba(255,255,255,0.18); }
+        .stat-name { font-family: 'Unbounded', sans-serif; font-weight: 600; font-size: 16px; line-height: 1.1; letter-spacing: -0.035em; }
+        .stat-meta { font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 11.5px; color: rgba(255,255,255,0.7); margin-top: 8px; }
         .price { font-size: 24px; font-weight: 900; margin-top: 10px; }
         .buy { background: #fff; color: #000; border: none; padding: 20px; border-radius: 18px; font-weight: 900; width: 100%; cursor: pointer; transition: 0.2s; }
 
-        .search-box { background: rgba(255,255,255,0.045); border: 1px solid rgba(255,255,255,0.09); border-radius: 22px; padding: 15px; width: 100%; color: #fff; margin-bottom: 25px; outline: none; }
+        .search-box { background: transparent; border: 1px solid rgba(255,255,255,0.22); border-radius: 23px; height: 46px; padding: 0 15px; width: 100%; color: #fff; margin-bottom: 25px; outline: none; box-sizing: border-box; }
+        .search-wrap .search-box { margin-bottom: 0; }
         .back { color: rgba(255,255,255,0.5); padding: 15px 0; display: block; text-align: center; font-weight: 800; font-size: 13px; cursor: pointer; }
 
         #chat-box { height: calc(100vh - 320px); overflow-y: auto; padding-right: 10px; margin-bottom: 15px; }
@@ -160,18 +214,15 @@
         .ai-msg { color: #fff; margin-bottom: 15px; font-size: 14px; line-height: 1.4; white-space: pre-wrap; }
         .user-msg { color: rgba(255,255,255,0.5); margin-bottom: 15px; font-size: 14px; text-align: right; }
 
-        .hotbar { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); width: 92%; background: rgba(15, 15, 17, 0.95); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); border-radius: 35px; display: flex; justify-content: space-around; padding: 12px; z-index: 2000; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: rgba(255,255,255,0.2); font-size: 18px; transition: 0.3s; cursor: pointer; }
-        .nav-item.active { color: #fff; }
-        .nav-item::after { content: ''; width: 14px; height: 2px; margin-top: 1px; border-radius: 2px; background: transparent; transition: background 0.3s; }
-        .nav-item.active::after { background: #fff; }
-        .nav-label { font-size: 9px; font-weight: 800; letter-spacing: 0.3px; text-transform: uppercase; }
+        .hotbar { position: absolute; left: 0; right: 0; bottom: 0; background: #0E0E10; border-top: 1px solid rgba(255,255,255,0.12); display: flex; padding: 0 6px 12px; z-index: 2000; }
+        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 11px 0 5px; color: rgba(255,255,255,0.62); font-size: 19px; cursor: pointer; box-shadow: inset 0 2px 0 0 transparent; transition: color 0.2s, box-shadow 0.2s; }
+        .nav-item.active { color: #fff; box-shadow: inset 0 2px 0 0 #fff; }
+        .nav-label { font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 9.5px; letter-spacing: 0.05em; text-transform: uppercase; }
         .nav-icon-wrap { position: relative; display: inline-flex; }
-        .cart-badge { display: flex; position: absolute; top: -6px; right: -9px; background: #ff3131; color: #fff; font-size: 10px; font-weight: 800; min-width: 16px; height: 16px; border-radius: 8px; align-items: center; justify-content: center; padding: 0 4px; text-shadow: none; transform: scale(0); opacity: 0; transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease; }
+        .cart-badge { display: flex; position: absolute; top: -6px; right: -8px; background: #fff; color: #0E0E10; font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 9.5px; min-width: 15px; height: 15px; border-radius: 8px; align-items: center; justify-content: center; padding: 0 3px; transform: scale(0); opacity: 0; transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease; }
         .cart-badge.show { transform: scale(1); opacity: 1; }
         @keyframes cartBump { 0% { transform: scale(1); } 35% { transform: scale(1.3); } 65% { transform: scale(0.92); } 100% { transform: scale(1); } }
         .nav-item.bump { animation: cartBump 0.4s ease; }
-        .buy.added { background: #00ff88; color: #000; }
 
         .qty-stepper { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.06); border-radius: 10px; padding: 4px 10px; }
         .qty-stepper button { background: none; border: none; color: #fff; font-size: 16px; font-weight: 800; cursor: pointer; width: 18px; line-height: 1; padding: 2px 0; }
@@ -180,17 +231,35 @@
         .profile-section { padding: 20px; margin-bottom: 15px; text-align: left; }
         .section-label { font-weight: 900; font-size: 12px; opacity: 0.4; text-transform: uppercase; margin-bottom: 8px; display: block; }
         
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 8px; background: #ff4d4d; transition: 0.3s; }
-        .status-dot.online { background: #00ff88; box-shadow: 0 0 10px #00ff88; }
+        .status-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; background: #fff; opacity: 0.3; transition: opacity 0.3s; }
+        .status-dot.online { opacity: 1; }
         
         .skeleton-line { background: rgba(255, 255, 255, 0.1); height: 12px; border-radius: 6px; margin: 5px 0; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.7; } }
 
-        .modal { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: #0d0d0f; z-index: 3000; display: none; 
-            padding: 20px; overflow-y: auto; 
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #0E0E10; z-index: 3000; display: none;
+            padding: 0 16px 20px; overflow-y: auto;
         }
+        .pd-photo { position: relative; height: 250px; margin: 0 -16px; background: repeating-linear-gradient(135deg, #232429 0 8px, #17181C 8px 16px); }
+        .pd-photo img { width: 100%; height: 100%; object-fit: cover; display: block; transition: opacity 0.3s ease; }
+        .pd-photo .photo-fallback { font-size: 40px; }
+        .pd-photo-caption { position: absolute; left: 16px; bottom: 14px; font-family: 'JetBrains Mono', monospace; font-weight: 400; font-size: 9px; letter-spacing: 0.08em; color: rgba(255,255,255,0.4); }
+        .pd-stock-badge { position: absolute; right: 16px; top: 14px; padding: 5px 10px; border-radius: 8px; background: rgba(14,14,16,0.72); font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 9.5px; letter-spacing: 0.06em; color: rgba(255,255,255,0.68); }
+        .pd-stock-badge.in { color: #fff; }
+        .pd-body { padding: 20px 0 22px; display: flex; flex-direction: column; gap: 18px; text-align: left; }
+        .pd-cat { font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 10px; letter-spacing: 0.12em; color: #fff; }
+        .pd-name { font-family: 'Unbounded', sans-serif; font-weight: 600; font-size: 22px; line-height: 1.14; letter-spacing: -0.03em; margin-top: 8px; }
+        .pd-price { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 30px; letter-spacing: -0.02em; margin-top: 14px; }
+        .spec-row { display: flex; align-items: baseline; gap: 10px; padding: 11px 0; border-top: 1px solid rgba(255,255,255,0.12); }
+        .spec-key { font-family: 'Golos Text', sans-serif; font-weight: 400; font-size: 12.5px; color: rgba(255,255,255,0.62); white-space: nowrap; }
+        .spec-dots { flex: 1; border-bottom: 1px dotted rgba(255,255,255,0.16); transform: translateY(-3px); }
+        .spec-val { font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 12.5px; color: #fff; white-space: nowrap; }
+        .pd-guarantee { display: flex; align-items: center; gap: 10px; padding: 13px 14px; border-radius: 13px; border: 1px solid rgba(255,255,255,0.12); }
+        .pd-guarantee .dot { width: 5px; height: 5px; border-radius: 3px; background: #fff; flex-shrink: 0; }
+        .pd-guarantee span:last-child { font-family: 'Golos Text', sans-serif; font-weight: 500; font-size: 11.5px; line-height: 1.4; color: rgba(255,255,255,0.7); }
+        .pd-buy { width: 100%; padding: 16px 0; border-radius: 14px; background: #fff; border: none; text-align: center; font-family: 'Golos Text', sans-serif; font-weight: 800; font-size: 14.5px; color: #0E0E10; cursor: pointer; }
         .modal.active { display: block; animation: slideUp 0.32s cubic-bezier(0.16, 1, 0.3, 1); }
         .modal.closing { display: block; animation: slideDown 0.32s cubic-bezier(0.4, 0, 0.7, 0.2); }
         @keyframes slideUp { from { transform: translateY(100%); opacity: 0.4; } to { transform: translateY(0); opacity: 1; } }
@@ -213,13 +282,14 @@
             <button class="menu-dots" onclick="openPage('profile')">•••</button>
         </div>
 
-        <div class="status-line">
+        <div class="status-line" id="status-line">
             <span id="status-dot" class="status-dot"></span>
-            СКЛАД ОНЛАЙН // ТОМСК // <span id="sku-count">0</span> SKU
+            <span class="label" id="status-label">СКЛАД ОФФЛАЙН</span>
+            <span class="meta">// ТОМСК // <span id="sku-count">0</span> SKU</span>
         </div>
 
-        <h1 class="hero-title"><span class="glitch">Железо</span><br>без ожидания</h1>
-        <p class="hero-sub">Заказ до 18:00 — доставка завтра. Проверка и стресс-тест перед отправкой.</p>
+        <h1 class="hero-title">Железо<br>без ожидания</h1>
+        <p class="hero-sub">Заказ до 18:00 — самовывоз в Томске в этот же день. Проверка и стресс-тест перед выдачей.</p>
 
         <div class="search-wrap">
             <i class="fa-solid fa-magnifying-glass search-icon"></i>
@@ -241,23 +311,19 @@
         <div id="category-grid" class="stat-grid">
             <div class="stat-card" onclick="openPage('gpu-list')">
                 <div class="stat-top"><span class="stat-code">GPU</span><span class="stat-index">01</span></div>
-                <div class="stat-name">Видеокарты</div>
-                <div class="stat-meta" id="stat-gpu">—</div>
+                <div><div class="stat-name">Видеокарты</div><div class="stat-meta" id="stat-gpu">—</div></div>
             </div>
             <div class="stat-card" onclick="openPage('cpu-list')">
                 <div class="stat-top"><span class="stat-code">CPU</span><span class="stat-index">02</span></div>
-                <div class="stat-name">Процессоры</div>
-                <div class="stat-meta" id="stat-cpu">—</div>
+                <div><div class="stat-name">Процессоры</div><div class="stat-meta" id="stat-cpu">—</div></div>
             </div>
             <div class="stat-card" onclick="openPage('ram-list')">
                 <div class="stat-top"><span class="stat-code">RAM</span><span class="stat-index">03</span></div>
-                <div class="stat-name">Память</div>
-                <div class="stat-meta" id="stat-ram">—</div>
+                <div><div class="stat-name">Память</div><div class="stat-meta" id="stat-ram">—</div></div>
             </div>
             <div class="stat-card" onclick="openPage('peripheral-list')">
                 <div class="stat-top"><span class="stat-code">PER</span><span class="stat-index">04</span></div>
-                <div class="stat-name">Периферия</div>
-                <div class="stat-meta" id="stat-per">—</div>
+                <div><div class="stat-name">Периферия</div><div class="stat-meta" id="stat-per">—</div></div>
             </div>
         </div>
 
@@ -266,41 +332,90 @@
     </div>
 
     <div id="gpu-list" class="page">
-        <div class="back" onclick="openPage('home')">← ТЕРМИНАЛ</div>
-        <input type="text" class="search-box" placeholder="ПОИСК..." oninput="filterItems(this, 'gpu-items', 'gpu-empty')">
-        <div id="gpu-items" class="product-grid">
+        <div class="internal-header">
+            <button class="back-btn" onclick="openPage('home')">‹</button>
+            <span class="internal-title">Видеокарты</span>
+            <span class="internal-meta">// GPU</span>
+            <button class="menu-dots" onclick="openPage('profile')">•••</button>
         </div>
+        <div class="sort-tabs" id="gpu-sort"></div>
+        <div class="list-count" id="gpu-count"></div>
+        <input type="text" class="search-box" placeholder="ПОИСК..." oninput="filterItems(this, 'gpu-items', 'gpu-empty')">
+        <div id="gpu-items" class="list-grid"></div>
         <div id="gpu-empty" class="no-results" style="display:none; text-align:center; opacity:0.4;">НИЧЕГО НЕ НАЙДЕНО</div>
     </div>
 
     <div id="cpu-list" class="page">
-        <div class="back" onclick="openPage('home')">← ТЕРМИНАЛ</div>
-        <input type="text" class="search-box" placeholder="ПОИСК..." oninput="filterItems(this, 'cpu-items', 'cpu-empty')">
-        <div id="cpu-items" class="product-grid">
+        <div class="internal-header">
+            <button class="back-btn" onclick="openPage('home')">‹</button>
+            <span class="internal-title">Процессоры</span>
+            <span class="internal-meta">// CPU</span>
+            <button class="menu-dots" onclick="openPage('profile')">•••</button>
         </div>
+        <div class="sort-tabs" id="cpu-sort"></div>
+        <div class="list-count" id="cpu-count"></div>
+        <input type="text" class="search-box" placeholder="ПОИСК..." oninput="filterItems(this, 'cpu-items', 'cpu-empty')">
+        <div id="cpu-items" class="list-grid"></div>
         <div id="cpu-empty" class="no-results" style="display:none; text-align:center; opacity:0.4;">НИЧЕГО НЕ НАЙДЕНО</div>
     </div>
 
     <div id="ram-list" class="page">
-        <div class="back" onclick="openPage('home')">← ТЕРМИНАЛ</div>
+        <div class="internal-header">
+            <button class="back-btn" onclick="openPage('home')">‹</button>
+            <span class="internal-title">Память</span>
+            <span class="internal-meta">// RAM</span>
+            <button class="menu-dots" onclick="openPage('profile')">•••</button>
+        </div>
+        <div class="sort-tabs" id="ram-sort"></div>
+        <div class="list-count" id="ram-count"></div>
         <input type="text" class="search-box" placeholder="ПОИСК..." oninput="filterItems(this, 'ram-items', 'ram-empty')">
-        <div id="ram-items" class="product-grid"></div>
+        <div id="ram-items" class="list-grid"></div>
         <div id="ram-empty" class="no-results" style="text-align:center; opacity:0.4;">Скоро здесь появится память — модули RAM в наличии.</div>
     </div>
 
     <div id="peripheral-list" class="page">
-        <div class="back" onclick="openPage('home')">← ТЕРМИНАЛ</div>
+        <div class="internal-header">
+            <button class="back-btn" onclick="openPage('home')">‹</button>
+            <span class="internal-title">Периферия</span>
+            <span class="internal-meta">// PER</span>
+            <button class="menu-dots" onclick="openPage('profile')">•••</button>
+        </div>
+        <div class="sort-tabs" id="per-sort"></div>
+        <div class="list-count" id="per-count"></div>
         <input type="text" class="search-box" placeholder="ПОИСК..." oninput="filterItems(this, 'per-items', 'per-empty')">
-        <div id="per-items" class="product-grid"></div>
+        <div id="per-items" class="list-grid"></div>
         <div id="per-empty" class="no-results" style="display:none; text-align:center; opacity:0.4;">НИЧЕГО НЕ НАЙДЕНО</div>
     </div>
 
     <div id="cart" class="page">
-        <h2 style="margin-bottom: 20px;">КОРЗИНА</h2>
-        <div id="cart-content" class="profile-section"></div>
+        <div class="internal-header">
+            <button class="back-btn" onclick="openPage('home')">‹</button>
+            <span class="internal-title">Корзина</span>
+            <span class="internal-meta" id="cart-meta"></span>
+            <button class="menu-dots" onclick="openPage('profile')">•••</button>
+        </div>
+        <div id="cart-lines"></div>
+        <div id="cart-empty" style="display:none;">
+            <div class="cart-empty-box"></div>
+            <div class="cart-empty-title">Корзина пуста</div>
+            <div class="cart-empty-hint">Соберите конфигурацию или загляните в хиты недели</div>
+            <button class="cart-empty-btn" onclick="openPage('home')">В каталог</button>
+        </div>
         <div id="cart-footer" style="display:none;">
-            <div class="price" id="total-price" style="margin-bottom:20px;">0 ₽</div>
-            <button class="buy" onclick="placeOrder()">ОФОРМИТЬ ЗАКАЗ</button>
+            <div class="cart-total-row"><span>Товары</span><span id="cart-goods-total">0 ₽</span></div>
+            <div class="cart-total-row"><span>Самовывоз, Томск</span><span>БЕСПЛАТНО, СЕГОДНЯ</span></div>
+            <div class="cart-total-row grand"><span>Итого</span><span id="total-price">0 ₽</span></div>
+            <button class="pd-buy" style="margin-top: 6px;" onclick="placeOrder()">Оформить заказ</button>
+            <div class="cart-confirm-note">ПОДТВЕРЖДЕНИЕ ПРИДЁТ В ЭТОТ ЧАТ</div>
+        </div>
+    </div>
+
+    <div id="order-success" class="page">
+        <div class="success-wrap">
+            <div class="success-icon"><i class="fa-solid fa-check"></i></div>
+            <div class="success-title" id="success-order-title">Заказ принят</div>
+            <div class="success-text">Менеджер подтвердит наличие в чате в течение 10 минут. Уточним время самовывоза в Томске.</div>
+            <button class="success-btn" onclick="openPage('home')">Вернуться в каталог</button>
         </div>
     </div>
 
@@ -405,8 +520,13 @@
 </div>
 
 <div id="product-modal" class="modal">
-    <div class="back" onclick="closeProduct()">✕ ЗАКРЫТЬ</div>
-    <div id="modal-content" style="text-align: center;"></div>
+    <div class="internal-header">
+        <button class="back-btn" onclick="closeProduct()">‹</button>
+        <span class="internal-title">Товар</span>
+        <span class="internal-meta" id="pd-meta"></span>
+        <button class="menu-dots" onclick="openPage('profile')">•••</button>
+    </div>
+    <div id="modal-content"></div>
 </div>
 
 <script>
@@ -416,173 +536,93 @@
     const API_URL = "https://pliable-yeast-prudishly.ngrok-free.dev";
     
    const products = [
-    { 
-        id: 'rx580', 
-        category: 'gpu', 
+    {
+        id: 'rx580',
+        category: 'gpu',
         name: 'Sapphire Nitro+ RX 580',
         tags: 'видеокарта видюха сапфир рх 580 амд',
-        price: 5800, 
-        img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/rx580.jpg', 
-        desc: `
-            <div style="font-family: monospace; pointer-events: none;">
-                <div style="color: #00ff88; font-weight: 900; font-size: 14px; margin-bottom: 12px; letter-spacing: 1px; text-shadow: 0 0 5px #00ff88, 0 0 12px rgba(0, 255, 136, 0.6);">[ КЛАСС: B ]</div>
-                <div class="spec-line"><span>ОБЪЕМ ПАМЯТИ</span><span>8 ГБ</span></div>
-                <div class="spec-line"><span>ТИП ПАМЯТИ</span><span>GDDR5</span></div>
-                <div class="spec-line"><span>ШИНА ПАМЯТИ</span><span>256 БИТ</span></div>
-                <div class="spec-line"><span>ИНТЕРФЕЙС</span><span>PCI-E 3.0</span></div>
-                <div class="spec-line"><span>РАЗЪЕМЫ</span><span>2xHDMI, 2xDP, DVI</span></div>
-                <div class="spec-line"><span>ДОП. ПИТАНИЕ</span><span>8+6 PIN</span></div>
-                <div class="ready-status" style="margin-top:12px; color:#00ff88; font-size:11px; letter-spacing:2px; font-weight: bold; text-shadow: 0 0 8px #00ff88;">
-                    >>> СТАБИЛЬНОСТЬ ПОДТВЕРЖДЕНА
-                </div>
-            </div>` 
+        price: 5800,
+        stock: null, // TODO: укажи реальный остаток в штуках
+        img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/rx580.jpg',
+        grade: 'B', gradeColor: '#00ff88',
+        specs: [['Объём памяти', '8 ГБ'], ['Тип памяти', 'GDDR5'], ['Шина памяти', '256 бит'], ['Интерфейс', 'PCI-E 3.0'], ['Разъёмы', '2xHDMI, 2xDP, DVI'], ['Доп. питание', '8+6 pin']]
     },
-    { 
-        id: 'rtx3050', 
-        category: 'gpu', 
+    {
+        id: 'rtx3050',
+        category: 'gpu',
         name: 'ASUS Dual RTX 3050',
         tags: 'видеокарта видюха асус ртх 3050 нвидиа',
-        price: 22000, 
-        img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/rtx3050.jpg', 
-        desc: `
-            <div style="font-family: monospace; pointer-events: none;">
-                <div style="color: #ffb300; font-weight: 900; font-size: 14px; margin-bottom: 12px; letter-spacing: 1px; text-shadow: 0 0 5px #ffb300, 0 0 12px rgba(255, 179, 0, 0.6);">[ КЛАСС: A+ ]</div>
-                <div class="spec-line"><span>ОБЪЕМ ПАМЯТИ</span><span>8 ГБ</span></div>
-                <div class="spec-line"><span>ТИП ПАМЯТИ</span><span>GDDR6</span></div>
-                <div class="spec-line"><span>ТЕХНОЛОГИИ</span><span>RAY TRACING / DLSS</span></div>
-                <div class="spec-line"><span>АРХИТЕКТУРА</span><span>NVIDIA AMPERE</span></div>
-                <div class="spec-line"><span>ИНТЕРФЕЙС</span><span>PCI-E 4.0</span></div>
-                <div class="spec-line"><span>РЕКОМ. БП</span><span>450-550W</span></div>
-                <div class="ready-status" style="margin-top:12px; color:#ffb300; font-size:11px; letter-spacing:2px; font-weight: bold; text-shadow: 0 0 8px #ffb300;">
-                    >>> NVIDIA DLSS SUPPORT
-                </div>
-            </div>` 
+        price: 22000,
+        stock: null, // TODO: укажи реальный остаток в штуках
+        img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/rtx3050.jpg',
+        grade: 'A+', gradeColor: '#ffb300',
+        specs: [['Объём памяти', '8 ГБ'], ['Тип памяти', 'GDDR6'], ['Технологии', 'Ray Tracing / DLSS'], ['Архитектура', 'NVIDIA Ampere'], ['Интерфейс', 'PCI-E 4.0'], ['Реком. БП', '450-550W']]
     },
-    { 
-        id: 'r5_5600x', 
-        category: 'cpu', 
+    {
+        id: 'r5_5600x',
+        category: 'cpu',
         name: 'AMD Ryzen 5 5600X',
         tags: 'процессор проц амд райзен 5600',
-        price: 12500, 
-        img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/r5_5600x.jpg', 
-        desc: `
-            <div style="font-family: monospace; pointer-events: none;">
-                <div style="color: #ffb300; font-weight: 900; font-size: 14px; margin-bottom: 12px; letter-spacing: 1px; text-shadow: 0 0 5px #ffb300, 0 0 12px rgba(255, 179, 0, 0.6);">[ КЛАСС: A+ ]</div>
-                <div class="spec-line"><span>СОКЕТ</span><span>AM4</span></div>
-                <div class="spec-line"><span>ЯДРА / ПОТОКИ</span><span>6 / 12</span></div>
-                <div class="spec-line"><span>БАЗОВАЯ ЧАСТОТА</span><span>3.7 ГГЦ</span></div>
-                <div class="spec-line"><span>ТУРБО ЧАСТОТА</span><span>4.6 ГГЦ</span></div>
-                <div class="spec-line"><span>КЭШ L3</span><span>32 МБ</span></div>
-                <div class="spec-line"><span>ТЕХПРОЦЕСС</span><span>7 НМ</span></div>
-                <div class="ready-status" style="margin-top:12px; color:#ffb300; font-size:11px; letter-spacing:2px; font-weight: bold; text-shadow: 0 0 8px #ffb300;">
-                    >>> АРХИТЕКТУРА ZEN 3
-                </div>
-            </div>` 
+        price: 12500,
+        stock: null, // TODO: укажи реальный остаток в штуках
+        img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/r5_5600x.jpg',
+        grade: 'A+', gradeColor: '#ffb300',
+        specs: [['Сокет', 'AM4'], ['Ядра / потоки', '6 / 12'], ['Базовая частота', '3.7 ГГц'], ['Турбо частота', '4.6 ГГц'], ['Кэш L3', '32 МБ'], ['Техпроцесс', '7 нм']]
     },
-    { 
-        id: 'gpro', 
-        category: 'per', 
+    {
+        id: 'gpro',
+        category: 'per',
         name: 'Logitech G Pro X Superlight',
         tags: 'мышь мышка логитек беспроводная',
-        price: 9200, 
-        img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/gpro.jpg', 
-        desc: `
-            <div style="font-family: monospace; pointer-events: none;">
-                <div style="color: #ff3131; font-weight: 900; font-size: 14px; margin-bottom: 12px; letter-spacing: 1px; text-shadow: 0 0 5px #ff3131, 0 0 12px rgba(255, 49, 49, 0.6);">[ КЛАСС: S ]</div>
-                <div class="spec-line"><span>ВЕС</span><span>МЕНЕЕ 63 ГРАММ</span></div>
-                <div class="spec-line"><span>СЕНСОР</span><span>HERO 25K</span></div>
-                <div class="spec-line"><span>ТИП СВЯЗИ</span><span>БЕСПРОВОДНАЯ</span></div>
-                <div class="spec-line"><span>АККУМУЛЯТОР</span><span>ДО 70 ЧАСОВ</span></div>
-                <div class="spec-line"><span>МАКС. DPI</span><span>25600</span></div>
-                <div class="spec-line"><span>ГЛАЙДЫ</span><span>100% PTFE</span></div>
-                <div class="ready-status" style="margin-top:12px; color:#ff3131; font-size:11px; letter-spacing:2px; font-weight: bold; text-shadow: 0 0 8px #ff3131;">
-                    >>> LIGHTSPEED TECHNOLOGY
-                </div>
-            </div>` 
+        price: 9200,
+        stock: null, // TODO: укажи реальный остаток в штуках
+        img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/gpro.jpg',
+        grade: 'S', gradeColor: '#ff3131',
+        specs: [['Вес', 'менее 63 г'], ['Сенсор', 'HERO 25K'], ['Тип связи', 'беспроводная'], ['Аккумулятор', 'до 70 часов'], ['Макс. DPI', '25 600'], ['Глайды', '100% PTFE']]
     },
-    { 
-        id: 'gtx1660super', 
-        category: 'gpu', 
+    {
+        id: 'gtx1660super',
+        category: 'gpu',
         name: 'Gigabyte GTX 1660 Super OC',
         tags: 'видеокарта видюха гигабайт гтх 1660 нвидиа',
-        price: 11500, 
-        img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/1660s.jpg', 
-        desc: `
-            <div style="font-family: monospace; pointer-events: none;">
-                <div style="color: #ffb300; font-weight: 900; font-size: 14px; margin-bottom: 12px; letter-spacing: 1px; text-shadow: 0 0 5px #ffb300, 0 0 12px rgba(255, 179, 0, 0.6);">[ КЛАСС: A ]</div>
-                <div class="spec-line"><span>ОБЪЕМ ПАМЯТИ</span><span>6 ГБ</span></div>
-                <div class="spec-line"><span>ТИП ПАМЯТИ</span><span>GDDR6</span></div>
-                <div class="spec-line"><span>ШИНА ПАМЯТИ</span><span>192 БИТ</span></div>
-                <div class="spec-line"><span>ЧАСТОТА ЧИПА</span><span>1830 МГЦ</span></div>
-                <div class="spec-line"><span>ОХЛАЖДЕНИЕ</span><span>WINDFORCE 2X</span></div>
-                <div class="spec-line"><span>ДОП. ПИТАНИЕ</span><span>8 PIN</span></div>
-                <div class="ready-status" style="margin-top:12px; color:#ffb300; font-size:11px; letter-spacing:2px; font-weight: bold; text-shadow: 0 0 8px #ffb300;">
-                    >>> ИДЕАЛЬНО ДЛЯ FULL HD
-                </div>
-            </div>` 
+        price: 11500,
+        stock: null, // TODO: укажи реальный остаток в штуках
+        img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/1660s.jpg',
+        grade: 'A', gradeColor: '#ffb300',
+        specs: [['Объём памяти', '6 ГБ'], ['Тип памяти', 'GDDR6'], ['Шина памяти', '192 бит'], ['Частота чипа', '1830 МГц'], ['Охлаждение', 'WindForce 2X'], ['Доп. питание', '8 pin']]
     },
-    { 
-        id: 'r5_3600', 
-        category: 'cpu', 
+    {
+        id: 'r5_3600',
+        category: 'cpu',
         name: 'AMD Ryzen 5 3600',
         tags: 'процессор проц амд райзен 3600',
-        price: 6400, 
-        img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/r5_3600.jpg', 
-        desc: `
-            <div style="font-family: monospace; pointer-events: none;">
-                <div style="color: #00ff88; font-weight: 900; font-size: 14px; margin-bottom: 12px; letter-spacing: 1px; text-shadow: 0 0 5px #00ff88, 0 0 12px rgba(0, 255, 136, 0.6);">[ КЛАСС: B ]</div>
-                <div class="spec-line"><span>СОКЕТ</span><span>AM4</span></div>
-                <div class="spec-line"><span>ЯДРА / ПОТОКИ</span><span>6 / 12</span></div>
-                <div class="spec-line"><span>БАЗОВАЯ ЧАСТОТА</span><span>3.6 ГГЦ</span></div>
-                <div class="spec-line"><span>ТУРБО ЧАСТОТА</span><span>4.2 ГГЦ</span></div>
-                <div class="spec-line"><span>КЭШ L3</span><span>32 МБ</span></div>
-                <div class="spec-line"><span>ТЕХПРОЦЕСС</span><span>7 НМ</span></div>
-                <div class="ready-status" style="margin-top:12px; color:#00ff88; font-size:11px; letter-spacing:2px; font-weight: bold; text-shadow: 0 0 8px #00ff88;">
-                    >>> НАДЕЖНЫЙ НАРОДНЫЙ ХИТ
-                </div>
-            </div>` 
+        price: 6400,
+        stock: null, // TODO: укажи реальный остаток в штуках
+        img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/r5_3600.jpg',
+        grade: 'B', gradeColor: '#00ff88',
+        specs: [['Сокет', 'AM4'], ['Ядра / потоки', '6 / 12'], ['Базовая частота', '3.6 ГГц'], ['Турбо частота', '4.2 ГГц'], ['Кэш L3', '32 МБ'], ['Техпроцесс', '7 нм']]
     },
-    { 
-        id: 'vxe_r1_se', 
-        category: 'per', 
+    {
+        id: 'vxe_r1_se',
+        category: 'per',
         name: 'VXE R1 SE Wireless',
         tags: 'мышь мышка беспроводная',
-        price: 2200, 
-        img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/vxe_r1.jpg', 
-        desc: `
-            <div style="font-family: monospace; pointer-events: none;">
-                <div style="color: #ff3131; font-weight: 900; font-size: 14px; margin-bottom: 12px; letter-spacing: 1px; text-shadow: 0 0 5px #ff3131, 0 0 12px rgba(255, 49, 49, 0.6);">[ КЛАСС: S ]</div>
-                <div class="spec-line"><span>ВЕС ДЕВАЙСА</span><span>51 ГРАММ</span></div>
-                <div class="spec-line"><span>СЕНСОР</span><span>PAW3395 SE</span></div>
-                <div class="spec-line"><span>ТИП СВЯЗИ</span><span>2.4G / BLUETOOTH / WIRE</span></div>
-                <div class="spec-line"><span>КОНТРОЛЛЕР</span><span>BEIKEN ЮЗЕР-ЧИП</span></div>
-                <div class="spec-line"><span>АККУМУЛЯТОР</span><span>ДО 35 ЧАСОВ</span></div>
-                <div class="spec-line"><span>МИКРИКИ</span><span>HUANO SINKING</span></div>
-                <div class="ready-status" style="margin-top:12px; color:#ff3131; font-size:11px; letter-spacing:2px; font-weight: bold; text-shadow: 0 0 8px #ff3131;">
-                    >>> ЛУЧШАЯ В СВОЕМ РОДЕ
-                </div>
-            </div>` 
+        price: 2200,
+        stock: null, // TODO: укажи реальный остаток в штуках
+        img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/vxe_r1.jpg',
+        grade: 'S', gradeColor: '#ff3131',
+        specs: [['Вес девайса', '51 г'], ['Сенсор', 'PAW3395 SE'], ['Тип связи', '2.4G / Bluetooth / Wire'], ['Контроллер', 'Beiken юзер-чип'], ['Аккумулятор', 'до 35 часов'], ['Микрики', 'Huano Sinking']]
     },
-    { 
-        id: 'ajazz_ak680_max', 
-        category: 'per', 
+    {
+        id: 'ajazz_ak680_max',
+        category: 'per',
         name: 'Ajazz AK680 Max RGB',
         tags: 'клавиатура клава аджазз механическая',
-        price: 2800, 
-        img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/ak680.jpg', 
-        desc: `
-            <div style="font-family: monospace; pointer-events: none;">
-                <div style="color: #ffb300; font-weight: 900; font-size: 14px; margin-bottom: 12px; letter-spacing: 1px; text-shadow: 0 0 5px #ffb300, 0 0 12px rgba(255, 179, 0, 0.6);">[ КЛАСС: A+ ]</div>
-                <div class="spec-line"><span>ФОРМ-ФАКТОР</span><span>65% (68 КЛАВИШ)</span></div>
-                <div class="spec-line"><span>ТИП ПЕРЕКЛЮЧАТЕЛЕЙ</span><span>MAGNETIC</span></div>
-                <div class="spec-line"><span>HOT-SWAP</span><span>ЕСТЬ (3-PIN / 5-PIN)</span></div>
-                <div class="spec-line"><span>ПОДСВЕТКА</span><span>FULL RGB ЧИСТАЯ</span></div>
-                <div class="spec-line"><span>ПОДКЛЮЧЕНИЕ</span><span>СЪЕМНЫЙ TYPE-C</span></div>
-                <div class="spec-line"><span>ШУМОИЗОЛЯЦИЯ</span><span>EVA FOAM СЛОЙ</span></div>
-                <div class="ready-status" style="margin-top:12px; color:#ffb300; font-size:11px; letter-spacing:2px; font-weight: bold; text-shadow: 0 0 8px #ffb300;">
-                    >>> МИНИМАЛЬНЫЙ ОТКЛИК
-                </div>
-            </div>` 
+        price: 2800,
+        stock: null, // TODO: укажи реальный остаток в штуках
+        img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/ak680.jpg',
+        grade: 'A+', gradeColor: '#ffb300',
+        specs: [['Форм-фактор', '65% (68 клавиш)'], ['Тип переключателей', 'Magnetic'], ['Hot-swap', 'есть (3-pin / 5-pin)'], ['Подсветка', 'Full RGB'], ['Подключение', 'съёмный Type-C'], ['Шумоизоляция', 'EVA foam слой']]
     }
 ];
     // --- ВОССТАНОВЛЕННЫЙ БЛОК ЛОГИКИ ---
@@ -608,34 +648,98 @@
         if (id === 'profile') { navId = 'nav-profile'; renderOrders(); }
         if (id === 'ai-chat') navId = 'nav-profile';
         if (id === 'build') navId = 'nav-build';
-        if (id.includes('-list')) navId = 'nav-home';
+        if (id === 'order-success') navId = 'nav-cart';
+        const listCatMap = { 'gpu-list': 'gpu', 'cpu-list': 'cpu', 'ram-list': 'ram', 'peripheral-list': 'per' };
+        if (id.includes('-list')) { navId = 'nav-home'; renderCategoryList(listCatMap[id]); }
         const activeNav = document.getElementById(navId);
         if(activeNav) activeNav.classList.add('active');
         if(id === 'cart') renderCart();
         tg.HapticFeedback.selectionChanged();
     }
 
-    function renderAllProducts() {
-        const containers = {
-            'gpu': document.getElementById('gpu-items'),
-            'cpu': document.getElementById('cpu-items'),
-            'ram': document.getElementById('ram-items'),
-            'per': document.getElementById('per-items')
-        };
-        for (let key in containers) { if (containers[key]) containers[key].innerHTML = ''; }
-        products.forEach(p => {
-            const target = containers[p.category];
-            if (target) {
-                target.innerHTML += `
-                    <div class="card item" data-tags="${(p.tags || '').toLowerCase()}" onclick="openProduct('${p.id}')">
-                        <div class="photo-frame">
-                            <img src="${p.img}" alt="${p.name}" onerror="this.style.opacity='0'; this.nextElementSibling.style.opacity='1';">
-                            <div class="photo-fallback"><i class="fa-solid fa-image"></i></div>
+    const CATEGORY_IDS = ['gpu', 'cpu', 'ram', 'per'];
+    let currentSort = { gpu: 'pop', cpu: 'pop', ram: 'pop', per: 'pop' };
+    const SORTS = [
+        { id: 'pop', label: 'Популярные' },
+        { id: 'asc', label: 'Дешевле' },
+        { id: 'stock', label: 'В наличии' },
+    ];
+
+    function pluralItems(n) {
+        const mod10 = n % 10, mod100 = n % 100;
+        if (mod10 === 1 && mod100 !== 11) return 'ПОЗИЦИЯ';
+        if ([2, 3, 4].includes(mod10) && ![12, 13, 14].includes(mod100)) return 'ПОЗИЦИИ';
+        return 'ПОЗИЦИЙ';
+    }
+
+    function stockShort(p) {
+        if (p.stock === null || p.stock === undefined) return { text: 'УТОЧНЯЙТЕ', inStock: false };
+        if (p.stock > 0) return { text: `${p.stock} ШТ`, inStock: true };
+        return { text: 'ПОД ЗАКАЗ', inStock: false };
+    }
+
+    function renderSortTabs(cat) {
+        const el = document.getElementById(cat + '-sort');
+        if (!el) return;
+        el.innerHTML = SORTS.map(s => `
+            <div class="sort-tab ${currentSort[cat] === s.id ? 'active' : ''}" onclick="setSort('${cat}', '${s.id}')">${s.label}</div>
+        `).join('');
+    }
+
+    function setSort(cat, sortId) {
+        currentSort[cat] = sortId;
+        renderSortTabs(cat);
+        renderCategoryList(cat);
+        tg.HapticFeedback.selectionChanged();
+    }
+
+    function renderCategoryList(cat) {
+        const containerIds = { gpu: 'gpu-items', cpu: 'cpu-items', ram: 'ram-items', per: 'per-items' };
+        const container = document.getElementById(containerIds[cat]);
+        if (!container) return;
+
+        let list = products.filter(p => p.category === cat);
+        if (currentSort[cat] === 'asc') list = [...list].sort((a, b) => a.price - b.price);
+        if (currentSort[cat] === 'stock') list = list.filter(p => p.stock !== null && p.stock !== undefined && p.stock > 0);
+
+        const countEl = document.getElementById(cat + '-count');
+        if (countEl) countEl.textContent = `${list.length} ${pluralItems(list.length)}`;
+
+        const lastRowStart = list.length - (list.length % 2 || 2);
+        container.innerHTML = list.map((p, i) => {
+            const stock = stockShort(p);
+            const inCart = cartItems.find(x => x.id === p.id);
+            const lastRow = i >= lastRowStart ? ' last-row' : '';
+            return `
+                <div class="list-card item${lastRow}" data-tags="${(p.tags || '').toLowerCase()}">
+                    <div class="list-photo" onclick="openProduct('${p.id}')">
+                        <img src="${p.img}" alt="${p.name}" onerror="this.style.opacity='0'; this.nextElementSibling.style.opacity='1';">
+                        <div class="photo-fallback"><i class="fa-solid fa-image"></i></div>
+                        <span class="list-stock ${stock.inStock ? 'in' : ''}">${stock.text}</span>
+                    </div>
+                    <div class="list-body">
+                        <div class="list-name" onclick="openProduct('${p.id}')">${p.name}</div>
+                        <div class="list-row">
+                            <span class="list-price">${formatPrice(p.price)}</span>
+                            <button class="list-add" onclick="event.stopPropagation(); quickAdd('${p.id}', '${cat}')">${inCart ? inCart.count : '+'}</button>
                         </div>
-                        <h3 class="name">${p.name}</h3>
-                        <div class="price">${p.price} ₽</div>
-                    </div>`;
-            }
+                    </div>
+                </div>`;
+        }).join('');
+
+        const emptyEl = document.getElementById(cat === 'per' ? 'per-empty' : cat + '-empty');
+        if (emptyEl && cat !== 'ram') emptyEl.style.display = list.length ? 'none' : 'block';
+    }
+
+    function quickAdd(productId, cat) {
+        addToCart(productId);
+        renderCategoryList(cat);
+    }
+
+    function renderAllCategoryLists() {
+        CATEGORY_IDS.forEach(cat => {
+            renderSortTabs(cat);
+            renderCategoryList(cat);
         });
     }
 
@@ -655,6 +759,12 @@
         }
     }
 
+    function stockLabel(p) {
+        if (p.stock === null || p.stock === undefined) return 'УТОЧНЯЙТЕ НАЛИЧИЕ · ТОМСК';
+        if (p.stock > 0) return `${p.stock} ШТ · ТОМСК`;
+        return 'ПОД ЗАКАЗ · ТОМСК';
+    }
+
     function renderHits() {
         const list = document.getElementById('hits-list');
         const hits = products.slice(0, 4);
@@ -665,28 +775,58 @@
                 </div>
                 <div class="hit-info">
                     <div class="hit-name">${p.name}</div>
-                    <div class="hit-meta">Томск</div>
+                    <div class="hit-meta">${stockLabel(p)}</div>
                 </div>
                 <div class="hit-price">${formatPrice(p.price)}</div>
             </div>`).join('');
     }
 
+    const CATEGORY_NAMES = { gpu: 'ВИДЕОКАРТЫ', cpu: 'ПРОЦЕССОРЫ', ram: 'ПАМЯТЬ', per: 'ПЕРИФЕРИЯ' };
+    const CATEGORY_CODES = { gpu: 'GPU', cpu: 'CPU', ram: 'RAM', per: 'PER' };
+
     function openProduct(productId) {
         const p = products.find(item => item.id === productId);
-        if (p) {
-            document.getElementById('modal-content').innerHTML = `
-                <div class="photo-frame" style="aspect-ratio: 4/3; border-radius:25px; margin-top:20px;">
-                    <img src="${p.img}" onerror="this.style.opacity='0'; this.nextElementSibling.style.opacity='1';">
-                    <div class="photo-fallback" style="font-size:48px;"><i class="fa-solid fa-image"></i></div>
+        if (!p) return;
+
+        document.getElementById('pd-meta').textContent = '// ' + p.id.toUpperCase();
+        const stock = stockShort(p);
+
+        document.getElementById('modal-content').innerHTML = `
+            <div class="pd-photo">
+                <img src="${p.img}" onerror="this.style.opacity='0'; this.nextElementSibling.style.opacity='1';">
+                <div class="photo-fallback"><i class="fa-solid fa-image"></i></div>
+                <div class="pd-photo-caption">ФОТО ТОВАРА 1:1</div>
+                <div class="pd-stock-badge ${stock.inStock ? 'in' : ''}">${stock.text}</div>
+            </div>
+            <div class="pd-body">
+                <div>
+                    <div class="pd-cat">${CATEGORY_CODES[p.category]} // ${CATEGORY_NAMES[p.category]}</div>
+                    <div class="pd-name">${p.name}</div>
+                    <div class="pd-price">${formatPrice(p.price)}</div>
                 </div>
-                <h2 style="margin-top:20px;">${p.name}</h2>
-                <div class="profile-section" style="margin:20px 0; font-size: 14px; line-height: 1.6;">${p.desc}</div>
-                <div class="price" style="font-size:32px;">${p.price} ₽</div>
-                <button class="buy" id="add-to-cart-btn" style="margin-top:20px;" onclick="addToCart('${p.id}')">ДОБАВИТЬ В КОРЗИНУ</button>
-            `;
-            document.getElementById('product-modal').classList.add('active');
-            tg.HapticFeedback.impactOccurred('medium');
-        }
+                <div>
+                    <div class="spec-row">
+                        <span class="spec-key">Класс</span>
+                        <span class="spec-dots"></span>
+                        <span class="spec-val" style="color:${p.gradeColor}; text-shadow:0 0 8px ${p.gradeColor};">${p.grade}</span>
+                    </div>
+                    ${p.specs.map(s => `
+                    <div class="spec-row">
+                        <span class="spec-key">${s[0]}</span>
+                        <span class="spec-dots"></span>
+                        <span class="spec-val">${s[1]}</span>
+                    </div>`).join('')}
+                </div>
+                <div class="pd-guarantee">
+                    <span class="dot"></span>
+                    <span>Проверка и стресс-тест перед выдачей. Гарантия — по договорённости с менеджером.</span>
+                </div>
+                <button class="pd-buy" id="add-to-cart-btn" onclick="pdAdd('${p.id}')">Добавить в корзину</button>
+            </div>
+        `;
+        renderProductButton(p.id);
+        document.getElementById('product-modal').classList.add('active');
+        tg.HapticFeedback.impactOccurred('medium');
     }
 
     function closeProduct() {
@@ -743,9 +883,6 @@
     }
 
     function addToCart(productId) {
-        const btn = document.getElementById('add-to-cart-btn');
-        if (btn && btn.disabled) return;
-
         const p = products.find(item => item.id === productId);
         if (!p) return;
         const existing = cartItems.find(item => item.id === productId);
@@ -755,15 +892,18 @@
         syncCartUI();
         pulseCartIcon();
         tg.HapticFeedback.notificationOccurred('success');
+    }
 
-        if (btn) {
-            btn.disabled = true;
-            btn.textContent = '✓ ДОБАВЛЕНО';
-            btn.classList.add('added');
-            setTimeout(closeProduct, 600);
-        } else {
-            closeProduct();
-        }
+    function renderProductButton(productId) {
+        const btn = document.getElementById('add-to-cart-btn');
+        if (!btn) return;
+        const inCart = cartItems.find(i => i.id === productId);
+        btn.textContent = inCart ? `В корзине · ${inCart.count} шт` : 'Добавить в корзину';
+    }
+
+    function pdAdd(productId) {
+        addToCart(productId);
+        renderProductButton(productId);
     }
 
     function changeQty(productId, delta) {
@@ -796,36 +936,44 @@
     }
 
     function renderCart() {
-        const cont = document.getElementById('cart-content');
-        const foot = document.getElementById('cart-footer');
-        if(cartItems.length === 0) {
-            cont.innerHTML = '<p style="opacity:0.4; text-align:center;">Корзина пуста</p>';
-            foot.style.display = 'none';
-        } else {
-            let total = 0;
-            let html = cartItems.map(i => {
-                const itemTotal = i.price * i.count;
-                total += itemTotal;
-                return `<div style="margin-bottom:15px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:12px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; font-size:14px; margin-bottom:8px;">
-                        <span>${i.name}</span>
-                        <i class="fa-solid fa-trash" style="color:#ff4d4d; cursor:pointer; padding:5px;" onclick="removeFromCart('${i.id}')"></i>
+        const linesEl = document.getElementById('cart-lines');
+        const emptyEl = document.getElementById('cart-empty');
+        const footEl = document.getElementById('cart-footer');
+        const count = cartItems.reduce((sum, i) => sum + i.count, 0);
+        document.getElementById('cart-meta').textContent = '// ' + count;
+
+        if (cartItems.length === 0) {
+            linesEl.innerHTML = '';
+            emptyEl.style.display = 'block';
+            footEl.style.display = 'none';
+            return;
+        }
+
+        emptyEl.style.display = 'none';
+        footEl.style.display = 'block';
+
+        let total = 0;
+        linesEl.innerHTML = cartItems.map(i => {
+            const itemTotal = i.price * i.count;
+            total += itemTotal;
+            return `
+                <div class="cart-line">
+                    <div class="cart-thumb"><img src="${i.img}" onerror="this.style.opacity='0';"></div>
+                    <div class="cart-line-info">
+                        <div class="cart-line-name">${i.name}</div>
+                        <div class="cart-line-sum">${formatPrice(itemTotal)}</div>
                     </div>
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <div class="qty-stepper">
-                            <button onclick="changeQty('${i.id}', -1)">−</button>
-                            <span>${i.count}</span>
-                            <button onclick="changeQty('${i.id}', 1)">+</button>
-                        </div>
-                        <b>${itemTotal} ₽</b>
+                    <div class="stepper">
+                        <button onclick="changeQty('${i.id}', -1)">−</button>
+                        <span class="qty">${i.count}</span>
+                        <button onclick="changeQty('${i.id}', 1)">+</button>
                     </div>
                 </div>`;
-            }).join('');
-            html += `<div style="text-align:center; margin-top:15px;"><span onclick="clearCart()" style="color:#ff4d4d; font-size:12px; font-weight:bold; opacity:0.6; cursor:pointer;">ОЧИСТИТЬ КОРЗИНУ</span></div>`;
-            cont.innerHTML = html;
-            document.getElementById('total-price').innerText = total + ' ₽';
-            foot.style.display = 'block';
-        }
+        }).join('');
+        linesEl.innerHTML += `<div style="text-align:center; margin-top:15px;"><span onclick="clearCart()" style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.06em; text-transform:uppercase; color:rgba(255,255,255,0.62); cursor:pointer;">Очистить корзину</span></div>`;
+
+        document.getElementById('cart-goods-total').textContent = formatPrice(total);
+        document.getElementById('total-price').textContent = formatPrice(total);
     }
 
     // ФУНКЦИЯ ДЛЯ ИСТОРИИ ЗАКАЗОВ
@@ -842,6 +990,12 @@
                 <b style="color:#f2ff00;">${order.amount} ₽ — Заказ отправлен, ожидает связи</b>
             </div>
         `).join('');
+    }
+
+    function nextOrderNumber() {
+        const seq = parseInt(localStorage.getItem('nexTech_order_seq') || '0', 10) + 1;
+        localStorage.setItem('nexTech_order_seq', String(seq));
+        return '#' + seq;
     }
 
     async function placeOrder() {
@@ -872,9 +1026,9 @@
                     ordersHistory.push(newOrder);
                     localStorage.setItem('nexTech_orders', JSON.stringify(ordersHistory));
 
-                    tg.showAlert('Заказ отправлен! С вами свяжутся в Telegram для подтверждения и оплаты.');
+                    document.getElementById('success-order-title').textContent = `Заказ ${nextOrderNumber()} принят`;
                     clearCart();
-                    openPage('home');
+                    openPage('order-success');
                 } catch (e) {
                     tg.showAlert("Сервер Offline. Заказ не может быть обработан.");
                 } finally { tg.MainButton.hide(); }
@@ -887,7 +1041,7 @@
         const items = document.getElementById(listId).getElementsByClassName('item');
         let found = false;
         for (let item of items) {
-            const name = item.querySelector('.name').innerText.toLowerCase();
+            const name = item.querySelector('.list-name').innerText.toLowerCase();
             const tags = item.dataset.tags || '';
             if (name.includes(val) || tags.includes(val)) { item.style.display = "block"; found = true; }
             else { item.style.display = "none"; }
@@ -981,21 +1135,22 @@
     }
 
     // Проверка статуса сервера раз в 5 секунд
+    function setWarehouseStatus(online) {
+        document.getElementById('status-dot').classList.toggle('online', online);
+        document.getElementById('status-line').classList.toggle('offline', !online);
+        document.getElementById('status-label').textContent = online ? 'СКЛАД ОНЛАЙН' : 'СКЛАД ОФФЛАЙН';
+    }
+
     setInterval(async () => {
-        const dot = document.getElementById('status-dot');
-        try { 
-            const check = await fetch(`${API_URL}/ask`, { 
-                method: 'OPTIONS', 
-                headers: { 'ngrok-skip-browser-warning': 'true' } 
-            }); 
-            
-            if (check.ok || check.status === 405) {
-                dot.classList.add('online');
-            } else {
-                dot.classList.remove('online');
-            }
-        } catch (e) { 
-            dot.classList.remove('online'); 
+        try {
+            const check = await fetch(`${API_URL}/ask`, {
+                method: 'OPTIONS',
+                headers: { 'ngrok-skip-browser-warning': 'true' }
+            });
+
+            setWarehouseStatus(check.ok || check.status === 405);
+        } catch (e) {
+            setWarehouseStatus(false);
         }
     }, 5000);
 
@@ -1054,7 +1209,7 @@
 
     window.onload = () => {
         validateCart();
-        renderAllProducts();
+        renderAllCategoryLists();
         updateCatalogStats();
         renderHits();
         syncCartUI();
