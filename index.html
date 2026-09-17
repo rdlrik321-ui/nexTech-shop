@@ -107,6 +107,9 @@
         .success-text { font-family: 'Golos Text', sans-serif; font-weight: 400; font-size: 13px; line-height: 1.5; color: rgba(255,255,255,0.62); max-width: 250px; }
         .success-btn { margin-top: 8px; padding: 12px 22px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.16); background: none; font-family: 'Golos Text', sans-serif; font-weight: 600; font-size: 13px; color: #fff; cursor: pointer; }
 
+        .pay-spin { animation: paySpin 1s linear infinite; }
+        @keyframes paySpin { to { transform: rotate(360deg); } }
+
         .internal-header { display: flex; align-items: center; gap: 11px; height: 50px; padding: 0 16px; margin: 0 -16px 0; border-bottom: 1px solid rgba(255,255,255,0.12); }
         .back-btn { width: 26px; height: 26px; border-radius: 8px; background: rgba(255,255,255,0.09); border: none; color: #fff; font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; padding: 0; }
         .internal-title { font-family: 'Golos Text', sans-serif; font-weight: 700; font-size: 14.5px; letter-spacing: -0.01em; color: #fff; }
@@ -405,8 +408,8 @@
             <div class="cart-total-row"><span>Товары</span><span id="cart-goods-total">0 ₽</span></div>
             <div class="cart-total-row"><span>Самовывоз, Томск</span><span>БЕСПЛАТНО, СЕГОДНЯ</span></div>
             <div class="cart-total-row grand"><span>Итого</span><span id="total-price">0 ₽</span></div>
-            <button class="pd-buy" style="margin-top: 6px;" onclick="placeOrder()">Оформить заказ</button>
-            <div class="cart-confirm-note">ПОДТВЕРЖДЕНИЕ ПРИДЁТ В ЭТОТ ЧАТ</div>
+            <button class="pd-buy" style="margin-top: 6px;" onclick="placeOrder()">Оплатить по СБП</button>
+            <div class="cart-confirm-note">ОПЛАТА ОНЛАЙН · ЧЕК ПРИДЁТ В ЭТОТ ЧАТ</div>
         </div>
     </div>
 
@@ -414,8 +417,17 @@
         <div class="success-wrap">
             <div class="success-icon"><i class="fa-solid fa-check"></i></div>
             <div class="success-title" id="success-order-title">Заказ принят</div>
-            <div class="success-text">Менеджер подтвердит наличие в чате в течение 10 минут. Уточним время самовывоза в Томске.</div>
+            <div class="success-text" id="success-order-text">Менеджер подтвердит наличие в чате в течение 10 минут. Уточним время самовывоза в Томске.</div>
             <button class="success-btn" onclick="openPage('home')">Вернуться в каталог</button>
+        </div>
+    </div>
+
+    <div id="payment-wait" class="page">
+        <div class="success-wrap">
+            <div class="success-icon"><i class="fa-solid fa-rotate pay-spin"></i></div>
+            <div class="success-title">Ждём оплату</div>
+            <div class="success-text">Заверши перевод по СБП в открывшемся окне. Как только банк подтвердит платёж — мы увидим это автоматически, окно закрывать не обязательно.</div>
+            <button class="success-btn" onclick="cancelPaymentWait()">Отменить</button>
         </div>
     </div>
 
@@ -632,6 +644,10 @@
     // --- ВОССТАНОВЛЕННЫЙ БЛОК ЛОГИКИ ---
     let cartItems = JSON.parse(localStorage.getItem('nexTech_cart')) || [];
     let ordersHistory = JSON.parse(localStorage.getItem('nexTech_orders')) || [];
+    let activePaymentId = null;
+    let paymentPollTimer = null;
+    let pendingOrderAmount = 0;
+    let pendingOrderDetails = '';
 
     function validateCart() {
         const hasBadItems = cartItems.some(item => !item.id || isNaN(item.price));
@@ -652,7 +668,7 @@
         if (id === 'profile') { navId = 'nav-profile'; renderOrders(); }
         if (id === 'ai-chat') navId = 'nav-ai';
         if (id === 'build') navId = 'nav-build';
-        if (id === 'order-success') navId = 'nav-cart';
+        if (id === 'order-success' || id === 'payment-wait') navId = 'nav-cart';
         const listCatMap = { 'gpu-list': 'gpu', 'cpu-list': 'cpu', 'ram-list': 'ram', 'peripheral-list': 'per' };
         if (id.includes('-list')) { navId = 'nav-home'; renderCategoryList(listCatMap[id]); }
         const activeNav = document.getElementById(navId);
@@ -995,37 +1011,87 @@
         const totalAmount = cartItems.reduce((sum, item) => sum + (item.price * item.count), 0);
         const orderDetails = cartItems.map(i => `${i.name} (x${i.count})`).join(', ');
 
-        tg.showConfirm(`Отправить заказ на ${totalAmount} ₽? С вами свяжутся в Telegram для подтверждения и оплаты.`, async (ok) => {
-            if (ok) {
-                tg.MainButton.setText("ОТПРАВКА ЗАКАЗА...").show().disable();
-                try {
-                    const res = await fetch(`${API_URL}/create-order`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'ngrok-skip-browser-warning': 'true',
-                            'Authorization': `Bearer ${tg.initData || ''}`
-                        },
-                        body: JSON.stringify({ amount: totalAmount, description: orderDetails })
-                    });
-                    if (!res.ok) throw new Error('request failed');
+        tg.showConfirm(`Оплатить ${totalAmount} ₽ через СБП? Откроется защищённая страница оплаты ЮKassa.`, async (ok) => {
+            if (!ok) return;
+            tg.MainButton.setText("СОЗДАНИЕ ПЛАТЕЖА...").show().disable();
+            try {
+                const res = await fetch(`${API_URL}/create-payment`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'ngrok-skip-browser-warning': 'true',
+                        'Authorization': `Bearer ${tg.initData || ''}`
+                    },
+                    body: JSON.stringify({ amount: totalAmount, description: orderDetails })
+                });
+                if (!res.ok) throw new Error('request failed');
+                const { payment_id, confirmation_url } = await res.json();
 
-                    const newOrder = {
-                        date: new Date().toLocaleString(),
-                        amount: totalAmount,
-                        items: orderDetails
-                    };
-                    ordersHistory.push(newOrder);
-                    localStorage.setItem('nexTech_orders', JSON.stringify(ordersHistory));
+                activePaymentId = payment_id;
+                pendingOrderAmount = totalAmount;
+                pendingOrderDetails = orderDetails;
 
-                    document.getElementById('success-order-title').textContent = `Заказ ${nextOrderNumber()} принят`;
-                    clearCart();
-                    openPage('order-success');
-                } catch (e) {
-                    tg.showAlert("Сервер Offline. Заказ не может быть обработан.");
-                } finally { tg.MainButton.hide(); }
-            }
+                tg.openLink(confirmation_url);
+                openPage('payment-wait');
+                startPaymentPolling();
+            } catch (e) {
+                tg.showAlert("Не удалось создать платёж. Попробуйте ещё раз.");
+            } finally { tg.MainButton.hide(); }
         });
+    }
+
+    function startPaymentPolling() {
+        stopPaymentPolling();
+        paymentPollTimer = setInterval(checkPaymentStatus, 2500);
+        document.addEventListener('visibilitychange', onVisibilityRecheck);
+    }
+
+    function stopPaymentPolling() {
+        if (paymentPollTimer) { clearInterval(paymentPollTimer); paymentPollTimer = null; }
+        document.removeEventListener('visibilitychange', onVisibilityRecheck);
+    }
+
+    function onVisibilityRecheck() {
+        if (document.visibilityState === 'visible' && activePaymentId) checkPaymentStatus();
+    }
+
+    async function checkPaymentStatus() {
+        if (!activePaymentId) return;
+        try {
+            const res = await fetch(`${API_URL}/payment-status/${activePaymentId}`, {
+                headers: {
+                    'ngrok-skip-browser-warning': 'true',
+                    'Authorization': `Bearer ${tg.initData || ''}`
+                }
+            });
+            if (!res.ok) return;
+            const { status: payStatus } = await res.json();
+
+            if (payStatus === 'succeeded') {
+                stopPaymentPolling();
+                const newOrder = { date: new Date().toLocaleString(), amount: pendingOrderAmount, items: pendingOrderDetails };
+                ordersHistory.push(newOrder);
+                localStorage.setItem('nexTech_orders', JSON.stringify(ordersHistory));
+
+                document.getElementById('success-order-title').textContent = `Заказ ${nextOrderNumber()} оплачен`;
+                document.getElementById('success-order-text').textContent = 'Оплата прошла успешно. Менеджер свяжется в этом чате, чтобы согласовать время самовывоза в Томске.';
+                clearCart();
+                activePaymentId = null;
+                openPage('order-success');
+                tg.HapticFeedback.notificationOccurred('success');
+            } else if (payStatus === 'canceled') {
+                stopPaymentPolling();
+                activePaymentId = null;
+                tg.showAlert('Платёж отменён. Можно повторить оплату из корзины.');
+                openPage('cart');
+            }
+        } catch (e) { /* сеть моргнула — попробуем на следующем тике */ }
+    }
+
+    function cancelPaymentWait() {
+        stopPaymentPolling();
+        activePaymentId = null;
+        openPage('cart');
     }
 
     function filterItems(input, listId, emptyId) {

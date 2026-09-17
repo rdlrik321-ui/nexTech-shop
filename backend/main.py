@@ -35,8 +35,19 @@ BOT_TOKEN = os.environ["BOT_TOKEN"]
 AUTH_KEY = os.environ["GIGACHAT_AUTH_KEY"]
 SELLER_CHAT_ID = os.environ["SELLER_CHAT_ID"]
 
+# --- ЮKASSA (СБП) ---
+YOOKASSA_SHOP_ID = os.environ.get("YOOKASSA_SHOP_ID", "")
+YOOKASSA_SECRET_KEY = os.environ.get("YOOKASSA_SECRET_KEY", "")
+# Куда вернуть покупателя после оплаты (диплинк на бота/мини-апп) — задай в .env
+YOOKASSA_RETURN_URL = os.environ.get("YOOKASSA_RETURN_URL", "https://t.me")
+YOOKASSA_API = "https://api.yookassa.ru/v3/payments"
+
 # ХРАНИЛИЩЕ ИСТОРИИ
 chat_history = []
+
+# Платежи в памяти: payment_id -> {status, amount, description, buyer_name, contact, notified}
+# Переживает только один запуск процесса — для продакшена перенести в БД.
+payments_store: dict[str, dict] = {}
 
 
 def verify_telegram_data(init_data: str, bot_token: str) -> bool:
@@ -88,6 +99,66 @@ class OrderRequest(BaseModel):
     description: str
 
 
+class PaymentRequest(BaseModel):
+    amount: float
+    description: str
+
+
+def require_telegram_user(authorization: str | None) -> dict:
+    """Общая проверка initData для платёжных эндпоинтов. Возвращает данные покупателя."""
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Система nexTech: Отказано в доступе. Токен авторизации отсутствует."
+        )
+    init_data = authorization.replace("Bearer ", "")
+    if not verify_telegram_data(init_data, BOT_TOKEN):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Система nexTech: Критическая ошибка верификации. Доступ заблокирован."
+        )
+    parsed_data = dict(parse_qsl(init_data))
+    return json.loads(parsed_data.get("user", "{}"))
+
+
+def notify_seller_of_payment(payment_id: str) -> None:
+    """Шлёт продавцу уведомление об оплаченном заказе ровно один раз."""
+    payment = payments_store.get(payment_id)
+    if not payment or payment.get("notified"):
+        return
+
+    buyer_name = payment.get("buyer_name") or "Без имени"
+    contact = payment.get("contact") or ""
+    text = (
+        "✅ <b>Оплачен заказ nexTech (СБП)</b>\n\n"
+        f"👤 {buyer_name} ({contact})\n"
+        f"🛒 {payment['description']}\n"
+        f"💰 <b>{payment['amount']:.0f} ₽</b>\n"
+        f"🧾 Платёж: {payment_id}"
+    )
+    resp = requests.post(
+        f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
+        json={"chat_id": SELLER_CHAT_ID, "text": text, "parse_mode": "HTML"},
+        timeout=10,
+    )
+    if resp.status_code == 200:
+        payment["notified"] = True
+    else:
+        print(f"Telegram sendMessage error (payment): {resp.status_code} {resp.text}")
+
+
+def fetch_yookassa_payment(payment_id: str) -> dict:
+    """Источник правды по статусу — всегда спрашиваем саму ЮKassa, а не доверяем чужим данным."""
+    resp = requests.get(
+        f"{YOOKASSA_API}/{payment_id}",
+        auth=(YOOKASSA_SHOP_ID, YOOKASSA_SECRET_KEY),
+        timeout=10,
+    )
+    if resp.status_code != 200:
+        raise HTTPException(status_code=502, detail="Не удалось получить статус платежа в ЮKassa.")
+    return resp.json()
+
+
 @app.options("/create-order")
 async def create_order_options():
     """Обработка предварительных запросов браузера (CORS)"""
@@ -136,6 +207,90 @@ async def create_order(request: OrderRequest, authorization: str = Header(None))
     if resp.status_code != 200:
         print(f"Telegram sendMessage error: {resp.status_code} {resp.text}")
         raise HTTPException(status_code=502, detail="Не удалось отправить уведомление продавцу.")
+
+    return {"ok": True}
+
+
+@app.options("/create-payment")
+async def create_payment_options():
+    """Обработка предварительных запросов браузера (CORS)"""
+    return {"status": "ok"}
+
+
+@app.post("/create-payment")
+async def create_payment(request: PaymentRequest, authorization: str = Header(None)):
+    """Создаёт платёж в ЮKassa (СБП/карта) и возвращает ссылку на оплату"""
+    if not YOOKASSA_SHOP_ID or not YOOKASSA_SECRET_KEY:
+        raise HTTPException(status_code=503, detail="Приём онлайн-оплаты пока не настроен.")
+
+    user = require_telegram_user(authorization)
+    buyer_name = " ".join(filter(None, [user.get("first_name"), user.get("last_name")])) or "Без имени"
+    buyer_username = user.get("username")
+    buyer_id = user.get("id")
+    contact = f"@{buyer_username}" if buyer_username else f'<a href="tg://user?id={buyer_id}">открыть чат</a>'
+
+    body = {
+        "amount": {"value": f"{request.amount:.2f}", "currency": "RUB"},
+        "capture": True,
+        "confirmation": {"type": "redirect", "return_url": YOOKASSA_RETURN_URL},
+        "description": request.description[:128],
+    }
+    resp = requests.post(
+        YOOKASSA_API,
+        json=body,
+        auth=(YOOKASSA_SHOP_ID, YOOKASSA_SECRET_KEY),
+        headers={"Idempotence-Key": str(uuid.uuid4())},
+        timeout=10,
+    )
+    if resp.status_code not in (200, 201):
+        print(f"YooKassa create payment error: {resp.status_code} {resp.text}")
+        raise HTTPException(status_code=502, detail="ЮKassa отклонила запрос на оплату.")
+
+    payment = resp.json()
+    payments_store[payment["id"]] = {
+        "status": payment["status"],
+        "amount": request.amount,
+        "description": request.description,
+        "buyer_name": buyer_name,
+        "contact": contact,
+        "notified": False,
+    }
+
+    return {
+        "payment_id": payment["id"],
+        "confirmation_url": payment["confirmation"]["confirmation_url"],
+    }
+
+
+@app.get("/payment-status/{payment_id}")
+async def payment_status(payment_id: str, authorization: str = Header(None)):
+    """Опрос статуса оплаты со стороны мини-аппа. Источник правды — сама ЮKassa."""
+    require_telegram_user(authorization)
+
+    if payment_id not in payments_store:
+        raise HTTPException(status_code=404, detail="Платёж не найден.")
+
+    fresh = fetch_yookassa_payment(payment_id)
+    payments_store[payment_id]["status"] = fresh["status"]
+
+    if fresh["status"] == "succeeded":
+        notify_seller_of_payment(payment_id)
+
+    return {"status": fresh["status"]}
+
+
+@app.post("/yookassa-webhook")
+async def yookassa_webhook(payload: dict):
+    """Необязательный быстрый путь уведомления — сам статус всё равно перепроверяем в ЮKassa API,
+    поэтому вебхуку не нужно доверять напрямую (его никто криптографически не подписывает)."""
+    payment_id = (payload.get("object") or {}).get("id")
+    if not payment_id or payment_id not in payments_store:
+        return {"ok": True}
+
+    fresh = fetch_yookassa_payment(payment_id)
+    payments_store[payment_id]["status"] = fresh["status"]
+    if fresh["status"] == "succeeded":
+        notify_seller_of_payment(payment_id)
 
     return {"ok": True}
 
