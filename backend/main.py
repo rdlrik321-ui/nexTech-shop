@@ -1,14 +1,16 @@
 import json
 import os
+import pathlib
 import requests
 import uuid
 import urllib3
 import hmac
 import hashlib
+from datetime import datetime
 from urllib.parse import parse_qsl
 from dotenv import load_dotenv
 from fastapi import FastAPI, Header, HTTPException, status
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from fastapi.middleware.cors import CORSMiddleware
 
 # 1. ОТКЛЮЧАЕМ ПРЕДУПРЕЖДЕНИЯ (Для работы со Сбером)
@@ -37,6 +39,26 @@ SELLER_CHAT_ID = os.environ["SELLER_CHAT_ID"]
 
 # ХРАНИЛИЩЕ ИСТОРИИ
 chat_history = []
+
+# --- ОТЗЫВЫ ---
+# Реальные отзывы покупателей, ничего не выдумываем. Хранятся в файле рядом с бэкендом.
+REVIEWS_FILE = pathlib.Path(__file__).parent / "reviews.json"
+
+
+def load_reviews() -> dict:
+    if REVIEWS_FILE.exists():
+        try:
+            return json.loads(REVIEWS_FILE.read_text(encoding="utf-8"))
+        except Exception:
+            return {}
+    return {}
+
+
+def save_reviews(data: dict) -> None:
+    REVIEWS_FILE.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+reviews_store: dict[str, list[dict]] = load_reviews()
 
 
 def verify_telegram_data(init_data: str, bot_token: str) -> bool:
@@ -86,6 +108,12 @@ class ChatRequest(BaseModel):
 class OrderRequest(BaseModel):
     amount: float
     description: str
+
+
+class ReviewRequest(BaseModel):
+    product_id: str
+    rating: int = Field(ge=1, le=5)
+    text: str
 
 
 @app.options("/create-order")
@@ -139,6 +167,60 @@ async def create_order(request: OrderRequest, authorization: str = Header(None))
         raise HTTPException(status_code=502, detail="Не удалось отправить уведомление продавцу.")
 
     return {"ok": True}
+
+
+@app.options("/reviews")
+async def reviews_options():
+    """Обработка предварительных запросов браузера (CORS)"""
+    return {"status": "ok"}
+
+
+@app.post("/reviews")
+async def create_review(request: ReviewRequest, authorization: str = Header(None)):
+    """Публикует отзыв покупателя. Автор — реальное имя/юзернейм из Telegram."""
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Система nexTech: Отказано в доступе. Токен авторизации отсутствует."
+        )
+    init_data = authorization.replace("Bearer ", "")
+    if not verify_telegram_data(init_data, BOT_TOKEN):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Система nexTech: Критическая ошибка верификации. Доступ заблокирован."
+        )
+
+    text = request.text.strip()
+    if not text:
+        raise HTTPException(status_code=400, detail="Текст отзыва не может быть пустым.")
+    text = text[:500]
+
+    parsed_data = dict(parse_qsl(init_data))
+    user = json.loads(parsed_data.get("user", "{}"))
+    author = (
+        " ".join(filter(None, [user.get("first_name"), user.get("last_name")]))
+        or (f"@{user.get('username')}" if user.get("username") else "Покупатель nexTech")
+    )
+
+    review = {
+        "author": author,
+        "rating": request.rating,
+        "text": text,
+        "date": datetime.now().strftime("%d.%m.%Y"),
+        "user_id": user.get("id"),
+    }
+    reviews_store.setdefault(request.product_id, []).append(review)
+    save_reviews(reviews_store)
+
+    return review
+
+
+@app.get("/reviews/{product_id}")
+async def get_reviews(product_id: str):
+    """Список отзывов по товару — публичный, только реально оставленные покупателями."""
+    items = reviews_store.get(product_id, [])
+    average = round(sum(r["rating"] for r in items) / len(items), 1) if items else 0
+    return {"reviews": list(reversed(items)), "average": average, "count": len(items)}
 
 
 @app.options("/ask")
