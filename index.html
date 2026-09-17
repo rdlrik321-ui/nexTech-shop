@@ -107,8 +107,13 @@
         .success-text { font-family: 'Golos Text', sans-serif; font-weight: 400; font-size: 13px; line-height: 1.5; color: rgba(255,255,255,0.62); max-width: 250px; }
         .success-btn { margin-top: 8px; padding: 12px 22px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.16); background: none; font-family: 'Golos Text', sans-serif; font-weight: 600; font-size: 13px; color: #fff; cursor: pointer; }
 
-        .pay-spin { animation: paySpin 1s linear infinite; }
-        @keyframes paySpin { to { transform: rotate(360deg); } }
+        .pay-amount { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 32px; letter-spacing: -0.02em; }
+        .pay-details { width: 100%; border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; }
+        .pay-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; }
+        .pay-row + .pay-row { border-top: 1px solid rgba(255,255,255,0.12); }
+        .pay-label { font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 10px; letter-spacing: 0.08em; color: rgba(255,255,255,0.5); }
+        .pay-value { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 14px; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 7px; }
+        .pay-value i { font-size: 11px; opacity: 0.5; }
 
         .internal-header { display: flex; align-items: center; gap: 11px; height: 50px; padding: 0 16px; margin: 0 -16px 0; border-bottom: 1px solid rgba(255,255,255,0.12); }
         .back-btn { width: 26px; height: 26px; border-radius: 8px; background: rgba(255,255,255,0.09); border: none; color: #fff; font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; padding: 0; }
@@ -409,7 +414,7 @@
             <div class="cart-total-row"><span>Самовывоз, Томск</span><span>БЕСПЛАТНО, СЕГОДНЯ</span></div>
             <div class="cart-total-row grand"><span>Итого</span><span id="total-price">0 ₽</span></div>
             <button class="pd-buy" style="margin-top: 6px;" onclick="placeOrder()">Оплатить по СБП</button>
-            <div class="cart-confirm-note">ОПЛАТА ОНЛАЙН · ЧЕК ПРИДЁТ В ЭТОТ ЧАТ</div>
+            <div class="cart-confirm-note">ПЕРЕВОД ПО СБП · ПОДТВЕРЖДЕНИЕ ПРИДЁТ В ЭТОТ ЧАТ</div>
         </div>
     </div>
 
@@ -424,10 +429,22 @@
 
     <div id="payment-wait" class="page">
         <div class="success-wrap">
-            <div class="success-icon"><i class="fa-solid fa-rotate pay-spin"></i></div>
-            <div class="success-title">Ждём оплату</div>
-            <div class="success-text">Заверши перевод по СБП в открывшемся окне. Как только банк подтвердит платёж — мы увидим это автоматически, окно закрывать не обязательно.</div>
-            <button class="success-btn" onclick="cancelPaymentWait()">Отменить</button>
+            <div class="success-icon"><i class="fa-solid fa-money-bill-wave"></i></div>
+            <div class="success-title">Оплата по СБП</div>
+            <div class="success-text">Переведите сумму на номер ниже через приложение любого банка (СБП), затем нажмите «Я перевёл(а)» — заказ уйдёт менеджеру на проверку.</div>
+            <div class="pay-amount" id="pay-amount">0 ₽</div>
+            <div class="pay-details">
+                <div class="pay-row">
+                    <span class="pay-label">ТЕЛЕФОН</span>
+                    <span class="pay-value" onclick="copyPayPhone()">+7 913 807-66-18 <i class="fa-solid fa-copy"></i></span>
+                </div>
+                <div class="pay-row">
+                    <span class="pay-label">БАНК</span>
+                    <span class="pay-value">Озон Банк</span>
+                </div>
+            </div>
+            <button class="pd-buy" onclick="confirmManualPayment()">Я перевёл(а)</button>
+            <button class="success-btn" onclick="cancelPaymentWait()">Отмена</button>
         </div>
     </div>
 
@@ -644,8 +661,6 @@
     // --- ВОССТАНОВЛЕННЫЙ БЛОК ЛОГИКИ ---
     let cartItems = JSON.parse(localStorage.getItem('nexTech_cart')) || [];
     let ordersHistory = JSON.parse(localStorage.getItem('nexTech_orders')) || [];
-    let activePaymentId = null;
-    let paymentPollTimer = null;
     let pendingOrderAmount = 0;
     let pendingOrderDetails = '';
 
@@ -1006,91 +1021,53 @@
         return '#' + seq;
     }
 
-    async function placeOrder() {
+    function placeOrder() {
         if (cartItems.length === 0) return;
-        const totalAmount = cartItems.reduce((sum, item) => sum + (item.price * item.count), 0);
-        const orderDetails = cartItems.map(i => `${i.name} (x${i.count})`).join(', ');
+        pendingOrderAmount = cartItems.reduce((sum, item) => sum + (item.price * item.count), 0);
+        pendingOrderDetails = cartItems.map(i => `${i.name} (x${i.count})`).join(', ');
 
-        tg.showConfirm(`Оплатить ${totalAmount} ₽ через СБП? Откроется защищённая страница оплаты ЮKassa.`, async (ok) => {
-            if (!ok) return;
-            tg.MainButton.setText("СОЗДАНИЕ ПЛАТЕЖА...").show().disable();
-            try {
-                const res = await fetch(`${API_URL}/create-payment`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'ngrok-skip-browser-warning': 'true',
-                        'Authorization': `Bearer ${tg.initData || ''}`
-                    },
-                    body: JSON.stringify({ amount: totalAmount, description: orderDetails })
-                });
-                if (!res.ok) throw new Error('request failed');
-                const { payment_id, confirmation_url } = await res.json();
-
-                activePaymentId = payment_id;
-                pendingOrderAmount = totalAmount;
-                pendingOrderDetails = orderDetails;
-
-                tg.openLink(confirmation_url);
-                openPage('payment-wait');
-                startPaymentPolling();
-            } catch (e) {
-                tg.showAlert("Не удалось создать платёж. Попробуйте ещё раз.");
-            } finally { tg.MainButton.hide(); }
-        });
+        document.getElementById('pay-amount').textContent = formatPrice(pendingOrderAmount);
+        openPage('payment-wait');
     }
 
-    function startPaymentPolling() {
-        stopPaymentPolling();
-        paymentPollTimer = setInterval(checkPaymentStatus, 2500);
-        document.addEventListener('visibilitychange', onVisibilityRecheck);
+    function copyPayPhone() {
+        const phone = document.querySelector('#payment-wait .pay-value').textContent.replace(/[^\d+]/g, '');
+        if (!navigator.clipboard) return;
+        navigator.clipboard.writeText(phone)
+            .then(() => tg.HapticFeedback.notificationOccurred('success'))
+            .catch(() => {});
     }
 
-    function stopPaymentPolling() {
-        if (paymentPollTimer) { clearInterval(paymentPollTimer); paymentPollTimer = null; }
-        document.removeEventListener('visibilitychange', onVisibilityRecheck);
-    }
-
-    function onVisibilityRecheck() {
-        if (document.visibilityState === 'visible' && activePaymentId) checkPaymentStatus();
-    }
-
-    async function checkPaymentStatus() {
-        if (!activePaymentId) return;
+    async function confirmManualPayment() {
+        if (!pendingOrderAmount) return;
+        tg.MainButton.setText("ОТПРАВКА...").show().disable();
         try {
-            const res = await fetch(`${API_URL}/payment-status/${activePaymentId}`, {
+            const res = await fetch(`${API_URL}/create-order`, {
+                method: 'POST',
                 headers: {
+                    'Content-Type': 'application/json',
                     'ngrok-skip-browser-warning': 'true',
                     'Authorization': `Bearer ${tg.initData || ''}`
-                }
+                },
+                body: JSON.stringify({ amount: pendingOrderAmount, description: pendingOrderDetails })
             });
-            if (!res.ok) return;
-            const { status: payStatus } = await res.json();
+            if (!res.ok) throw new Error('request failed');
 
-            if (payStatus === 'succeeded') {
-                stopPaymentPolling();
-                const newOrder = { date: new Date().toLocaleString(), amount: pendingOrderAmount, items: pendingOrderDetails };
-                ordersHistory.push(newOrder);
-                localStorage.setItem('nexTech_orders', JSON.stringify(ordersHistory));
+            const newOrder = { date: new Date().toLocaleString(), amount: pendingOrderAmount, items: pendingOrderDetails };
+            ordersHistory.push(newOrder);
+            localStorage.setItem('nexTech_orders', JSON.stringify(ordersHistory));
 
-                document.getElementById('success-order-title').textContent = `Заказ ${nextOrderNumber()} оплачен`;
-                document.getElementById('success-order-text').textContent = 'Оплата прошла успешно. Менеджер свяжется в этом чате, чтобы согласовать время самовывоза в Томске.';
-                clearCart();
-                activePaymentId = null;
-                openPage('order-success');
-                tg.HapticFeedback.notificationOccurred('success');
-            } else if (payStatus === 'canceled') {
-                stopPaymentPolling();
-                activePaymentId = null;
-                tg.showAlert('Платёж отменён. Можно повторить оплату из корзины.');
-                openPage('cart');
-            }
-        } catch (e) { /* сеть моргнула — попробуем на следующем тике */ }
+            document.getElementById('success-order-title').textContent = `Заказ ${nextOrderNumber()} отправлен`;
+            document.getElementById('success-order-text').textContent = 'Менеджер проверит поступление перевода и подтвердит заказ в этом чате.';
+            clearCart();
+            openPage('order-success');
+            tg.HapticFeedback.notificationOccurred('success');
+        } catch (e) {
+            tg.showAlert("Сервер Offline. Сообщите менеджеру в чате вручную.");
+        } finally { tg.MainButton.hide(); }
     }
 
     function cancelPaymentWait() {
-        stopPaymentPolling();
-        activePaymentId = null;
         openPage('cart');
     }
 
