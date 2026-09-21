@@ -586,96 +586,7 @@
     
     const API_URL = "https://pliable-yeast-prudishly.ngrok-free.dev";
     
-   const products = [
-    {
-        id: 'rx580',
-        category: 'gpu',
-        name: 'Sapphire Nitro+ RX 580',
-        tags: 'видеокарта видюха сапфир рх 580 амд',
-        price: 5800,
-        stock: null, // TODO: укажи реальный остаток в штуках
-        img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/rx580.jpg',
-        grade: 'B', gradeColor: '#00ff88',
-        specs: [['Объём памяти', '8 ГБ'], ['Тип памяти', 'GDDR5'], ['Шина памяти', '256 бит'], ['Интерфейс', 'PCI-E 3.0'], ['Разъёмы', '2xHDMI, 2xDP, DVI'], ['Доп. питание', '8+6 pin']]
-    },
-    {
-        id: 'rtx3050',
-        category: 'gpu',
-        name: 'ASUS Dual RTX 3050',
-        tags: 'видеокарта видюха асус ртх 3050 нвидиа',
-        price: 22000,
-        stock: null, // TODO: укажи реальный остаток в штуках
-        img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/rtx3050.jpg',
-        grade: 'A+', gradeColor: '#ffb300',
-        specs: [['Объём памяти', '8 ГБ'], ['Тип памяти', 'GDDR6'], ['Технологии', 'Ray Tracing / DLSS'], ['Архитектура', 'NVIDIA Ampere'], ['Интерфейс', 'PCI-E 4.0'], ['Реком. БП', '450-550W']]
-    },
-    {
-        id: 'r5_5600x',
-        category: 'cpu',
-        name: 'AMD Ryzen 5 5600X',
-        tags: 'процессор проц амд райзен 5600',
-        price: 12500,
-        stock: null, // TODO: укажи реальный остаток в штуках
-        img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/r5_5600x.jpg',
-        grade: 'A+', gradeColor: '#ffb300',
-        specs: [['Сокет', 'AM4'], ['Ядра / потоки', '6 / 12'], ['Базовая частота', '3.7 ГГц'], ['Турбо частота', '4.6 ГГц'], ['Кэш L3', '32 МБ'], ['Техпроцесс', '7 нм']]
-    },
-    {
-        id: 'gpro',
-        category: 'per',
-        name: 'Logitech G Pro X Superlight',
-        tags: 'мышь мышка логитек беспроводная',
-        price: 9200,
-        stock: null, // TODO: укажи реальный остаток в штуках
-        img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/gpro.jpg',
-        grade: 'S', gradeColor: '#ff3131',
-        specs: [['Вес', 'менее 63 г'], ['Сенсор', 'HERO 25K'], ['Тип связи', 'беспроводная'], ['Аккумулятор', 'до 70 часов'], ['Макс. DPI', '25 600'], ['Глайды', '100% PTFE']]
-    },
-    {
-        id: 'gtx1660super',
-        category: 'gpu',
-        name: 'Gigabyte GTX 1660 Super OC',
-        tags: 'видеокарта видюха гигабайт гтх 1660 нвидиа',
-        price: 11500,
-        stock: null, // TODO: укажи реальный остаток в штуках
-        img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/1660s.jpg',
-        grade: 'A', gradeColor: '#ffb300',
-        specs: [['Объём памяти', '6 ГБ'], ['Тип памяти', 'GDDR6'], ['Шина памяти', '192 бит'], ['Частота чипа', '1830 МГц'], ['Охлаждение', 'WindForce 2X'], ['Доп. питание', '8 pin']]
-    },
-    {
-        id: 'r5_3600',
-        category: 'cpu',
-        name: 'AMD Ryzen 5 3600',
-        tags: 'процессор проц амд райзен 3600',
-        price: 6400,
-        stock: null, // TODO: укажи реальный остаток в штуках
-        img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/r5_3600.jpg',
-        grade: 'B', gradeColor: '#00ff88',
-        specs: [['Сокет', 'AM4'], ['Ядра / потоки', '6 / 12'], ['Базовая частота', '3.6 ГГц'], ['Турбо частота', '4.2 ГГц'], ['Кэш L3', '32 МБ'], ['Техпроцесс', '7 нм']]
-    },
-    {
-        id: 'vxe_r1_se',
-        category: 'per',
-        name: 'VXE R1 SE Wireless',
-        tags: 'мышь мышка беспроводная',
-        price: 2200,
-        stock: null, // TODO: укажи реальный остаток в штуках
-        img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/vxe_r1.jpg',
-        grade: 'S', gradeColor: '#ff3131',
-        specs: [['Вес девайса', '51 г'], ['Сенсор', 'PAW3395 SE'], ['Тип связи', '2.4G / Bluetooth / Wire'], ['Контроллер', 'Beiken юзер-чип'], ['Аккумулятор', 'до 35 часов'], ['Микрики', 'Huano Sinking']]
-    },
-    {
-        id: 'ajazz_ak680_max',
-        category: 'per',
-        name: 'Ajazz AK680 Max RGB',
-        tags: 'клавиатура клава аджазз механическая',
-        price: 2800,
-        stock: null, // TODO: укажи реальный остаток в штуках
-        img: 'https://raw.githubusercontent.com/rdlrik321-ui/nexTech-shop/main/ak680.jpg',
-        grade: 'A+', gradeColor: '#ffb300',
-        specs: [['Форм-фактор', '65% (68 клавиш)'], ['Тип переключателей', 'Magnetic'], ['Hot-swap', 'есть (3-pin / 5-pin)'], ['Подсветка', 'Full RGB'], ['Подключение', 'съёмный Type-C'], ['Шумоизоляция', 'EVA foam слой']]
-    }
-];
+    let products = [];
     // --- ВОССТАНОВЛЕННЫЙ БЛОК ЛОГИКИ ---
     let cartItems = JSON.parse(localStorage.getItem('nexTech_cart')) || [];
     let ordersHistory = JSON.parse(localStorage.getItem('nexTech_orders')) || [];
@@ -684,10 +595,21 @@
     let pendingOrderIds = [];
 
     function validateCart() {
-        const hasBadItems = cartItems.some(item => !item.id || isNaN(item.price));
-        if (hasBadItems) {
-            cartItems = [];
-            localStorage.setItem('nexTech_cart', '[]');
+        // Корзина хранит копии товаров — синхронизируем с актуальным каталогом (цены, удалённые позиции)
+        cartItems = cartItems
+            .filter(item => item.id && products.some(p => p.id === item.id))
+            .map(item => ({ ...products.find(p => p.id === item.id), count: item.count }));
+        localStorage.setItem('nexTech_cart', JSON.stringify(cartItems));
+    }
+
+    async function loadProducts() {
+        try {
+            const res = await fetch('products.json', { cache: 'no-cache' });
+            if (!res.ok) throw new Error('request failed');
+            products = await res.json();
+        } catch (e) {
+            document.getElementById('home').insertAdjacentHTML('afterbegin',
+                '<div class="no-results" style="padding:14px 0; text-align:center; opacity:0.6;">Не удалось загрузить каталог. Закройте и откройте приложение заново.</div>');
         }
     }
     // ----------------------------------
@@ -1382,7 +1304,8 @@
         }, { passive: true });
     })();
 
-    window.onload = () => {
+    window.onload = async () => {
+        await loadProducts();
         validateCart();
         renderAllCategoryLists();
         updateCatalogStats();
