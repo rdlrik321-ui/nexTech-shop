@@ -681,6 +681,7 @@
     let ordersHistory = JSON.parse(localStorage.getItem('nexTech_orders')) || [];
     let pendingOrderAmount = 0;
     let pendingOrderDetails = '';
+    let pendingOrderIds = [];
 
     function validateCart() {
         const hasBadItems = cartItems.some(item => !item.id || isNaN(item.price));
@@ -891,7 +892,8 @@
                     <span class="section-label">ОТЗЫВЫ</span>
                     <div class="reviews-summary" id="reviews-summary">Загрузка…</div>
                     <div id="reviews-list"></div>
-                    <div class="review-form">
+                    <div class="reviews-summary" id="review-locked" style="margin-top:14px; margin-bottom:0; display:none;">Оставить отзыв могут покупатели этого товара</div>
+                    <div class="review-form" id="review-form" style="display:none;">
                         <div class="star-picker" id="star-picker">
                             ${[1, 2, 3, 4, 5].map(n => `<i class="fa-regular fa-star" data-star="${n}" onclick="setReviewRating(${n})"></i>`).join('')}
                         </div>
@@ -1001,10 +1003,15 @@
         const summaryEl = document.getElementById('reviews-summary');
         try {
             const res = await fetch(`${API_URL}/reviews/${productId}`, {
-                headers: { 'ngrok-skip-browser-warning': 'true' }
+                headers: {
+                    'ngrok-skip-browser-warning': 'true',
+                    'Authorization': `Bearer ${tg.initData || ''}`
+                }
             });
             if (!res.ok) throw new Error('request failed');
-            const { reviews, average, count } = await res.json();
+            const { reviews, average, count, can_review } = await res.json();
+            document.getElementById('review-form').style.display = can_review ? 'flex' : 'none';
+            document.getElementById('review-locked').style.display = can_review ? 'none' : 'block';
 
             if (count === 0) {
                 summaryEl.textContent = 'Отзывов пока нет — будьте первым';
@@ -1157,6 +1164,7 @@
         if (cartItems.length === 0) return;
         pendingOrderAmount = cartItems.reduce((sum, item) => sum + (item.price * item.count), 0);
         pendingOrderDetails = cartItems.map(i => `${i.name} (x${i.count})`).join(', ');
+        pendingOrderIds = cartItems.map(i => i.id);
 
         document.getElementById('pay-amount').textContent = formatPrice(pendingOrderAmount);
         openPage('payment-wait');
@@ -1181,7 +1189,7 @@
                     'ngrok-skip-browser-warning': 'true',
                     'Authorization': `Bearer ${tg.initData || ''}`
                 },
-                body: JSON.stringify({ amount: pendingOrderAmount, description: pendingOrderDetails })
+                body: JSON.stringify({ amount: pendingOrderAmount, description: pendingOrderDetails, product_ids: pendingOrderIds })
             });
             if (!res.ok) throw new Error('request failed');
 

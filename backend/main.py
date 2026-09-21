@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import json
 import os
 import pathlib
@@ -60,6 +62,35 @@ def save_reviews(data: dict) -> None:
 
 reviews_store: dict[str, list[dict]] = load_reviews()
 
+# Отзывы могут оставлять только те, кто отправил заказ с этим товаром.
+ORDERS_FILE = pathlib.Path(__file__).parent / "orders.json"
+
+
+def load_orders() -> list:
+    if ORDERS_FILE.exists():
+        try:
+            return json.loads(ORDERS_FILE.read_text(encoding="utf-8"))
+        except Exception:
+            return []
+    return []
+
+
+orders_store: list[dict] = load_orders()
+
+
+def user_from_init_data(authorization: str | None) -> dict | None:
+    """Проверенные данные пользователя из initData или None, если подписи нет/она неверна."""
+    if not authorization or not authorization.startswith("Bearer "):
+        return None
+    init_data = authorization.replace("Bearer ", "")
+    if not verify_telegram_data(init_data, BOT_TOKEN):
+        return None
+    return json.loads(dict(parse_qsl(init_data)).get("user", "{}"))
+
+
+def has_bought(user_id, product_id: str) -> bool:
+    return any(o["user_id"] == user_id and product_id in o["product_ids"] for o in orders_store)
+
 
 def verify_telegram_data(init_data: str, bot_token: str) -> bool:
     """Функция валидации данных от Telegram"""
@@ -108,6 +139,7 @@ class ChatRequest(BaseModel):
 class OrderRequest(BaseModel):
     amount: float
     description: str
+    product_ids: list[str] = []
 
 
 class ReviewRequest(BaseModel):
@@ -166,6 +198,14 @@ async def create_order(request: OrderRequest, authorization: str = Header(None))
         print(f"Telegram sendMessage error: {resp.status_code} {resp.text}")
         raise HTTPException(status_code=502, detail="Не удалось отправить уведомление продавцу.")
 
+    orders_store.append({
+        "user_id": buyer_id,
+        "product_ids": request.product_ids,
+        "amount": request.amount,
+        "date": datetime.now().isoformat(timespec="seconds"),
+    })
+    ORDERS_FILE.write_text(json.dumps(orders_store, ensure_ascii=False, indent=2), encoding="utf-8")
+
     return {"ok": True}
 
 
@@ -189,6 +229,10 @@ async def create_review(request: ReviewRequest, authorization: str = Header(None
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Система nexTech: Критическая ошибка верификации. Доступ заблокирован."
         )
+
+    user_for_check = json.loads(dict(parse_qsl(init_data)).get("user", "{}"))
+    if not has_bought(user_for_check.get("id"), request.product_id):
+        raise HTTPException(status_code=403, detail="Отзыв могут оставить только покупатели этого товара.")
 
     text = request.text.strip()
     if not text:
@@ -216,11 +260,13 @@ async def create_review(request: ReviewRequest, authorization: str = Header(None
 
 
 @app.get("/reviews/{product_id}")
-async def get_reviews(product_id: str):
-    """Список отзывов по товару — публичный, только реально оставленные покупателями."""
+async def get_reviews(product_id: str, authorization: str = Header(None)):
+    """Список отзывов по товару — публичный; can_review показывает, покупал ли этот пользователь товар."""
     items = reviews_store.get(product_id, [])
     average = round(sum(r["rating"] for r in items) / len(items), 1) if items else 0
-    return {"reviews": list(reversed(items)), "average": average, "count": len(items)}
+    user = user_from_init_data(authorization)
+    can_review = bool(user) and has_bought(user.get("id"), product_id)
+    return {"reviews": list(reversed(items)), "average": average, "count": len(items), "can_review": can_review}
 
 
 @app.options("/ask")
