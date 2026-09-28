@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import pathlib
+import time
 import requests
 import uuid
 import urllib3
@@ -39,8 +40,8 @@ BOT_TOKEN = os.environ["BOT_TOKEN"]
 AUTH_KEY = os.environ["GIGACHAT_AUTH_KEY"]
 SELLER_CHAT_ID = os.environ["SELLER_CHAT_ID"]
 
-# ХРАНИЛИЩЕ ИСТОРИИ
-chat_history = []
+# ИСТОРИЯ ЧАТА С ИИ — у каждого покупателя своя (по Telegram id)
+chat_histories: dict[int, list[dict]] = {}
 
 # --- ОТЗЫВЫ ---
 # Реальные отзывы покупателей, ничего не выдумываем. Хранятся в файле рядом с бэкендом.
@@ -88,6 +89,10 @@ def user_from_init_data(authorization: str | None) -> dict | None:
     return json.loads(dict(parse_qsl(init_data)).get("user", "{}"))
 
 
+def has_reviewed(user_id, product_id: str) -> bool:
+    return any(r.get("user_id") == user_id for r in reviews_store.get(product_id, []))
+
+
 def has_bought(user_id, product_id: str) -> bool:
     return any(o["user_id"] == user_id and product_id in o["product_ids"] for o in orders_store)
 
@@ -103,6 +108,8 @@ def verify_telegram_data(init_data: str, bot_token: str) -> bool:
             return False
         
         parsed_data.pop('hash', None)
+        if time.time() - int(parsed_data.get('auth_date', 0)) > 86400:
+            return False
         data_check_string = "\n".join(f"{k}={v}" for k, v in sorted(parsed_data.items()))
         
         secret_key = hmac.new(b"WebAppData", bot_token.encode(), hashlib.sha256).digest()
@@ -111,6 +118,23 @@ def verify_telegram_data(init_data: str, bot_token: str) -> bool:
         return hmac.compare_digest(expected_hash, received_hash)
     except Exception:
         return False
+
+
+CATEGORY_LABELS = {"gpu": "Видеокарта", "cpu": "Процессор", "ram": "Память", "per": "Периферия"}
+
+
+def catalog_text() -> str:
+    """Прайс для ИИ берём из products.json, чтобы он не расходился с приложением."""
+    try:
+        products = json.loads((pathlib.Path(__file__).parent.parent / "products.json").read_text(encoding="utf-8"))
+    except Exception:
+        return "(каталог сейчас недоступен — отправляй клиента к менеджеру)"
+    lines = []
+    for p in products:
+        stock = p.get("stock")
+        note = "наличие уточняется" if stock is None else (f"в наличии {stock} шт" if stock > 0 else "под заказ")
+        lines.append(f"* {CATEGORY_LABELS.get(p['category'], p['category'])}: {p['name']} — {format(p['price'], ',').replace(',', ' ')} ₽ ({note})")
+    return "\n".join(lines)
 
 
 def get_access_token():
@@ -234,6 +258,9 @@ async def create_review(request: ReviewRequest, authorization: str = Header(None
     if not has_bought(user_for_check.get("id"), request.product_id):
         raise HTTPException(status_code=403, detail="Отзыв могут оставить только покупатели этого товара.")
 
+    if has_reviewed(user_for_check.get("id"), request.product_id):
+        raise HTTPException(status_code=409, detail="Вы уже оставили отзыв на этот товар.")
+
     text = request.text.strip()
     if not text:
         raise HTTPException(status_code=400, detail="Текст отзыва не может быть пустым.")
@@ -265,7 +292,7 @@ async def get_reviews(product_id: str, authorization: str = Header(None)):
     items = reviews_store.get(product_id, [])
     average = round(sum(r["rating"] for r in items) / len(items), 1) if items else 0
     user = user_from_init_data(authorization)
-    can_review = bool(user) and has_bought(user.get("id"), product_id)
+    can_review = bool(user) and has_bought(user.get("id"), product_id) and not has_reviewed(user.get("id"), product_id)
     return {"reviews": list(reversed(items)), "average": average, "count": len(items), "can_review": can_review}
 
 
@@ -278,8 +305,6 @@ async def options_handler():
 @app.post("/ask")
 async def ask_ai(request: ChatRequest, authorization: str = Header(None)):
     """Защищенный эндпоинт общения с ИИ"""
-    global chat_history
-    
     # ПРОВЕРКА КЛИЕНТА НА ВШИВОСТЬ 🛡️
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(
@@ -296,6 +321,9 @@ async def ask_ai(request: ChatRequest, authorization: str = Header(None)):
             status_code=status.HTTP_403_FORBIDDEN, 
             detail="Система nexTech: Критическая ошибка верификации. Доступ заблокирован."
         )
+
+    user_id = json.loads(dict(parse_qsl(init_data)).get("user", "{}")).get("id", 0)
+    chat_history = chat_histories.setdefault(user_id, [])
 
     # --- ЕСЛИ ВСЕ ОК, РАБОТАЕМ С GIGACHAT ---
     token = get_access_token()
@@ -318,16 +346,14 @@ async def ask_ai(request: ChatRequest, authorization: str = Header(None)):
 5. ФОКУС: Отвечай только на вопросы о ПК-железе. Если спрашивают о другом — вежливо вернись к теме магазина.
 
 --- АКТУАЛЬНЫЙ ПРАЙС (ДАННЫЕ ДЛЯ КОНСУЛЬТАЦИИ): ---
-* Видеокарта: Sapphire Nitro+ RX 580 (8GB) — 5 800 ₽
-* Процессор: AMD Ryzen 5 5600X — 12 500 ₽
-* Процессор: Intel Core i5-12400F — 11 500 ₽
-* Мышь: VXE R1 SE — 3 200 ₽
-* Мышь: Logitech G Pro X Superlight — 9 200 ₽
+{catalog}
 
 --- ЛОГИКА ПРОДАЖ: ---
 - Если клиент сомневается, подчеркни надежность (например, "Sapphire Nitro+ — это топовое исполнение с отличным охлаждением").
 - Если клиент выбрал товар и готов к покупке, ОБЯЗАТЕЛЬНО добавь в конце сообщения метку: [КУПИТЬ: Название товара].
-- Если товара нет в списке выше — отвечай, что его сейчас нет в наличии."""
+- Если товара нет в списке выше — отвечай, что его сейчас нет в наличии.
+- Если у товара написано «наличие уточняется» — не утверждай, что он есть или его нет: предложи уточнить у менеджера."""
+    system_prompt = system_prompt.replace("{catalog}", catalog_text())
 
     messages_to_send = [{"role": "system", "content": system_prompt}] + chat_history
 

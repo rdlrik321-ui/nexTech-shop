@@ -58,6 +58,7 @@
     font-weight: bold;
 }
         /* Твои оригинальные стили без изменений */
+        :root { --pad: 16px; --side: 232px; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
         body {
             background: #0E0E10;
@@ -70,7 +71,7 @@
 
         .page { 
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            padding: 20px 16px 110px;
+            padding: 20px var(--pad) 110px;
             opacity: 0; transform: translateY(15px);
             pointer-events: none; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             overflow-y: auto;
@@ -115,17 +116,17 @@
         .pay-value { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 14px; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 7px; }
         .pay-value i { font-size: 11px; opacity: 0.5; }
 
-        .internal-header { display: flex; align-items: center; gap: 11px; height: 50px; padding: 0 16px; margin: 0 -16px 0; border-bottom: 1px solid rgba(255,255,255,0.12); }
+        .internal-header { display: flex; align-items: center; gap: 11px; height: 50px; padding: 0 var(--pad); margin: 0 calc(-1 * var(--pad)); border-bottom: 1px solid rgba(255,255,255,0.12); }
         .back-btn { width: 26px; height: 26px; border-radius: 8px; background: rgba(255,255,255,0.09); border: none; color: #fff; font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; padding: 0; }
         .internal-title { font-family: 'Golos Text', sans-serif; font-weight: 700; font-size: 14.5px; letter-spacing: -0.01em; color: #fff; }
         .internal-meta { font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 10px; letter-spacing: 0.08em; color: rgba(255,255,255,0.62); }
 
-        .sort-tabs { display: flex; margin: 0 -16px; border-bottom: 1px solid rgba(255,255,255,0.12); }
+        .sort-tabs { display: flex; margin: 0 calc(-1 * var(--pad)); border-bottom: 1px solid rgba(255,255,255,0.12); }
         .sort-tab { flex: 1; text-align: center; padding: 13px 4px; font-family: 'Golos Text', sans-serif; font-weight: 600; font-size: 11.5px; color: rgba(255,255,255,0.66); cursor: pointer; box-shadow: inset 0 -2px 0 0 transparent; transition: color 0.15s, box-shadow 0.15s; }
         .sort-tab.active { color: #fff; box-shadow: inset 0 -2px 0 0 #fff; }
         .list-count { font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 10px; letter-spacing: 0.09em; color: rgba(255,255,255,0.64); text-transform: uppercase; padding: 12px 0; }
 
-        .list-grid { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid rgba(255,255,255,0.12); margin: 0 -16px; }
+        .list-grid { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid rgba(255,255,255,0.12); margin: 0 calc(-1 * var(--pad)); }
         .list-card { background: #0E0E10; display: flex; flex-direction: column; border-bottom: 1px solid rgba(255,255,255,0.12); }
         .list-card:nth-child(odd) { border-right: 1px solid rgba(255,255,255,0.12); }
         .list-card.last-row { border-bottom: none; }
@@ -140,7 +141,7 @@
         .list-price { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 14px; color: #fff; }
         .list-add { min-width: 30px; height: 30px; padding: 0 8px; border-radius: 9px; background: #fff; border: none; font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 13px; color: #0E0E10; cursor: pointer; }
 
-        .top-bar { display: flex; align-items: center; gap: 11px; height: 50px; padding: 0 16px; margin: 0 -16px 0; border-bottom: 1px solid rgba(255,255,255,0.12); }
+        .top-bar { display: flex; align-items: center; gap: 11px; height: 50px; padding: 0 var(--pad); margin: 0 calc(-1 * var(--pad)); border-bottom: 1px solid rgba(255,255,255,0.12); }
         .brand-mini { display: flex; align-items: center; gap: 11px; }
         .mini-logo {
             width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
@@ -200,7 +201,7 @@
         .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .product-grid .card { margin-bottom: 0; }
 
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: rgba(255,255,255,0.12); border-bottom: 1px solid rgba(255,255,255,0.12); margin: 0 -16px; }
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: rgba(255,255,255,0.12); border-bottom: 1px solid rgba(255,255,255,0.12); margin: 0 calc(-1 * var(--pad)); }
         .stat-card { background: #0E0E10; display: flex; flex-direction: column; gap: 20px; padding: 20px 16px; cursor: pointer; text-align: left; transition: background 0.15s ease; }
         .stat-card:active { background: rgba(255,255,255,0.06); }
         .stat-top { display: flex; justify-content: space-between; align-items: flex-start; }
@@ -258,13 +259,13 @@
         .modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #0E0E10; z-index: 3000; display: none;
-            padding: 0 16px 20px; overflow-y: auto;
+            padding: 0 var(--pad) 20px; overflow-y: auto;
         }
-        .pd-photo { position: relative; height: 250px; margin: 0 -16px; background: repeating-linear-gradient(135deg, #232429 0 8px, #17181C 8px 16px); }
+        .pd-photo { position: relative; height: 250px; margin: 0 calc(-1 * var(--pad)); background: repeating-linear-gradient(135deg, #232429 0 8px, #17181C 8px 16px); }
         .pd-photo img { width: 100%; height: 100%; object-fit: cover; display: block; transition: opacity 0.3s ease; }
         .pd-photo .photo-fallback { font-size: 40px; }
-        .pd-photo-caption { position: absolute; left: 16px; bottom: 14px; font-family: 'JetBrains Mono', monospace; font-weight: 400; font-size: 9px; letter-spacing: 0.08em; color: rgba(255,255,255,0.4); }
-        .pd-stock-badge { position: absolute; right: 16px; top: 14px; padding: 5px 10px; border-radius: 8px; background: rgba(14,14,16,0.72); font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 9.5px; letter-spacing: 0.06em; color: rgba(255,255,255,0.68); }
+        .pd-photo-caption { position: absolute; left: var(--pad); bottom: 14px; font-family: 'JetBrains Mono', monospace; font-weight: 400; font-size: 9px; letter-spacing: 0.08em; color: rgba(255,255,255,0.4); }
+        .pd-stock-badge { position: absolute; right: var(--pad); top: 14px; padding: 5px 10px; border-radius: 8px; background: rgba(14,14,16,0.72); font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 9.5px; letter-spacing: 0.06em; color: rgba(255,255,255,0.68); }
         .pd-stock-badge.in { color: #fff; }
         .pd-body { padding: 20px 0 22px; display: flex; flex-direction: column; gap: 18px; text-align: left; }
         .pd-cat { font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 10px; letter-spacing: 0.12em; color: #fff; }
@@ -301,7 +302,49 @@
 
         /* Стиль для плашек заказов */
         .order-card { border-left: 2px solid #fff; padding-left: 15px; margin-bottom: 15px; }
-    </style>
+    
+        /* ===== Десктоп / полноэкранный режим Telegram на ПК ===== */
+        @media (min-width: 900px) {
+            :root { --pad: max(32px, calc((100vw - var(--side) - 1040px) / 2)); }
+            .container { max-width: none; }
+            .page { left: var(--side); width: calc(100% - var(--side)); padding-bottom: 48px; }
+            .modal { left: var(--side); width: calc(100% - var(--side)); }
+
+            .hotbar { position: fixed; top: 0; bottom: 0; left: 0; right: auto; width: var(--side); flex-direction: column; justify-content: flex-start; gap: 4px; padding: 22px 12px; border-top: none; border-right: 1px solid rgba(255,255,255,0.12); }
+            .hotbar::before { content: 'nexTech'; font-family: 'Unbounded', sans-serif; font-weight: 800; font-size: 17px; letter-spacing: -0.03em; padding: 4px 14px 22px; }
+            .nav-item { flex: none; flex-direction: row; justify-content: flex-start; gap: 14px; padding: 13px 14px; border-radius: 12px; font-size: 16px; box-shadow: none; }
+            .nav-item i { width: 20px; text-align: center; }
+            .nav-item:hover { background: rgba(255,255,255,0.06); color: #fff; }
+            .nav-item.active { background: rgba(255,255,255,0.09); box-shadow: none; }
+            .nav-label { font-size: 11px; }
+            .nav-item.center { order: 10; margin-top: 18px; padding: 0; background: none; }
+            .nav-item.center:hover { background: none; }
+            .nav-center-btn { width: 100%; height: 46px; margin-top: 0; border-radius: 12px; box-shadow: none; }
+            .nav-center-btn::after { content: 'ИИ-консультант'; font-family: 'Golos Text', sans-serif; font-weight: 700; font-size: 13px; margin-left: 10px; }
+            .cart-badge { top: -7px; right: -9px; }
+
+            .hero-sub { max-width: 460px; }
+            .hero-title { font-size: 36px; }
+            .search-wrap { max-width: 560px; }
+            .stat-grid { grid-template-columns: repeat(4, 1fr); }
+            .stat-card:first-child { padding-left: var(--pad); }
+
+            .list-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); overflow: hidden; }
+            .list-card, .list-card:nth-child(odd) { border-right: 1px solid rgba(255,255,255,0.12); margin: 0 -1px -1px 0; }
+            .list-card.last-row { border-bottom: 1px solid rgba(255,255,255,0.12); }
+            .list-photo { height: 170px; }
+
+            #cart-lines, #cart-footer, #cart-empty, #profile .profile-section, .success-wrap { max-width: 720px; }
+            #cart-empty, .success-wrap { margin-left: auto; margin-right: auto; }
+            #ai-chat > :not(.internal-header) { max-width: 760px; }
+            #chat-box { height: calc(100vh - 260px); }
+
+            #modal-content { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); column-gap: 44px; align-items: start; max-width: 1080px; margin: 0 auto; padding-top: 28px; }
+            .pd-photo { margin: 0; height: 480px; border-radius: 18px; overflow: hidden; position: sticky; top: 28px; }
+            .pd-photo-caption { left: 18px; }
+            .pd-stock-badge { right: 16px; }
+        }
+</style>
 </head>
 <body>
 
@@ -813,7 +856,7 @@
                     <span class="section-label">ОТЗЫВЫ</span>
                     <div class="reviews-summary" id="reviews-summary">Загрузка…</div>
                     <div id="reviews-list"></div>
-                    <div class="reviews-summary" id="review-locked" style="margin-top:14px; margin-bottom:0; display:none;">Оставить отзыв могут покупатели этого товара</div>
+                    <div class="reviews-summary" id="review-locked" style="margin-top:14px; margin-bottom:0; display:none;">Отзыв можно оставить один раз — после покупки этого товара</div>
                     <div class="review-form" id="review-form" style="display:none;">
                         <div class="star-picker" id="star-picker">
                             ${[1, 2, 3, 4, 5].map(n => `<i class="fa-regular fa-star" data-star="${n}" onclick="setReviewRating(${n})"></i>`).join('')}
@@ -1069,8 +1112,8 @@
         histCont.innerHTML = [...ordersHistory].reverse().map(order => `
             <div class="order-card">
                 <div style="font-size:10px; opacity:0.5;">${order.date}</div>
-                <div style="font-size:13px; margin:5px 0;">${order.items}</div>
-                <b style="color:#f2ff00;">${order.amount} ₽ — Заказ отправлен, ожидает связи</b>
+                <div style="font-size:13px; margin:5px 0;">${escapeHtml(order.items)}</div>
+                <b>${order.amount} ₽ — Заказ отправлен, ожидает связи</b>
             </div>
         `).join('');
     }
@@ -1238,6 +1281,7 @@
     }
 
     setInterval(async () => {
+        if (document.hidden) return;
         try {
             const check = await fetch(`${API_URL}/ask`, {
                 method: 'OPTIONS',
