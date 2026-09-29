@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import pathlib
+import secrets
 import time
 import requests
 import uuid
@@ -31,6 +32,29 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+@app.on_event("startup")
+async def register_telegram_webhook():
+    """Говорит Telegram, куда слать нажатия кнопок «Оплата пришла» / «Отмена»."""
+    if not PUBLIC_URL:
+        print("PUBLIC_URL не задан в .env — кнопки подтверждения оплаты работать не будут.")
+        return
+    try:
+        resp = requests.post(
+            f"https://api.telegram.org/bot{BOT_TOKEN}/setWebhook",
+            json={
+                "url": f"{PUBLIC_URL}/telegram-webhook",
+                "secret_token": WEBHOOK_SECRET,
+                "allowed_updates": ["callback_query"],
+            },
+            timeout=10,
+        )
+        if not resp.json().get("ok"):
+            print(f"Telegram отказал в регистрации вебхука: {resp.text}")
+    except Exception as e:
+        print(f"Не удалось зарегистрировать вебхук Telegram: {e}")
+
+
 # --- НАСТРОЙКИ БЕЗОПАСНОСТИ NEXTECH ---
 # Секреты берутся из .env (см. .env.example) — никогда не хардкодь их здесь,
 # этот файл лежит в репозитории и может стать публичным.
@@ -39,6 +63,9 @@ load_dotenv()
 BOT_TOKEN = os.environ["BOT_TOKEN"]
 AUTH_KEY = os.environ["GIGACHAT_AUTH_KEY"]
 SELLER_CHAT_ID = os.environ["SELLER_CHAT_ID"]
+# Публичный адрес этого бэкенда (тот же, что и API_URL в index.html) — нужен,
+# чтобы Telegram знал, куда слать нажатия кнопок «Оплата пришла» / «Отмена».
+PUBLIC_URL = os.environ.get("PUBLIC_URL", "")
 
 # ИСТОРИЯ ЧАТА С ИИ — у каждого покупателя своя (по Telegram id)
 chat_histories: dict[int, list[dict]] = {}
@@ -79,6 +106,19 @@ def load_orders() -> list:
 orders_store: list[dict] = load_orders()
 
 
+def save_orders() -> None:
+    ORDERS_FILE.write_text(json.dumps(orders_store, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def find_order(order_id: str) -> dict | None:
+    return next((o for o in orders_store if o.get("id") == order_id), None)
+
+
+# Секрет вебхука Telegram — генерируется заново при каждом запуске и тут же
+# регистрируется в setWebhook, поэтому хранить его в .env не нужно.
+WEBHOOK_SECRET = secrets.token_urlsafe(32)
+
+
 def user_from_init_data(authorization: str | None) -> dict | None:
     """Проверенные данные пользователя из initData или None, если подписи нет/она неверна."""
     if not authorization or not authorization.startswith("Bearer "):
@@ -94,7 +134,11 @@ def has_reviewed(user_id, product_id: str) -> bool:
 
 
 def has_bought(user_id, product_id: str) -> bool:
-    return any(o["user_id"] == user_id and product_id in o["product_ids"] for o in orders_store)
+    """Покупкой считаем только заказ, который продавец подтвердил кнопкой «Оплата пришла»."""
+    return any(
+        o["user_id"] == user_id and product_id in o["product_ids"] and o.get("status") == "confirmed"
+        for o in orders_store
+    )
 
 
 def verify_telegram_data(init_data: str, bot_token: str) -> bool:
@@ -205,30 +249,111 @@ async def create_order(request: OrderRequest, authorization: str = Header(None))
     buyer_id = user.get("id")
     contact = f"@{buyer_username}" if buyer_username else f'<a href="tg://user?id={buyer_id}">открыть чат</a>'
 
+    order_id = uuid.uuid4().hex
     text = (
         "🆕 <b>Новый заказ nexTech — покупатель сообщает об оплате по СБП</b>\n\n"
         f"👤 {buyer_name} ({contact})\n"
         f"🛒 {request.description}\n"
         f"💰 <b>{request.amount:.0f} ₽</b>\n\n"
-        "⚠️ Проверьте поступление перевода в банке перед сборкой заказа."
+        "⚠️ Проверьте поступление перевода в банке, затем нажмите кнопку ниже."
     )
 
     resp = requests.post(
         f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
-        json={"chat_id": SELLER_CHAT_ID, "text": text, "parse_mode": "HTML"},
+        json={
+            "chat_id": SELLER_CHAT_ID,
+            "text": text,
+            "parse_mode": "HTML",
+            "reply_markup": {"inline_keyboard": [[
+                {"text": "✅ Оплата пришла", "callback_data": f"confirm:{order_id}"},
+                {"text": "❌ Отмена", "callback_data": f"cancel:{order_id}"},
+            ]]},
+        },
         timeout=10,
     )
     if resp.status_code != 200:
         print(f"Telegram sendMessage error: {resp.status_code} {resp.text}")
         raise HTTPException(status_code=502, detail="Не удалось отправить уведомление продавцу.")
 
+    seller_message_id = resp.json()["result"]["message_id"]
+
     orders_store.append({
+        "id": order_id,
         "user_id": buyer_id,
         "product_ids": request.product_ids,
         "amount": request.amount,
+        "description": request.description,
         "date": datetime.now().isoformat(timespec="seconds"),
+        "status": "pending",
+        "seller_message_id": seller_message_id,
+        "seller_message_text": text,
     })
-    ORDERS_FILE.write_text(json.dumps(orders_store, ensure_ascii=False, indent=2), encoding="utf-8")
+    save_orders()
+
+    return {"ok": True, "order_id": order_id}
+
+
+@app.post("/telegram-webhook")
+async def telegram_webhook(update: dict, x_telegram_bot_api_secret_token: str = Header(None)):
+    """Обрабатывает нажатия кнопок «Оплата пришла» / «Отмена» под заказом у продавца."""
+    if x_telegram_bot_api_secret_token != WEBHOOK_SECRET:
+        raise HTTPException(status_code=403, detail="Неверный секрет вебхука.")
+
+    cq = update.get("callback_query")
+    if not cq:
+        return {"ok": True}
+
+    action, _, order_id = cq.get("data", "").partition(":")
+    order = find_order(order_id)
+
+    def answer(text: str, show_alert: bool = False) -> None:
+        requests.post(
+            f"https://api.telegram.org/bot{BOT_TOKEN}/answerCallbackQuery",
+            json={"callback_query_id": cq["id"], "text": text, "show_alert": show_alert},
+            timeout=10,
+        )
+
+    if action not in ("confirm", "cancel") or not order:
+        answer("Заказ не найден.", show_alert=True)
+        return {"ok": True}
+    if order["status"] != "pending":
+        answer("Уже обработано.")
+        return {"ok": True}
+
+    if action == "confirm":
+        order["status"] = "confirmed"
+        status_line = "✅ ОПЛАТА ПОДТВЕРЖДЕНА"
+        buyer_text = (
+            f"✅ Оплата по заказу «{order['description']}» на {order['amount']:.0f} ₽ подтверждена.\n"
+            "Менеджер свяжется, чтобы согласовать самовывоз в Томске."
+        )
+        answer("Отмечено как оплаченный.")
+    else:
+        order["status"] = "cancelled"
+        status_line = "❌ ОТМЕНЕНО"
+        buyer_text = (
+            f"❌ Заказ «{order['description']}» на {order['amount']:.0f} ₽ отменён.\n"
+            "Если это ошибка — напишите менеджеру в этом чате."
+        )
+        answer("Заказ отменён.")
+
+    save_orders()
+
+    requests.post(
+        f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
+        json={"chat_id": order["user_id"], "text": buyer_text},
+        timeout=10,
+    )
+    requests.post(
+        f"https://api.telegram.org/bot{BOT_TOKEN}/editMessageText",
+        json={
+            "chat_id": SELLER_CHAT_ID,
+            "message_id": order["seller_message_id"],
+            "text": f"{order['seller_message_text']}\n\n{status_line}",
+            "parse_mode": "HTML",
+        },
+        timeout=10,
+    )
 
     return {"ok": True}
 
