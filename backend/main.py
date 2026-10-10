@@ -63,6 +63,11 @@ load_dotenv()
 BOT_TOKEN = os.environ["BOT_TOKEN"]
 # Ключ GigaChat необязателен: без него магазин работает, ИИ-чат просто отвечает «недоступен».
 AUTH_KEY = os.environ.get("GIGACHAT_AUTH_KEY", "")
+
+# ИИ-консультант: любой OpenAI-совместимый провайдер (по умолчанию Google Gemini) → иначе GigaChat → иначе «недоступен».
+LLM_API_KEY = os.environ.get("LLM_API_KEY", "")
+LLM_BASE_URL = (os.environ.get("LLM_BASE_URL") or "https://generativelanguage.googleapis.com/v1beta/openai").rstrip("/")
+LLM_MODEL = os.environ.get("LLM_MODEL") or "gemini-2.5-flash"
 SELLER_CHAT_ID = os.environ["SELLER_CHAT_ID"]
 # Публичный адрес этого бэкенда (тот же, что и API_URL в index.html) — нужен,
 # чтобы Telegram знал, куда слать нажатия кнопок «Оплата пришла» / «Отмена».
@@ -178,8 +183,63 @@ def catalog_text() -> str:
     for p in products:
         stock = p.get("stock")
         note = "наличие уточняется" if stock is None else (f"в наличии {stock} шт" if stock > 0 else "под заказ")
-        lines.append(f"* {CATEGORY_LABELS.get(p['category'], p['category'])}: {p['name']} — {format(p['price'], ',').replace(',', ' ')} ₽ ({note})")
+        specs = "; ".join(f"{k}: {v}" for k, v in p.get("specs", []))
+        lines.append(
+            f"* {CATEGORY_LABELS.get(p['category'], p['category'])}: {p['name']} — "
+            f"{format(p['price'], ',').replace(',', ' ')} ₽ ({note}); класс {p.get('grade', '?')}; {specs}"
+        )
     return "\n".join(lines)
+
+
+AI_UNAVAILABLE = "ИИ-консультант временно недоступен. По вопросам наличия и оплаты напишите менеджеру в разделе «Поддержка»."
+
+SYSTEM_PROMPT = """Ты — ассистент магазина комплектующих и периферии для ПК nexTech (Томск). Консультируй по товарам из прайса и помогай с выбором.
+
+--- ПРАВИЛА (СТРОГО): ---
+1. Стиль: вежливо, на «Вы», коротко и по делу.
+2. На приветствие отвечай кратко и спроси, что интересует. Не перечисляй весь ассортимент, пока не попросили.
+3. Опирайся ТОЛЬКО на прайс ниже. Цены, характеристики и наличие не выдумывай. Не придумывай акции, скидки, подарки, сроки и гарантию.
+4. Если товара нет в прайсе — скажи, что такого сейчас нет. Если наличие «уточняется» — не утверждай ни «есть», ни «нет», предложи уточнить у менеджера.
+5. Отвечай только про ПК-железо и условия магазина. На другие темы вежливо верни разговор к магазину.
+6. Если клиент готов купить конкретный товар, в конце ответа добавь метку: [КУПИТЬ: Название товара].
+
+--- УСЛОВИЯ МАГАЗИНА (всё остальное — к менеджеру): ---
+- Самовывоз в Томске. Оплата переводом по СБП, после перевода менеджер проверяет поступление и подтверждает заказ в чате.
+- Классы состояния: S — абсолютный топ, новое железо или флагманы; A — идеальное состояние, минимальный износ, обслужено и протестировано; B — надёжный рабочий класс, проверенное б/у железо. Если класс другой — отправь уточнить у менеджера.
+- Перед выдачей железо проходит проверку и стресс-тест.
+- Про гарантию, сроки и доставку ничего не обещай: направляй к менеджеру в разделе «Поддержка».
+
+--- ПРАЙС: ---
+{catalog}"""
+
+
+def build_system_prompt() -> str:
+    return SYSTEM_PROMPT.replace("{catalog}", catalog_text())
+
+
+def ask_openai_compatible(messages: list) -> str:
+    resp = requests.post(
+        f"{LLM_BASE_URL}/chat/completions",
+        headers={"Authorization": f"Bearer {LLM_API_KEY}", "Content-Type": "application/json"},
+        json={"model": LLM_MODEL, "messages": messages, "temperature": 0.3},
+        timeout=40,
+    )
+    resp.raise_for_status()
+    return resp.json()["choices"][0]["message"]["content"]
+
+
+def ask_gigachat(messages: list) -> str:
+    token = get_access_token()
+    if not token:
+        raise RuntimeError("не удалось получить токен GigaChat")
+    resp = requests.post(
+        "https://gigachat.devices.sberbank.ru/api/v1/chat/completions",
+        headers={"Content-Type": "application/json", "Authorization": f"Bearer {token}"},
+        json={"model": "GigaChat", "messages": messages, "temperature": 0.3},
+        verify=False,
+        timeout=40,
+    )
+    return resp.json()["choices"][0]["message"]["content"]
 
 
 def get_access_token():
@@ -451,62 +511,24 @@ async def ask_ai(request: ChatRequest, authorization: str = Header(None)):
     user_id = json.loads(dict(parse_qsl(init_data)).get("user", "{}")).get("id", 0)
     chat_history = chat_histories.setdefault(user_id, [])
 
-    # --- ЕСЛИ ВСЕ ОК, РАБОТАЕМ С GIGACHAT ---
-    if not AUTH_KEY:
-        return {"reply": "ИИ-консультант временно недоступен. По вопросам наличия и оплаты напишите менеджеру в разделе «Поддержка»."}
-
-    token = get_access_token()
-    if not token:
-        return {"reply": "Система nexTech: Ошибка авторизации в ядре ИИ."}
+    if not LLM_API_KEY and not AUTH_KEY:
+        return {"reply": AI_UNAVAILABLE}
 
     chat_history.append({"role": "user", "content": request.message})
-    
     if len(chat_history) > 10:
         chat_history.pop(0)
 
-    system_prompt = """Ты — интеллектуальный ассистент магазина электроники nexTech. 
-Твоя цель: консультировать клиентов по наличию и помогать с выбором комплектующих.
+    messages = [{"role": "system", "content": build_system_prompt()}] + chat_history
 
---- ПРАВИЛА ПОВЕДЕНИЯ (СТРОГО): ---
-1. СТИЛЬ: Деловой, вежливый, на "Вы". Ответы должны быть лаконичными и по делу.
-2. ПРИВЕТСТВИЕ: На "Привет" или "Здравствуйте" отвечай кратко: "Здравствуйте! Вас приветствует nexTech. Какое железо или периферия Вас интересует?". НЕ ПЕРЕЧИСЛЯЙ товары сразу.
-3. БЕЗОПАСНОСТЬ: Категорически запрещено выдумывать акции, скидки, бонусы или подарки. Цены строго фиксированные.
-4. СПАМ-ФИЛЬТР: Выдавай полный список товаров ТОЛЬКО по прямому запросу ("Что есть?", "Весь прайс", "Покажи ассортимент"). 
-5. ФОКУС: Отвечай только на вопросы о ПК-железе. Если спрашивают о другом — вежливо вернись к теме магазина.
-
---- АКТУАЛЬНЫЙ ПРАЙС (ДАННЫЕ ДЛЯ КОНСУЛЬТАЦИИ): ---
-{catalog}
-
---- ЛОГИКА ПРОДАЖ: ---
-- Если клиент сомневается, подчеркни надежность (например, "Sapphire Nitro+ — это топовое исполнение с отличным охлаждением").
-- Если клиент выбрал товар и готов к покупке, ОБЯЗАТЕЛЬНО добавь в конце сообщения метку: [КУПИТЬ: Название товара].
-- Если товара нет в списке выше — отвечай, что его сейчас нет в наличии.
-- Если у товара написано «наличие уточняется» — не утверждай, что он есть или его нет: предложи уточнить у менеджера."""
-    system_prompt = system_prompt.replace("{catalog}", catalog_text())
-
-    messages_to_send = [{"role": "system", "content": system_prompt}] + chat_history
-
-    url = "https://gigachat.devices.sberbank.ru/api/v1/chat/completions"
-    payload = {
-        "model": "GigaChat",
-        "messages": messages_to_send,
-        "temperature": 0.3
-    }
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': f'Bearer {token}'
-    }
-    
     try:
-        response = requests.post(url, headers=headers, json=payload, verify=False)
-        result = response.json()
-        ai_reply = result['choices'][0]['message']['content']
-        
-        chat_history.append({"role": "assistant", "content": ai_reply})
-        return {"reply": ai_reply}
+        ai_reply = ask_openai_compatible(messages) if LLM_API_KEY else ask_gigachat(messages)
     except Exception as e:
-        print(f"Ошибка запроса: {e}")
-        return {"reply": "Ошибка связи с ядром GigaChat."}
+        print(f"Ошибка запроса к ИИ: {e}")
+        chat_history.pop()  # вопрос без ответа в историю не оставляем
+        return {"reply": "Ошибка связи с ИИ. Попробуйте позже или напишите менеджеру в разделе «Поддержка»."}
+
+    chat_history.append({"role": "assistant", "content": ai_reply})
+    return {"reply": ai_reply}
 
 
 if __name__ == "__main__":
