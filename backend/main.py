@@ -67,7 +67,8 @@ AUTH_KEY = os.environ.get("GIGACHAT_AUTH_KEY", "")
 # ИИ-консультант: любой OpenAI-совместимый провайдер (по умолчанию Google Gemini) → иначе GigaChat → иначе «недоступен».
 LLM_API_KEY = os.environ.get("LLM_API_KEY", "")
 LLM_BASE_URL = (os.environ.get("LLM_BASE_URL") or "https://generativelanguage.googleapis.com/v1beta/openai").rstrip("/")
-LLM_MODEL = os.environ.get("LLM_MODEL") or "gemini-2.5-flash"
+# Можно перечислить несколько моделей через запятую — при сбое/перегрузке берётся следующая.
+LLM_MODELS = [m.strip() for m in (os.environ.get("LLM_MODEL") or "gemini-flash-latest,gemini-3-flash-preview").split(",") if m.strip()]
 SELLER_CHAT_ID = os.environ["SELLER_CHAT_ID"]
 # Публичный адрес этого бэкенда (тот же, что и API_URL в index.html) — нужен,
 # чтобы Telegram знал, куда слать нажатия кнопок «Оплата пришла» / «Отмена».
@@ -218,14 +219,21 @@ def build_system_prompt() -> str:
 
 
 def ask_openai_compatible(messages: list) -> str:
-    resp = requests.post(
-        f"{LLM_BASE_URL}/chat/completions",
-        headers={"Authorization": f"Bearer {LLM_API_KEY}", "Content-Type": "application/json"},
-        json={"model": LLM_MODEL, "messages": messages, "temperature": 0.3},
-        timeout=40,
-    )
-    resp.raise_for_status()
-    return resp.json()["choices"][0]["message"]["content"]
+    last_error = None
+    for model in LLM_MODELS:
+        try:
+            resp = requests.post(
+                f"{LLM_BASE_URL}/chat/completions",
+                headers={"Authorization": f"Bearer {LLM_API_KEY}", "Content-Type": "application/json"},
+                json={"model": model, "messages": messages, "temperature": 0.3},
+                timeout=30,
+            )
+            resp.raise_for_status()
+            return resp.json()["choices"][0]["message"]["content"]
+        except Exception as e:
+            print(f"ИИ: модель {model} не ответила: {e}")
+            last_error = e
+    raise last_error
 
 
 def ask_gigachat(messages: list) -> str:
