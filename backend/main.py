@@ -68,7 +68,7 @@ AUTH_KEY = os.environ.get("GIGACHAT_AUTH_KEY", "")
 LLM_API_KEY = os.environ.get("LLM_API_KEY", "")
 LLM_BASE_URL = (os.environ.get("LLM_BASE_URL") or "https://generativelanguage.googleapis.com/v1beta/openai").rstrip("/")
 # Можно перечислить несколько моделей через запятую — при сбое/перегрузке берётся следующая.
-LLM_MODELS = [m.strip() for m in (os.environ.get("LLM_MODEL") or "gemini-flash-latest,gemini-3-flash-preview").split(",") if m.strip()]
+LLM_MODELS = [m.strip() for m in (os.environ.get("LLM_MODEL") or "gemini-3-flash-preview,gemini-flash-latest").split(",") if m.strip()]
 SELLER_CHAT_ID = os.environ["SELLER_CHAT_ID"]
 # Публичный адрес этого бэкенда (тот же, что и API_URL в index.html) — нужен,
 # чтобы Telegram знал, куда слать нажатия кнопок «Оплата пришла» / «Отмена».
@@ -226,7 +226,7 @@ def ask_openai_compatible(messages: list) -> str:
                 f"{LLM_BASE_URL}/chat/completions",
                 headers={"Authorization": f"Bearer {LLM_API_KEY}", "Content-Type": "application/json"},
                 json={"model": model, "messages": messages, "temperature": 0.3},
-                timeout=30,
+                timeout=15,
             )
             resp.raise_for_status()
             return resp.json()["choices"][0]["message"]["content"]
