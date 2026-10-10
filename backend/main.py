@@ -46,7 +46,7 @@ async def register_telegram_webhook():
             json={
                 "url": f"{PUBLIC_URL}/telegram-webhook",
                 "secret_token": WEBHOOK_SECRET,
-                "allowed_updates": ["callback_query"],
+                "allowed_updates": ["callback_query", "message"],
             },
             timeout=10,
         )
@@ -74,6 +74,8 @@ SELLER_CHAT_ID = os.environ["SELLER_CHAT_ID"]
 # Публичный адрес этого бэкенда (тот же, что и API_URL в index.html) — нужен,
 # чтобы Telegram знал, куда слать нажатия кнопок «Оплата пришла» / «Отмена».
 PUBLIC_URL = os.environ.get("PUBLIC_URL", "")
+# Адрес самого мини-аппа (GitHub Pages) — для кнопки «Открыть магазин» в ответе на /start.
+WEBAPP_URL = os.environ.get("WEBAPP_URL") or "https://rdlrik321-ui.github.io/nexTech-shop/"
 
 # ИСТОРИЯ ЧАТА С ИИ — у каждого покупателя своя (по Telegram id)
 chat_histories: dict[int, list[dict]] = {}
@@ -405,6 +407,27 @@ async def telegram_webhook(update: dict, x_telegram_bot_api_secret_token: str = 
     """Обрабатывает нажатия кнопок «Оплата пришла» / «Отмена» под заказом у продавца."""
     if x_telegram_bot_api_secret_token != WEBHOOK_SECRET:
         raise HTTPException(status_code=403, detail="Неверный секрет вебхука.")
+
+    msg = update.get("message")
+    if msg and (msg.get("chat") or {}).get("type") == "private" and not (msg.get("from") or {}).get("is_bot"):
+        if (msg.get("text") or "").strip().startswith("/start"):
+            text = ("Добро пожаловать в nexTech — комплектующие и периферия для ПК.\n\n"
+                    "Самовывоз в Томске, оплата переводом по СБП. Откройте каталог кнопкой ниже.")
+        else:
+            text = "Откройте магазин кнопкой ниже. Связаться с менеджером можно из магазина, раздел «Поддержка»."
+        try:
+            requests.post(
+                f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
+                json={
+                    "chat_id": msg["chat"]["id"],
+                    "text": text,
+                    "reply_markup": {"inline_keyboard": [[{"text": "Открыть магазин", "web_app": {"url": WEBAPP_URL}}]]},
+                },
+                timeout=10,
+            )
+        except Exception as e:
+            print(f"Не удалось ответить на сообщение: {e}")
+        return {"ok": True}
 
     cq = update.get("callback_query")
     if not cq:
