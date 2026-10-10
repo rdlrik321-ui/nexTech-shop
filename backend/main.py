@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import pathlib
+import re
 import secrets
 import time
 import requests
@@ -203,6 +204,7 @@ SYSTEM_PROMPT = """Ты — ассистент магазина комплект
 4. Если товара нет в прайсе — скажи, что такого сейчас нет. Если наличие «уточняется» — не утверждай ни «есть», ни «нет», предложи уточнить у менеджера.
 5. Отвечай только про ПК-железо и условия магазина. На другие темы вежливо верни разговор к магазину.
 6. Если клиент готов купить конкретный товар, в конце ответа добавь метку: [КУПИТЬ: Название товара].
+7. Называй товары точными названиями из прайса — под твоим ответом автоматически появятся карточки с фото и кнопкой «В корзину». Не используй таблицы и заголовки, для перечисления — короткие пункты. Не повторяй подробно то, что видно в карточке.
 
 --- УСЛОВИЯ МАГАЗИНА (всё остальное — к менеджеру): ---
 - Самовывоз в Томске. Оплата переводом по СБП, после перевода менеджер проверяет поступление и подтверждает заказ в чате.
@@ -212,6 +214,42 @@ SYSTEM_PROMPT = """Ты — ассистент магазина комплект
 
 --- ПРАЙС: ---
 {catalog}"""
+
+
+def _norm(text: str) -> str:
+    return re.sub(r"\s+", " ", text.lower().replace("ё", "е")).strip()
+
+
+def find_products(text: str, limit: int = 4) -> list:
+    """id товаров каталога, упомянутых в тексте (в порядке появления)."""
+    try:
+        catalog = json.loads((pathlib.Path(__file__).parent.parent / "products.json").read_text(encoding="utf-8"))
+    except Exception:
+        return []
+    t, found = _norm(text), []
+    for p in catalog:
+        name = _norm(p["name"])
+        keys = [name]
+        head, _, tail = name.partition(" ")
+        if len(tail) >= 8:
+            keys.append(tail)  # то же название без первого слова-бренда
+        positions = [t.find(k) for k in keys if k in t]
+        if positions:
+            found.append((min(positions), p["id"]))
+    return [pid for _, pid in sorted(found)][:limit]
+
+
+BUY_MARK = re.compile(r"\[\s*КУПИТЬ\s*:\s*([^\]]+)\]", re.I)
+
+
+def split_reply(reply: str):
+    """Убирает служебную метку [КУПИТЬ: …] и возвращает (текст, id упомянутых товаров, id к покупке)."""
+    buy = next(iter([pid for m in BUY_MARK.finditer(reply) for pid in find_products(m.group(1), 1)]), None)
+    clean = BUY_MARK.sub("", reply).strip()
+    ids = find_products(clean)
+    if buy and buy not in ids:
+        ids = [buy] + ids[:3]
+    return clean, ids, buy
 
 
 def build_system_prompt() -> str:
@@ -535,8 +573,9 @@ async def ask_ai(request: ChatRequest, authorization: str = Header(None)):
         chat_history.pop()  # вопрос без ответа в историю не оставляем
         return {"reply": "Ошибка связи с ИИ. Попробуйте позже или напишите менеджеру в разделе «Поддержка»."}
 
-    chat_history.append({"role": "assistant", "content": ai_reply})
-    return {"reply": ai_reply}
+    clean_reply, product_ids, buy_id = split_reply(ai_reply)
+    chat_history.append({"role": "assistant", "content": clean_reply})
+    return {"reply": clean_reply, "products": product_ids, "buy": buy_id}
 
 
 if __name__ == "__main__":

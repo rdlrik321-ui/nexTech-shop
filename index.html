@@ -218,8 +218,23 @@
         #chat-box { height: calc(100vh - 320px); overflow-y: auto; padding-right: 10px; margin-bottom: 15px; }
         .ai-msg, .user-msg { animation: msgIn 0.25s ease-out; }
         @keyframes msgIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-        .ai-msg { color: #fff; margin-bottom: 15px; font-size: 14px; line-height: 1.4; white-space: pre-wrap; }
-        .user-msg { color: rgba(255,255,255,0.5); margin-bottom: 15px; font-size: 14px; text-align: right; }
+        .ai-msg { color: #fff; margin-bottom: 14px; font-size: 14px; line-height: 1.5; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px 16px 16px 4px; padding: 12px 14px; max-width: 92%; overflow-wrap: anywhere; }
+        .ai-msg p { margin: 0 0 8px; }
+        .ai-msg ul { margin: 0 0 8px; padding-left: 18px; }
+        .ai-msg li { margin-bottom: 5px; }
+        .ai-msg p:last-child, .ai-msg ul:last-child { margin-bottom: 0; }
+        .user-msg { margin: 0 0 14px auto; width: fit-content; max-width: 85%; background: rgba(255,255,255,0.14); color: #fff; font-size: 14px; line-height: 1.4; padding: 9px 13px; border-radius: 16px 16px 4px 16px; overflow-wrap: anywhere; }
+        .chat-cards { display: flex; flex-direction: column; gap: 8px; margin: -4px 0 14px; max-width: 92%; }
+        .chat-card { display: flex; align-items: center; gap: 12px; padding: 10px; border: 1px solid rgba(255,255,255,0.14); border-radius: 14px; background: #0E0E10; }
+        .chat-card .hit-thumb { border-radius: 12px; cursor: pointer; }
+        .chat-card-info { flex: 1; min-width: 0; cursor: pointer; }
+        .chat-card-name { font-family: 'Golos Text', sans-serif; font-weight: 600; font-size: 13px; line-height: 1.25; }
+        .chat-card-meta { font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 10.5px; letter-spacing: 0.03em; color: rgba(255,255,255,0.62); margin-top: 4px; }
+        .chat-card-meta b { color: #fff; font-weight: 700; font-size: 12px; }
+        .chat-card-btn { flex-shrink: 0; padding: 9px 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.22); background: none; color: #fff; font-family: 'Golos Text', sans-serif; font-weight: 700; font-size: 12px; cursor: pointer; }
+        .chat-card-btn.primary { background: #fff; color: #0E0E10; border-color: #fff; }
+        .chat-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 14px; }
+        .chat-chip { padding: 8px 13px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.2); background: none; color: #fff; font-family: 'Golos Text', sans-serif; font-weight: 600; font-size: 12.5px; cursor: pointer; }
 
         .hotbar { position: absolute; left: 0; right: 0; bottom: 0; background: #0E0E10; border-top: 1px solid rgba(255,255,255,0.12); display: flex; padding: 0 6px 12px; z-index: 2000; }
         .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 11px 0 5px; color: rgba(255,255,255,0.62); font-size: 19px; cursor: pointer; box-shadow: inset 0 2px 0 0 transparent; transition: color 0.2s, box-shadow 0.2s; }
@@ -580,7 +595,7 @@
         <div class="internal-header">
             <button class="back-btn" onclick="openPage('home')">‹</button>
             <span class="internal-title">AI-ассистент</span>
-            <span class="internal-meta">// GIGACHAT</span>
+            <span class="internal-meta">// AI</span>
             <button class="menu-dots" onclick="openSupport()"><i class="fa-solid fa-headset"></i></button>
         </div>
         <div id="chat-box" style="margin-top: 20px;"></div>
@@ -1226,52 +1241,111 @@
     }
 
     // УМНЫЙ AI С КОНТЕКСТОМ ТОВАРОВ
-   async function sendToAI() {
+    function renderMarkdown(text) {
+        const inline = t => t.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+        let html = '', inList = false;
+        const closeList = () => { if (inList) { html += '</ul>'; inList = false; } };
+        for (const raw of escapeHtml(text).split('\n')) {
+            const line = raw.trim();
+            const li = line.match(/^(?:[*•-]|\d+[.)])\s+(.*)$/);
+            const h = line.match(/^#{1,6}\s+(.*)$/);
+            if (li) {
+                if (!inList) { html += '<ul>'; inList = true; }
+                html += '<li>' + inline(li[1]) + '</li>';
+            } else if (!line) {
+                closeList();
+            } else {
+                closeList();
+                html += '<p>' + (h ? '<b>' + inline(h[1]) + '</b>' : inline(line)) + '</p>';
+            }
+        }
+        closeList();
+        return html;
+    }
+
+    function chatCardsHtml(ids, buyId) {
+        return ids.map(id => products.find(p => p.id === id)).filter(Boolean).map(p => {
+            const st = stockShort(p);
+            return `<div class="chat-card">
+                <div class="hit-thumb" onclick="openProduct('${p.id}')"><img src="${p.img}" onerror="this.style.display='none'"></div>
+                <div class="chat-card-info" onclick="openProduct('${p.id}')">
+                    <div class="chat-card-name">${escapeHtml(p.name)}</div>
+                    <div class="chat-card-meta"><b>${formatPrice(p.price)}</b><br>${st.text}</div>
+                </div>
+                <button class="chat-card-btn ${p.id === buyId ? 'primary' : ''}" onclick="chatAdd('${p.id}', this)">В корзину</button>
+            </div>`;
+        }).join('');
+    }
+
+    function chatAdd(productId, btn) {
+        addToCart(productId);
+        const item = cartItems.find(i => i.id === productId);
+        btn.textContent = `В корзине · ${item ? item.count : 1}`;
+    }
+
+    function renderChatIntro() {
+        const chips = [
+            ['Видеокарты', 'Какие у вас есть видеокарты?'],
+            ['Процессоры', 'Какие у вас есть процессоры?'],
+            ['Периферия', 'Какая у вас есть периферия?'],
+            ['До 10 000 ₽', 'Что у вас есть до 10 000 рублей?'],
+        ];
+        document.getElementById('chat-box').innerHTML =
+            '<div class="ai-msg"><p>Здравствуйте! Помогу подобрать комплектующие и подскажу по наличию. С чего начнём?</p></div>' +
+            '<div class="chat-chips">' +
+            chips.map(([label, q]) => `<button class="chat-chip" data-q="${escapeHtml(q)}" onclick="sendToAI(this.dataset.q)">${label}</button>`).join('') +
+            '</div>';
+    }
+
+    async function sendToAI(preset) {
         const input = document.getElementById('ai-input');
         const chat = document.getElementById('chat-box');
         const btn = document.getElementById('ai-send-btn');
-        if (!input.value.trim() || btn.disabled) return;
-        
-        const userMsg = input.value;
-        chat.innerHTML += `<div class="user-msg">${userMsg}</div>`;
+        const userMsg = (typeof preset === 'string' ? preset : input.value).trim();
+        if (!userMsg || btn.disabled) return;
+
+        chat.querySelectorAll('.chat-chips').forEach(el => el.remove());
+        chat.insertAdjacentHTML('beforeend', `<div class="user-msg">${escapeHtml(userMsg)}</div>`);
         input.value = '';
         btn.disabled = true;
-        
-        const tid = 't' + Date.now();
-        chat.innerHTML += `<div class="ai-msg" id="${tid}"><b>[AI]:</b> <div class="skeleton-line"></div></div>`;
-        chat.scrollTop = chat.scrollHeight;
 
-        // Собираем данные о товарах, чтобы AI их знал
-        const shopContext = products.map(p => `${p.name} за ${p.price}р`).join(', ');
-        const fullPrompt = `Инфо о магазине nexTech: у нас есть ${shopContext}. Вопрос клиента: ${userMsg}`;
+        const tid = 't' + Date.now();
+        chat.insertAdjacentHTML('beforeend', `<div class="ai-msg" id="${tid}"><div class="skeleton-line"></div></div>`);
+        chat.scrollTop = chat.scrollHeight;
+        const bubble = document.getElementById(tid);
 
         try {
             const res = await fetch(`${API_URL}/ask`, {
                 method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json', 
+                headers: {
+                    'Content-Type': 'application/json',
                     'ngrok-skip-browser-warning': 'true',
-                    // Передаем паспорт безопасности бэкенду 🛡️
                     'Authorization': `Bearer ${tg.initData || ''}`
                 },
-                body: JSON.stringify({ message: fullPrompt })
+                body: JSON.stringify({ message: userMsg })
             });
-            
-            // Если сервер вернул ошибку верификации
+
             if (res.status === 401 || res.status === 403) {
-                document.getElementById(tid).innerHTML = `<b>[SYSTEM]:</b> Ошибка верификации терминала. Доступ заблокирован.`;
+                bubble.innerHTML = '<p>Ошибка верификации. Откройте магазин заново из Telegram.</p>';
             } else {
                 const data = await res.json();
-                document.getElementById(tid).innerHTML = `<b>[AI]:</b> ${data.reply}`;
+                bubble.innerHTML = renderMarkdown(data.reply || '');
+                if (data.products && data.products.length) {
+                    bubble.insertAdjacentHTML('afterend', `<div class="chat-cards">${chatCardsHtml(data.products, data.buy)}</div>`);
+                }
             }
-        } catch (e) { 
-            document.getElementById(tid).innerHTML = `<b>[SYSTEM]:</b> Сервер офлайн.`; 
+        } catch (e) {
+            bubble.innerHTML = '<p>Сервер недоступен. Попробуйте позже.</p>';
         } finally {
             btn.disabled = false;
             chat.scrollTop = chat.scrollHeight;
             tg.HapticFeedback.selectionChanged();
         }
     }
+
+    document.getElementById('ai-input').addEventListener('keydown', e => {
+        if (e.key === 'Enter') { e.preventDefault(); sendToAI(); }
+    });
 
     // Проверка статуса сервера раз в 5 секунд
     function setWarehouseStatus(online) {
@@ -1354,7 +1428,7 @@
         updateCatalogStats();
         renderHits();
         syncCartUI();
-        document.getElementById('chat-box').innerHTML = '<div class="ai-msg">Система nexTech готова. Спросите меня о наличии товаров!</div>';
+        renderChatIntro();
     };
 </script>
 </body>
