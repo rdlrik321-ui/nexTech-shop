@@ -1,0 +1,17 @@
+# Секреты — никогда не коммитим (образец с пустыми значениями — .env.example)
+.env
+.env.*
+!.env.example
+
+# Рабочие данные магазина: заказы и отзывы с Telegram-id покупателей
+orders.json
+reviews.json
+
+# Окружения, бинарники, мусор
+.venv/
+venv/
+__pycache__/
+*.pyc
+ngrok
+ngrok.exe
+.DS_Store
