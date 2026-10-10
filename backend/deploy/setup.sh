@@ -7,6 +7,17 @@ IP=$(curl -4 -s https://ifconfig.me)
 DOMAIN="${1:-${IP//./-}.sslip.io}"
 APP_DIR=/opt/nextech
 
+echo "== Проверка: достаёт ли этот сервер до нужных сервисов =="
+BAD=0
+for u in "https://api.telegram.org" "https://generativelanguage.googleapis.com"; do
+  if curl -s -m 8 -o /dev/null "$u"; then echo "  OK  $u"; else echo "  !!  $u — НЕ доступен с этого сервера"; BAD=1; fi
+done
+if [ "$BAD" = 1 ]; then
+  echo ">>> Без доступа к Telegram бот не сможет присылать заказы. Лучше взять сервер в другой стране (не РФ)."
+  read -r -p "Всё равно продолжить установку? [y/N] " ans
+  [ "$ans" = "y" ] || exit 1
+fi
+
 apt-get update
 apt-get install -y python3-venv git caddy
 
