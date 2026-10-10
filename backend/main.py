@@ -61,7 +61,8 @@ async def register_telegram_webhook():
 load_dotenv()
 
 BOT_TOKEN = os.environ["BOT_TOKEN"]
-AUTH_KEY = os.environ["GIGACHAT_AUTH_KEY"]
+# Ключ GigaChat необязателен: без него магазин работает, ИИ-чат просто отвечает «недоступен».
+AUTH_KEY = os.environ.get("GIGACHAT_AUTH_KEY", "")
 SELLER_CHAT_ID = os.environ["SELLER_CHAT_ID"]
 # Публичный адрес этого бэкенда (тот же, что и API_URL в index.html) — нужен,
 # чтобы Telegram знал, куда слать нажатия кнопок «Оплата пришла» / «Отмена».
@@ -451,6 +452,9 @@ async def ask_ai(request: ChatRequest, authorization: str = Header(None)):
     chat_history = chat_histories.setdefault(user_id, [])
 
     # --- ЕСЛИ ВСЕ ОК, РАБОТАЕМ С GIGACHAT ---
+    if not AUTH_KEY:
+        return {"reply": "ИИ-консультант временно недоступен. По вопросам наличия и оплаты напишите менеджеру в разделе «Поддержка»."}
+
     token = get_access_token()
     if not token:
         return {"reply": "Система nexTech: Ошибка авторизации в ядре ИИ."}
